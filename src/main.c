@@ -14,6 +14,46 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+
+
+
+
+struct cam_sys {
+
+	mat4 matrix;
+	int location;
+
+	void (*scale)(struct cam_sys *space, vec3 scale);
+	void (*translate)(struct cam_sys *space, vec3 translation);
+	// maybe rename apply uniform
+	void (*set_uniform)(struct cam_sys *space);
+};
+
+
+void cam_sys_scale(struct cam_sys *space, vec3 scale) {
+	glm_scale(space->matrix, scale);
+}
+void cam_sys_translate(struct cam_sys *space, vec3 translation) {
+	glm_translate(space->matrix, translation);
+}
+void cam_sys_set_uniform(struct cam_sys *space) {
+	glUniformMatrix4fv(space->location, 1, false, (const float *)space->matrix);
+}
+
+
+
+
+void setup_cam_sys(struct cam_sys *space, char *name, int program) {
+	glm_mat4_identity(space->matrix);
+	space->location = glGetUniformLocation(program, name);
+
+	space->scale = cam_sys_scale;
+	space->translate = cam_sys_translate;
+	space->set_uniform = cam_sys_set_uniform;
+}
+
+
+
 int main() {
 
 	if (!glfwInit()) {
@@ -42,8 +82,9 @@ int main() {
 
 
 
+
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/mandlebrot2.glsl");
+	const char *fragmentShaderSource = loadShader("src/fragment.glsl");
 	const char *vertexShaderSource = loadShader("src/vertex.glsl");
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
@@ -55,6 +96,10 @@ int main() {
 	if (!(fragment_success || vertex_success)) {
 		return 1;
 	}
+
+
+
+
 
 
 
@@ -114,32 +159,20 @@ int main() {
 
 
 	// coordinate systems
+	struct cam_sys model;
+	setup_cam_sys(&model, "model", program);
+	struct cam_sys view;
+	setup_cam_sys(&view, "view", program);
+	struct cam_sys projection;
+	setup_cam_sys(&projection, "projection", program);
 
 
-	mat4 model;
-	mat4 view;
-	mat4 projection;
-
-	glm_mat4_identity(model);
-	glm_mat4_identity(view);
-	glm_mat4_identity(projection);
-
-	int model_loc = glGetUniformLocation(program, "model");
-	int view_loc = glGetUniformLocation(program, "view");
-	int projection_loc = glGetUniformLocation(program, "projection");
+	model.scale(&model, (vec3){300, 300, 1});
+	view.translate(&view, (vec3){250, 250, 0});
+	glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
+	projection.set_uniform(&projection);
 
 
-
-	vec3 scale = {800, 600, 1};
-	glm_scale(model, scale);
-
-
-	vec3 translation = {250, 250, 0};
-	glm_translate(view, translation);
-
-
-	glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection);
-	glUniformMatrix4fv(projection_loc, 1, false, (const float *)projection);
 
 
 
@@ -161,11 +194,21 @@ int main() {
 	{
 		glfwPollEvents();
 
+		// while loop space stuff
+		view.translate(&view, (vec3){x, -y, 0});
+		view.set_uniform(&view);
+		model.set_uniform(&model);
+
+
+
+
+
+
+
+		// input
+
 		int present = glfwJoystickPresent(GLFW_JOYSTICK_2);
-
 		float diff = scalemax_val - scalemin_val;
-
-
 		present = 0;
 		int state = glfwGetKey(window, GLFW_KEY_E);
 		if (state == GLFW_PRESS)
@@ -187,35 +230,34 @@ int main() {
 
 			scalex = axes[3];
 			scaley = axes[4];
-			//printf("x: %f, y: %f\n", scalex, scaley);
 
 		}
 
-		vec3 translation = {x, -y, 0};
-		glm_translate(view, translation);
-		glUniformMatrix4fv(view_loc, 1, false, (const float *)view);
 
 
 
-		glUniformMatrix4fv(model_loc, 1, false, (const float *)model);
-
-
-
+		// unneccesary uniform stuff
 		int point_loc = glGetUniformLocation(program, "point");
-
 		glUniform2f(point_loc, scalex * 100, scaley * -100);
-
-
-		//uniform float scalemin;
-		//uniform float scalemax;
 
 		int scalemin_loc = glGetUniformLocation(program, "scalemin");
 		int scalemax_loc = glGetUniformLocation(program, "scalemax");
 		glUniform1f(scalemin_loc, scalemin_val);
 		glUniform1f(scalemax_loc, scalemax_val);
-
-
 		glUniform1f(time_loc, x);
+
+
+
+
+
+
+
+
+
+
+
+
+		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(program);
@@ -226,6 +268,8 @@ int main() {
 		glfwSwapBuffers(window);
 
 	}
+
+	// freeing unused stuff at end
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
