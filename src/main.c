@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "shader.h"
+#include "spaces.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -13,45 +14,6 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-
-
-
-
-struct cam_sys {
-
-	mat4 matrix;
-	int location;
-
-	void (*scale)(struct cam_sys *space, vec3 scale);
-	void (*translate)(struct cam_sys *space, vec3 translation);
-	// maybe rename apply uniform
-	void (*set_uniform)(struct cam_sys *space);
-};
-
-
-void cam_sys_scale(struct cam_sys *space, vec3 scale) {
-	glm_scale(space->matrix, scale);
-}
-void cam_sys_translate(struct cam_sys *space, vec3 translation) {
-	glm_translate(space->matrix, translation);
-}
-void cam_sys_set_uniform(struct cam_sys *space) {
-	glUniformMatrix4fv(space->location, 1, false, (const float *)space->matrix);
-}
-
-
-
-
-void setup_cam_sys(struct cam_sys *space, char *name, int program) {
-	glm_mat4_identity(space->matrix);
-	space->location = glGetUniformLocation(program, name);
-
-	space->scale = cam_sys_scale;
-	space->translate = cam_sys_translate;
-	space->set_uniform = cam_sys_set_uniform;
-}
-
 
 
 int main() {
@@ -159,12 +121,12 @@ int main() {
 
 
 	// coordinate systems
-	struct cam_sys model;
-	setup_cam_sys(&model, "model", program);
-	struct cam_sys view;
-	setup_cam_sys(&view, "view", program);
-	struct cam_sys projection;
-	setup_cam_sys(&projection, "projection", program);
+	struct space model;
+	setup_space(&model, "model", program);
+	struct space view;
+	setup_space(&view, "view", program);
+	struct space projection;
+	setup_space(&projection, "projection", program);
 
 
 	model.scale(&model, (vec3){300, 300, 1});
