@@ -46,7 +46,7 @@ int main() {
 
 
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/fragment.glsl");
+	const char *fragmentShaderSource = loadShader("src/mandlebrot2.glsl");
 	const char *vertexShaderSource = loadShader("src/vertex.glsl");
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
