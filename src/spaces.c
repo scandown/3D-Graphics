@@ -1,7 +1,5 @@
 #include "spaces.h"
-#include "glad/glad.h"
 
-struct space;
 
 void space_scale(struct space *space, vec3 scale) {
        glm_scale(space->matrix, scale);
