@@ -78,6 +78,37 @@ int main() {
 
 
 
+	float v_cube[] = {
+		// front
+		-1, -1, 0, // 0
+		1, -1, 0,  // 1
+		1, 1, 0,   // 2
+		-1, 1, 0,  // 3
+
+		//back
+		-1, -1, 1, // 4
+		1, -1, 1,  // 5
+		1, 1, 1,   // 6
+		-1, 1, 1,  // 7
+	};
+
+	unsigned int i_cube[] = {
+		// front
+		0, 1, 2,
+		0, 3, 2,
+
+		//side r
+		2, 6, 5,
+		2, 1, 5,
+
+		// back
+		5, 4, 7,
+		5, 6, 7,
+
+		// side l
+		7, 3, 0,
+		7, 4, 0,
+	};
 
 	float vertices[] = {
 		-1,  -1, 0,
@@ -101,10 +132,10 @@ int main() {
 
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(v_cube), v_cube, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i_cube), i_cube, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
@@ -129,9 +160,11 @@ int main() {
 	setup_space(&projection, "projection", program);
 
 
-	model.scale(&model, (vec3){300, 300, 1});
-	view.translate(&view, (vec3){250, 250, 0});
-	glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
+	model.scale(&model, (vec3){1, 1, 1});
+	glm_rotate_x(model.matrix, 45, model.matrix);
+	view.translate(&view, (vec3){0, 0, -20});
+	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
+	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
 	projection.set_uniform(&projection);
 
 
@@ -225,7 +258,7 @@ int main() {
 		glUseProgram(program);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
