@@ -161,8 +161,7 @@ int main() {
 
 
 	model.scale(&model, (vec3){1, 1, 1});
-	glm_rotate_x(model.matrix, 45, model.matrix);
-	view.translate(&view, (vec3){0, 0, -20});
+	view.translate(&view, (vec3){0, 0, -5});
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
 	projection.set_uniform(&projection);
@@ -188,6 +187,12 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+
+
+		const float speed = 0.01;
+
+		glm_rotate_x(model.matrix, speed, model.matrix);
+
 
 		// while loop space stuff
 		view.translate(&view, (vec3){x, -y, 0});
