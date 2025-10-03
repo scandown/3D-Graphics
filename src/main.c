@@ -46,7 +46,7 @@ int main() {
 
 
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/mandlebrot2.glsl");
+	const char *fragmentShaderSource = loadShader("src/red.glsl");
 	const char *vertexShaderSource = loadShader("src/vertex.glsl");
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
@@ -80,16 +80,16 @@ int main() {
 
 	float v_cube[] = {
 		// front
-		-1, -1, 0, // 0
-		1, -1, 0,  // 1
+		0, 0, 0, // 0
+		1, 0, 0,  // 1
 		1, 1, 0,   // 2
-		-1, 1, 0,  // 3
+		0, 1, 0,  // 3
 
 		//back
-		-1, -1, 1, // 4
-		1, -1, 1,  // 5
+		0, 0, 1, // 4
+		1, 0, 1,  // 5
 		1, 1, 1,   // 6
-		-1, 1, 1,  // 7
+		0, 1, 1,  // 7
 	};
 
 	unsigned int i_cube[] = {
@@ -102,12 +102,20 @@ int main() {
 		2, 1, 5,
 
 		// back
-		5, 4, 7,
-		5, 6, 7,
+		4, 5, 6,
+		4, 7, 6,
 
 		// side l
-		7, 3, 0,
-		7, 4, 0,
+		0, 4, 7,
+		0, 3, 7,
+
+		// top
+		3, 2, 6,
+		3, 7, 6,
+
+		// bottom
+		0, 1, 5,
+		0, 4, 5
 	};
 
 	float vertices[] = {
@@ -192,6 +200,7 @@ int main() {
 		const float speed = 0.01;
 
 		glm_rotate_x(model.matrix, speed, model.matrix);
+		glm_rotate_y(model.matrix, speed, model.matrix);
 
 
 		// while loop space stuff
@@ -263,7 +272,7 @@ int main() {
 		glUseProgram(program);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
