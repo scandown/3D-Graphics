@@ -199,9 +199,20 @@ int main() {
 
 		const float speed = 0.01;
 
-		glm_rotate_x(model.matrix, speed, model.matrix);
-		glm_rotate_y(model.matrix, speed, model.matrix);
+		//glm_rotate_x(model.matrix, speed, model.matrix);
+		//glm_rotate_y(model.matrix, speed, model.matrix);
 
+		//glm_rotate_x(model.matrix, 0.01, model.matrix);
+
+		//glm_lookat(vec3 eye, vec3 center, vec3 up, mat4 dest);
+
+		const float rad = 10;
+		float camX = sin(glfwGetTime()) * rad;
+		float camZ = cos(glfwGetTime()) * rad;
+		glm_lookat((vec3){camX, 0, camZ},
+			   (vec3){0, 0, 0},
+			   (vec3){0, 1, 0},
+			   view.matrix);
 
 		// while loop space stuff
 		view.translate(&view, (vec3){x, -y, 0});
