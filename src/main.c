@@ -46,7 +46,7 @@ int main() {
 
 
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/red.glsl");
+	const char *fragmentShaderSource = loadShader("src/mandlebrot2.glsl");
 	const char *vertexShaderSource = loadShader("src/vertex.glsl");
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
@@ -80,16 +80,16 @@ int main() {
 
 	float v_cube[] = {
 		// front
-		0, 0, 0, // 0
-		1, 0, 0,  // 1
-		1, 1, 0,   // 2
-		0, 1, 0,  // 3
+		-1, -1, -1, // -1
+		1, -1, -1,  // 1
+		1, 1, -1,   // 2
+		-1, 1, -1,  // 3
 
 		//back
-		0, 0, 1, // 4
-		1, 0, 1,  // 5
+		-1, -1, 1, // 4
+		1, -1, 1,  // 5
 		1, 1, 1,   // 6
-		0, 1, 1,  // 7
+		-1, 1, 1,  // 7
 	};
 
 	unsigned int i_cube[] = {
@@ -198,7 +198,7 @@ int main() {
 	vec3 cam_total_front = {0};
 
 	float pitch = 0;
-	float yaw = 0;
+	float yaw = -90;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -220,7 +220,7 @@ int main() {
 		
 
 		//pitch += 0.1;
-		yaw += 1;
+		//yaw += 1;
 		vec3 direction;
 		direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
 		direction[1] = sin(glm_rad(pitch));
