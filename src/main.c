@@ -40,7 +40,7 @@ int main() {
 		return -1;
 	}
 
-
+	glEnable(GL_DEPTH_TEST);
 
 
 
@@ -169,7 +169,7 @@ int main() {
 
 
 	model.scale(&model, (vec3){1, 1, 1});
-	view.translate(&view, (vec3){0, 0, -5});
+	view.translate(&view, (vec3){0, 0, -2});
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
 	projection.set_uniform(&projection);
@@ -191,6 +191,14 @@ int main() {
 	float scalemax_val = 2;
 	glfwSetKeyCallback(window, key_callback);
 
+	vec3 cameraPos   = {0.0f, 0.0f,  3.0f};
+	vec3 cameraFront = {0.0f, 0.0f, -1.0f};
+	vec3 cameraUp    = {0.0f, 1.0f,  0.0f};
+
+	vec3 cam_total_front = {0};
+
+	float pitch = 0;
+	float yaw = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -209,13 +217,21 @@ int main() {
 		const float rad = 10;
 		float camX = sin(glfwGetTime()) * rad;
 		float camZ = cos(glfwGetTime()) * rad;
-		glm_lookat((vec3){camX, 0, camZ},
-			   (vec3){0, 0, 0},
-			   (vec3){0, 1, 0},
-			   view.matrix);
+		
+
+		//pitch += 0.1;
+		yaw += 1;
+		vec3 direction;
+		direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+		direction[1] = sin(glm_rad(pitch));
+		direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+		glm_vec3_normalize_to(direction, cameraFront);
+
+		glm_vec3_add(cameraPos, cameraFront, cam_total_front);
+		glm_lookat(cameraPos, cam_total_front, cameraUp, view.matrix);
 
 		// while loop space stuff
-		view.translate(&view, (vec3){x, -y, 0});
+		//view.translate(&view, (vec3){x, -y, 0});
 		view.set_uniform(&view);
 		model.set_uniform(&model);
 
@@ -279,7 +295,8 @@ int main() {
 
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(program);
 
 		glBindVertexArray(VAO);
