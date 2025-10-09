@@ -7,7 +7,7 @@
 #include "shader.h"
 #include "spaces.h"
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch);
+void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow *window);
@@ -208,7 +208,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch);
+		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
 
 
 		const float speed = 0.01;
@@ -261,6 +261,39 @@ int main() {
 		if (state == GLFW_PRESS)
 		{
 			scalemax_val -= diff / 100;	
+		}
+
+		float cameraSpeed = 0.05f;
+		state = glfwGetKey(window, GLFW_KEY_W);
+		if (state == GLFW_PRESS) {
+			vec3 cameraMove;
+			glm_vec3_scale(cameraFront, cameraSpeed, cameraMove);
+			glm_vec3_add(cameraPos, cameraMove, cameraPos);
+		}
+		state = glfwGetKey(window, GLFW_KEY_A);
+		if (state == GLFW_PRESS) {
+		//		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			vec3 cameraRight;
+			glm_vec3_cross(cameraFront, cameraUp, cameraRight);
+			glm_vec3_normalize(cameraRight);
+			glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+
+			glm_vec3_sub(cameraPos, cameraRight, cameraPos);
+		}
+		state = glfwGetKey(window, GLFW_KEY_S);
+		if (state == GLFW_PRESS) {
+			vec3 cameraMove;
+			glm_vec3_scale(cameraFront, cameraSpeed, cameraMove);
+			glm_vec3_sub(cameraPos, cameraMove, cameraPos);
+		}
+		state = glfwGetKey(window, GLFW_KEY_D);
+		if (state == GLFW_PRESS) {
+			vec3 cameraRight;
+			glm_vec3_cross(cameraFront, cameraUp, cameraRight);
+			glm_vec3_normalize(cameraRight);
+			glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+
+			glm_vec3_add(cameraPos, cameraRight, cameraPos);
 		}
 
 		if (present) {
@@ -338,20 +371,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch) {
+void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity) {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
 	double xpos_diff = xpos - *prev_xpos;
 	double ypos_diff = -(ypos - *prev_ypos);
 
-	printf("%f, %f\n", xpos_diff, ypos_diff);
-
 	*prev_xpos = xpos;
 	*prev_ypos = ypos;
 
-	*yaw += xpos_diff;
-	*pitch += ypos_diff;
+	*yaw += xpos_diff * sensitivity;
+	*pitch += ypos_diff * sensitivity;
 
 }
 
