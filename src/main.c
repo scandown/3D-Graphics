@@ -6,6 +6,7 @@
 
 #include "shader.h"
 #include "spaces.h"
+#include "model.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -44,7 +45,15 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	int num = 0;
+	float *test = model_load("assets/utah_teapot.obj", &num);
 
+	for (int i = 0; i < num; i++) {
+		printf("%f\n", test[i]);
+	}
+
+	free(test);
+	return 1;
 
 
 	//setup for opengl :3
