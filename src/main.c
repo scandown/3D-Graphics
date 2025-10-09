@@ -7,7 +7,7 @@
 #include "shader.h"
 #include "spaces.h"
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos);
+void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow *window);
@@ -208,7 +208,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		cursor_position_callback(window, &prev_xpos, &prev_ypos);
+		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch);
 
 
 		const float speed = 0.01;
@@ -338,7 +338,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos) {
+void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch) {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -349,6 +349,9 @@ void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *pre
 
 	*prev_xpos = xpos;
 	*prev_ypos = ypos;
+
+	*yaw += xpos_diff;
+	*pitch += ypos_diff;
 
 }
 
