@@ -342,8 +342,8 @@ void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *pre
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	double xpos_diff = *prev_xpos - xpos;
-	double ypos_diff = *prev_ypos - ypos;
+	double xpos_diff = xpos - *prev_xpos;
+	double ypos_diff = ypos - *prev_ypos;
 
 	printf("%f, %f\n", xpos_diff, ypos_diff);
 
