@@ -10,7 +10,7 @@
 
 
 // model
-//#include "modely.h"
+#include "modely.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -49,16 +49,24 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	int vnum = 0;
-	int fnum = 0;
+	int vsize = 0;
+	int fsize = 0;
 	float *vtest;
 	unsigned int *ftest;
 
-	if (model_load("assets/teapot.obj", &vnum, &fnum, &vtest, &ftest) == -1) {
+	if (model_load("assets/teapot.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
+	
+	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
+	unsigned int teapot_vertex_length = sizeof(v_teapot) / sizeof(float);
+	int wrong = check_int_equality(ftest, fsize, f_teapot, teapot_face_length);
 
-	//printf("%i\n", fnum);
+	printf("The two face arrays are %i wrong\n", wrong);
+	wrong = check_float_equality(vtest, vsize, v_teapot, teapot_vertex_length);
+	printf("The two vertex arrays are %i wrong\n", wrong);
+
+	//printf("%i\n", fsize);
 /*
 	for (int i = 0; i < num; i++) {
 		printf("%i\n", ftest[i]);
@@ -66,14 +74,14 @@ int main() {
 	*/
 
 	bool debug = false;
-	bool debug_cube = true;
-	//unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
+	bool debug_cube = false;
+	bool debug_cube_header = true;
 	//printf("f_teapot length = %li\n", teapot_face_length);
 	if (debug) {
-		printf("vnum = %i, fnum = %i\n", vnum, fnum);
+		printf("vsize = %i, fsize = %i\n", vsize, fsize);
 		free(vtest);
 		free(ftest);
-		return 1;
+		return 0;
 	}
 
 
@@ -171,10 +179,16 @@ int main() {
 
 	if (debug_cube) {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vtest), vtest, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vsize, vtest, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ftest), ftest, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize, ftest, GL_STATIC_DRAW);
+	} else if (debug_cube_header) {
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(v_teapot), v_teapot, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(f_teapot), f_teapot, GL_STATIC_DRAW);
 	} else {
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -340,7 +354,7 @@ int main() {
 
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, fnum, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
