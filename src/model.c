@@ -1,12 +1,30 @@
 #include "model.h"
 
+void string_search_float(int *i,float *array, char *line) {
+	char *save = NULL;
+	char *vertex = strtok_r(line + 2, " ", &save);
+	while (vertex != NULL) {
+		array[(*i)++] = atof(vertex);
+		vertex = strtok_r(NULL, " ", &save);
+	}
+}
 
-float *model_load(char *model_name, int *num_of_vertices) {
+void string_search_int(int *i, unsigned int *array, char *line) {
+	char *save = NULL;
+	char *vertex = strtok_r(line + 2, " ", &save);
+	while (vertex != NULL) {
+		array[(*i)++] = atoi(vertex);
+		vertex = strtok_r(NULL, " ", &save);
+	}
+}
+
+
+int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float **vert, unsigned int **faces) {
 
 	FILE *fptr = fopen(model_name, "r");	
 	if (fptr == NULL) {
 		printf("Couldn't open: %s\n", model_name);
-		return NULL;
+		return -1;
 	}
 
 
@@ -15,29 +33,32 @@ float *model_load(char *model_name, int *num_of_vertices) {
 	rewind(fptr);
 
 	char *file = malloc(file_size + 1);
+	char *file_copy = malloc(file_size + 1);
 	fread(file, 1, file_size, fptr);
+	strncpy(file_copy, file, file_size);
 
 	// 4 for the size of a float
 	float *vertices = malloc((file_size) * sizeof(float));
+	unsigned int *faces_full = malloc((file_size) * sizeof(unsigned int));
 
 
 	// get each line of the vertices
-	char *save_line, *save_vertex;
+	char *save_line;
 	char *line = strtok_r(file, "\n", &save_line);
-	int i = 0;
+	int i_vertices = 0;
+	int i_faces = 0;
 
+	
 	while (line != NULL) {
 		if (line[0] == 'v' && line[1] == ' ') {
-			char *vertex = strtok_r(line + 2, " ", &save_vertex);
-			while (vertex != NULL) {
-				vertices[i++] = atof(vertex);
-				vertex = strtok_r(NULL, " ", &save_vertex);
-			}
+			string_search_float(&i_vertices, vertices, line);
 		}
+		else if (line[0] == 'f' && line[1] == ' ') {
+			string_search_int(&i_faces, faces_full, line);
+		}
+
 		line = strtok_r(NULL, "\n", &save_line);
 	}
-
-	printf("Number of floats: %i\n", i);
 
 	//printf("%f\n", vertices[0]);
 
@@ -46,8 +67,11 @@ float *model_load(char *model_name, int *num_of_vertices) {
 
 	fclose(fptr);
 
-	*num_of_vertices = i;
+	*num_of_vertices = i_vertices;
+	*num_of_faces = i_faces;
 
-	return vertices;
+	*vert = vertices;
+	*faces = faces_full;
+	return 0;
 }
 
