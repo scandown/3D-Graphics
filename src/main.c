@@ -10,7 +10,7 @@
 
 
 // model
-#include "modely.h"
+//#include "modely.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -53,11 +53,10 @@ int main() {
 	int fnum = 0;
 	float *vtest;
 	unsigned int *ftest;
-/*	
+
 	if (model_load("assets/teapot.obj", &vnum, &fnum, &vtest, &ftest) == -1) {
 		return -1;
 	}
-	*/
 
 	//printf("%i\n", fnum);
 /*
@@ -68,7 +67,7 @@ int main() {
 
 	bool debug = false;
 	bool debug_cube = true;
-	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
+	//unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
 	//printf("f_teapot length = %li\n", teapot_face_length);
 	if (debug) {
 		printf("vnum = %i, fnum = %i\n", vnum, fnum);
@@ -172,10 +171,10 @@ int main() {
 
 	if (debug_cube) {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(v_teapot), v_teapot, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vtest), vtest, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(f_teapot), f_teapot, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ftest), ftest, GL_STATIC_DRAW);
 	} else {
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -341,7 +340,7 @@ int main() {
 
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, teapot_face_length, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, fnum, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
