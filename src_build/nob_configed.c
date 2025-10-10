@@ -24,6 +24,7 @@ int main(void)
     nob_cc_output(&cmd, output_path);
     nob_cc_inputs(&cmd, input_path, "external/lib/glad.c", SRC_FOLDER"shader.c", SRC_FOLDER"spaces.c", SRC_FOLDER"model.c");
     nob_cmd_append(&cmd, "-lglfw3", "-lm", "-ldl", "-lpthread", "-lGL", "-lX11");
+    nob_cmd_append(&cmd, "-Wno-unused-variable", "-Wno-unused-parameter");
     if (!cmd_run(&cmd)) return 1;
     return 0;
 }

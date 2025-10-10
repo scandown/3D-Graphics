@@ -8,6 +8,10 @@
 #include "spaces.h"
 #include "model.h"
 
+
+// model
+#include "modely.h"
+
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -45,19 +49,37 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	int num = 0;
-	float *test = model_load("assets/utah_teapot.obj", &num);
-
-	for (int i = 0; i < num; i++) {
-		printf("%f\n", test[i]);
+	int vnum = 0;
+	int fnum = 0;
+	float *vtest;
+	unsigned int *ftest;
+/*	
+	if (model_load("assets/teapot.obj", &vnum, &fnum, &vtest, &ftest) == -1) {
+		return -1;
 	}
+	*/
 
-	free(test);
-	return 1;
+	//printf("%i\n", fnum);
+/*
+	for (int i = 0; i < num; i++) {
+		printf("%i\n", ftest[i]);
+	}
+	*/
+
+	bool debug = false;
+	bool debug_cube = true;
+	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
+	//printf("f_teapot length = %li\n", teapot_face_length);
+	if (debug) {
+		printf("vnum = %i, fnum = %i\n", vnum, fnum);
+		free(vtest);
+		free(ftest);
+		return 1;
+	}
 
 
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/mandlebrot2.glsl");
+	const char *fragmentShaderSource = loadShader("src/red.glsl");
 	const char *vertexShaderSource = loadShader("src/vertex.glsl");
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
@@ -85,8 +107,6 @@ int main() {
 	glLinkProgram(program);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
-
-
 
 
 	float v_cube[] = {
@@ -150,11 +170,20 @@ int main() {
 	glBindVertexArray(VAO);
 
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(v_cube), v_cube, GL_STATIC_DRAW);
+	if (debug_cube) {
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(v_teapot), v_teapot, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i_cube), i_cube, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(f_teapot), f_teapot, GL_STATIC_DRAW);
+	} else {
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(v_cube), v_cube, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i_cube), i_cube, GL_STATIC_DRAW);
+	}
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
@@ -191,15 +220,11 @@ int main() {
 
 
 
-	int time_loc = glGetUniformLocation(program, "time");
-	float x = 0;
-	float y = 0;
 
-	float scalex = 0;
-	float scaley = 0;
 
 	float scalemin_val = -2;
 	float scalemax_val = 2;
+	float diff = scalemax_val - scalemin_val;
 	glfwSetKeyCallback(window, key_callback);
 
 	vec3 cameraPos   = {0.0f, 0.0f,  3.0f};
@@ -217,25 +242,11 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
+		//cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
 
 
 		const float speed = 0.01;
 
-		//glm_rotate_x(model.matrix, speed, model.matrix);
-		//glm_rotate_y(model.matrix, speed, model.matrix);
-
-		//glm_rotate_x(model.matrix, 0.01, model.matrix);
-
-		//glm_lookat(vec3 eye, vec3 center, vec3 up, mat4 dest);
-
-		const float rad = 10;
-		float camX = sin(glfwGetTime()) * rad;
-		float camZ = cos(glfwGetTime()) * rad;
-		
-
-		//pitch += 0.1;
-		//yaw += 1;
 		vec3 direction;
 		direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
 		direction[1] = sin(glm_rad(pitch));
@@ -258,9 +269,6 @@ int main() {
 
 		// input
 
-		int present = glfwJoystickPresent(GLFW_JOYSTICK_2);
-		float diff = scalemax_val - scalemin_val;
-		present = 0;
 		int state = glfwGetKey(window, GLFW_KEY_E);
 		if (state == GLFW_PRESS)
 		{
@@ -305,30 +313,14 @@ int main() {
 			glm_vec3_add(cameraPos, cameraRight, cameraPos);
 		}
 
-		if (present) {
-			int axesCount;
-			const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_2, &axesCount);
-
-			x = axes[0];
-			y = axes[1];
-
-			scalex = axes[3];
-			scaley = axes[4];
-
-		}
 
 
 
-
-		// unneccesary uniform stuff
-		int point_loc = glGetUniformLocation(program, "point");
-		glUniform2f(point_loc, scalex * 100, scaley * -100);
 
 		int scalemin_loc = glGetUniformLocation(program, "scalemin");
 		int scalemax_loc = glGetUniformLocation(program, "scalemax");
 		glUniform1f(scalemin_loc, scalemin_val);
 		glUniform1f(scalemax_loc, scalemax_val);
-		glUniform1f(time_loc, x);
 
 
 
@@ -347,8 +339,9 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(program);
 
+
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, teapot_face_length, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 
@@ -363,6 +356,10 @@ int main() {
 
 	free((void *)fragmentShaderSource);
 	free((void *)vertexShaderSource);
+
+	// free model data
+	free(vtest);
+	free(ftest);
 
 	glfwTerminate();
 	return 0;
