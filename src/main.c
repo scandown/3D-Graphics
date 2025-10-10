@@ -48,6 +48,7 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glDisable(GL_CULL_FACE);
 
 	int vsize = 0;
 	int fsize = 0;
@@ -62,9 +63,9 @@ int main() {
 	unsigned int teapot_vertex_length = sizeof(v_teapot) / sizeof(float);
 	int wrong = check_int_equality(ftest, fsize, f_teapot, teapot_face_length);
 
-	printf("The two face arrays are %i wrong\n", wrong);
+	//printf("The two face arrays are %i wrong\n", wrong);
 	wrong = check_float_equality(vtest, vsize, v_teapot, teapot_vertex_length);
-	printf("The two vertex arrays are %i wrong\n", wrong);
+	//printf("The two vertex arrays are %i wrong\n", wrong);
 
 	//printf("%i\n", fsize);
 /*
@@ -73,9 +74,33 @@ int main() {
 	}
 	*/
 
+	// print vertex array
+	// print face array
+	printf("Faces:\n");
+	printf("f: ");
+	for (int i = 0; i < fsize; i++) {
+		if (i % 3 == 0 && i != 0) {
+			printf("\nf: ");
+		}
+		printf("%i, ", ftest[i]);
+	}
+	printf("\n");
+
+
+	printf("\n");
+	printf("Vertices:\n");
+	printf("v: ");
+	for (int i = 0; i < vsize; i++) {
+		if (i % 3 == 0 && i != 0) {
+			printf("\nv: ");
+		}
+		printf("%f, ", vtest[i]);
+	}
+	printf("\n");
+
 	bool debug = false;
-	bool debug_cube = false;
-	bool debug_cube_header = true;
+	bool debug_cube = true;
+	bool debug_cube_header = false;
 	//printf("f_teapot length = %li\n", teapot_face_length);
 	if (debug) {
 		printf("vsize = %i, fsize = %i\n", vsize, fsize);
@@ -179,10 +204,10 @@ int main() {
 
 	if (debug_cube) {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vsize, vtest, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vsize * sizeof(float), vtest, GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize, ftest, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
 	} else if (debug_cube_header) {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(v_teapot), v_teapot, GL_STATIC_DRAW);
@@ -255,7 +280,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
-		//cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
+		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
 
 
 		const float speed = 0.01;

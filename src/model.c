@@ -13,7 +13,7 @@ void string_search_int(int *i, unsigned int *array, char *line) {
 	char *save = NULL;
 	char *vertex = strtok_r(line + 2, " ", &save);
 	while (vertex != NULL) {
-		array[(*i)++] = atoi(vertex);
+		array[(*i)++] = atoi(vertex) - 1;
 		vertex = strtok_r(NULL, " ", &save);
 	}
 }
