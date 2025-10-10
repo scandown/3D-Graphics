@@ -18,6 +18,26 @@ void string_search_int(int *i, unsigned int *array, char *line) {
 	}
 }
 
+int check_equality(int *array1, int array1_length, int *array2, int array2_length) {
+	// arr 1[0]	
+	//
+	int wrong = 0;
+	
+	if (array1_length != array2_length) {
+		return -1;
+	}
+	
+	for (int i = 0; i < array1_length; i++) {
+		if (array1[i] != array2[i]) {
+			wrong++;
+			printf("array1[%i]: %i != array2[%i]: %i\n", i, array1[i], i, array2[i]);
+		}
+		
+	}
+
+	return wrong;
+}
+
 
 int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float **vert, unsigned int **faces) {
 
