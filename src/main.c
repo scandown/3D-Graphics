@@ -48,14 +48,13 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glDisable(GL_CULL_FACE);
 
 	int vsize = 0;
 	int fsize = 0;
 	float *vtest;
 	unsigned int *ftest;
 
-	if (model_load("assets/teapot.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
+	if (model_load("assets/penger.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
 	
@@ -76,27 +75,6 @@ int main() {
 
 	// print vertex array
 	// print face array
-	printf("Faces:\n");
-	printf("f: ");
-	for (int i = 0; i < fsize; i++) {
-		if (i % 3 == 0 && i != 0) {
-			printf("\nf: ");
-		}
-		printf("%i, ", ftest[i]);
-	}
-	printf("\n");
-
-
-	printf("\n");
-	printf("Vertices:\n");
-	printf("v: ");
-	for (int i = 0; i < vsize; i++) {
-		if (i % 3 == 0 && i != 0) {
-			printf("\nv: ");
-		}
-		printf("%f, ", vtest[i]);
-	}
-	printf("\n");
 
 	bool debug = false;
 	bool debug_cube = true;
@@ -425,8 +403,13 @@ void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *pre
 	*prev_xpos = xpos;
 	*prev_ypos = ypos;
 
-	*yaw += xpos_diff * sensitivity;
 	*pitch += ypos_diff * sensitivity;
+	if (*pitch > 89.9) {
+		*pitch = 89.9;
+	} else if (*pitch < -89.9) {
+		*pitch = -89.9;
+	}
+	*yaw += xpos_diff * sensitivity;
 
 }
 
