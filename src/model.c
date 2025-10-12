@@ -71,9 +71,7 @@ int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float 
 	rewind(fptr);
 
 	char *file = malloc(file_size + 1);
-	char *file_copy = malloc(file_size + 1);
 	fread(file, 1, file_size, fptr);
-	strncpy(file_copy, file, file_size);
 
 	// 4 for the size of a float
 	float *vertices = malloc((file_size) * sizeof(float));

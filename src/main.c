@@ -14,7 +14,6 @@
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -49,37 +48,26 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+
 	int vsize = 0;
 	int fsize = 0;
 	float *vtest;
 	unsigned int *ftest;
 
-	if (model_load("assets/penger.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
+
+	if (model_load("assets/gun.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
 	
 	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
 	unsigned int teapot_vertex_length = sizeof(v_teapot) / sizeof(float);
-	int wrong = check_int_equality(ftest, fsize, f_teapot, teapot_face_length);
+	//int wrong = check_int_equality(ftest, fsize, f_teapot, teapot_face_length);
 
-	//printf("The two face arrays are %i wrong\n", wrong);
-	wrong = check_float_equality(vtest, vsize, v_teapot, teapot_vertex_length);
-	//printf("The two vertex arrays are %i wrong\n", wrong);
-
-	//printf("%i\n", fsize);
-/*
-	for (int i = 0; i < num; i++) {
-		printf("%i\n", ftest[i]);
-	}
-	*/
-
-	// print vertex array
-	// print face array
+	//wrong = check_float_equality(vtest, vsize, v_teapot, teapot_vertex_length);
 
 	bool debug = false;
 	bool debug_cube = true;
 	bool debug_cube_header = false;
-	//printf("f_teapot length = %li\n", teapot_face_length);
 	if (debug) {
 		printf("vsize = %i, fsize = %i\n", vsize, fsize);
 		free(vtest);
@@ -241,7 +229,6 @@ int main() {
 	float scalemin_val = -2;
 	float scalemax_val = 2;
 	float diff = scalemax_val - scalemin_val;
-	glfwSetKeyCallback(window, key_callback);
 
 	vec3 cameraPos   = {0.0f, 0.0f,  3.0f};
 	vec3 cameraFront = {0.0f, 0.0f, -1.0f};
@@ -254,6 +241,10 @@ int main() {
 
 	double prev_xpos = 0;
 	double prev_ypos = 0;
+	
+	float x = 0;
+	float y = 0;
+	float z = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -275,9 +266,14 @@ int main() {
 		// while loop space stuff
 		//view.translate(&view, (vec3){x, -y, 0});
 		view.set_uniform(&view);
+
 		model.set_uniform(&model);
 
-
+		/*
+		float gun_pitch = tan(cameraPos[1] / cameraPos[0]);
+		float gun_
+		glm_rotate_x(model.matrix, 
+		*/
 
 
 
@@ -295,6 +291,7 @@ int main() {
 		{
 			scalemax_val -= diff / 100;	
 		}
+
 
 		float cameraSpeed = 0.05f;
 		state = glfwGetKey(window, GLFW_KEY_W);
@@ -328,7 +325,16 @@ int main() {
 
 			glm_vec3_add(cameraPos, cameraRight, cameraPos);
 		}
-
+		state = glfwGetKey(window, GLFW_KEY_SPACE);
+		if (state == GLFW_PRESS)
+		{
+			cameraPos[1] += cameraSpeed;
+		}
+		state = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
+		if (state == GLFW_PRESS)
+		{
+			cameraPos[1] -= cameraSpeed;
+		}
 
 
 
@@ -381,11 +387,6 @@ int main() {
 	return 0;
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-//    if (key == GLFW_KEY_E && action == GLFW_REPEAT)
-//        printf("HIII\n");
-}
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
