@@ -7,6 +7,8 @@
 #include "shader.h"
 #include "spaces.h"
 #include "model.h"
+#include "vec3.h"
+#include "quat.h"
 
 
 // model
@@ -211,8 +213,9 @@ int main() {
 	struct space projection;
 	setup_space(&projection, "projection", program);
 
+	vec3 model_position = {1, 1, 1};
 
-	model.scale(&model, (vec3){1, 1, 1});
+	model.scale(&model, model_position);
 	view.translate(&view, (vec3){0, 0, -2});
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
@@ -347,13 +350,34 @@ int main() {
 
 
 		int q_loc = glGetUniformLocation(program, "q");
-		int q_in_loc = glGetUniformLocation(program, "q_in");
 
 		float time = glfwGetTime();
 
 		vec4 q_vec = {cos(time), 0, 1 * sin(time), sin(time) * 1};
-		glm_vec4_normalize(q_vec);
-		glUniform4fv(q_loc, 1, (float *)q_vec);
+		//mag = sqrt (x, y, z) squaeredn
+		//
+		//
+		//v_norm = v / mag;
+		//
+		//// this is on the unit sphere now
+		//
+		//
+		//
+		//
+		//v_new = v_norm;
+		//theta = v_norm.dot(v_new);
+		//axis = v_norm.cross(v_new);
+		//
+		//
+		//new_q = {cos(theta), sin(theta)(axis)}
+
+
+		vec3_c axis;
+		vec3_c point = {0, 0};
+		quat result = quat_rotate(M_PI, (vec3_c){0,1,0}, point);
+
+		float q_test[] = {result.w, result.i, result.j, result.k};
+		glUniform4fv(q_loc, 1, q_test);
 
 
 
