@@ -55,7 +55,7 @@ int main() {
 	unsigned int *ftest;
 
 
-	if (model_load("assets/gun.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
+	if (model_load("assets/cube.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
 	
@@ -344,6 +344,16 @@ int main() {
 		glUniform1f(scalemin_loc, scalemin_val);
 		glUniform1f(scalemax_loc, scalemax_val);
 
+
+
+		int q_loc = glGetUniformLocation(program, "q");
+		int q_in_loc = glGetUniformLocation(program, "q_in");
+
+		float time = glfwGetTime();
+
+		vec4 q_vec = {cos(time), 0, 1 * sin(time), sin(time) * 1};
+		glm_vec4_normalize(q_vec);
+		glUniform4fv(q_loc, 1, (float *)q_vec);
 
 
 
