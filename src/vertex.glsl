@@ -8,6 +8,7 @@ uniform mat4 projection;
 
 uniform vec4 q;
 
+// source: https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 mat4 quatToMat4(vec4 q_in) {
     float w = q_in.x;
     float x = q_in.y;
