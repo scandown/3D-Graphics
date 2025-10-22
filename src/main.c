@@ -7,8 +7,8 @@
 #include "shader.h"
 #include "spaces.h"
 #include "model.h"
-#include "vec3.h"
-#include "quat.h"
+//#include "vec3.h"
+//#include "quat.h"
 
 
 // model
@@ -213,9 +213,9 @@ int main() {
 	struct space projection;
 	setup_space(&projection, "projection", program);
 
-	vec3 model_position = {1, 1, 1};
+	vec3 model_position = {0, 0, 0};
 
-	model.scale(&model, model_position);
+	model.translate(&model, model_position);
 	view.translate(&view, (vec3){0, 0, -2});
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
@@ -372,12 +372,21 @@ int main() {
 		//new_q = {cos(theta), sin(theta)(axis)}
 
 
-		vec3_c axis;
-		vec3_c point = {0, 0};
-		quat result = quat_rotate(M_PI, (vec3_c){0,1,0}, point);
 
-		float q_test[] = {result.w, result.i, result.j, result.k};
-		glUniform4fv(q_loc, 1, q_test);
+//		GLint glGetUniformLocation( 	GLuint program,
+//  	const GLchar *name);
+
+		int timeLoc = glGetUniformLocation(program, "time");
+		//printf("%f\n", time);
+		glUniform1f(timeLoc, time);
+		
+
+
+
+
+		int pointLoc = glGetUniformLocation(program, "point");
+		glUniform4fv(pointLoc, 1, cameraPos);
+
 
 
 
