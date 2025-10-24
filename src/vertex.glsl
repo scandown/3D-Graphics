@@ -30,21 +30,6 @@ quat quat_mul(quat q1, quat q2) {
 	return quat(scalar, imaginary.x, imaginary.y, imaginary.z);
 }
 
-vec3 quat_rotate_vector(float theta, vec3 axis, vec3 v) {
-	float ca = cos(theta/2.0);
-	float sa = sin(theta/2.0);
-
-	axis = normalize(axis);
-
-	quat q = quat(ca, sa * axis.x, sa * axis.y, sa * axis.z);
-	quat q_inv = quat(ca, -sa * axis.x, -sa * axis.y, -sa * axis.z);
-
-	quat quat_point = vec_to_quat(v);
-	quat rotated = quat_mul(quat_mul(q, quat_point), q_inv);
-
-	return vec3(rotated.i, rotated.j, rotated.k);
-}
-
 layout (location = 0) in vec3 aPos;
 out vec3 pos;
 
@@ -53,36 +38,24 @@ uniform mat4 view;
 uniform mat4 projection;
 
 uniform float time;
-uniform vec4 point;
+uniform vec4 rot;
 
 
 void main() {
-	/*
-	// Extract rotation angle from quaternion (simplified approach)
-	//float angle = radians(80 + time * 10);
-	//vec3 axis = normalize(vec3(0, 0, 1));
-
-	//vec3 point = vec3(1, 0, 0);
-	vec3 axis = vec3(1, 0, 0);
-	vec3 v = aPos;
-
-	float angle = radians(1);
-
-	vec3 rotated_pos = quat_rotate_vector(angle, axis, aPos);
-
-	mat4 coordinates = projection * view * model;
-	gl_Position = coordinates * vec4(rotated_pos, 1.0);
-	pos = aPos;
-	*/
-
-	// Extract rotation angle from quaternion (simplified approach)
-	float angle = radians(29);
-	vec3 axis = normalize(vec3(1, 0, 0));
 
 	// Rotate the position using quaternion rotation
-	vec3 rotated_pos = quat_rotate_vector(angle, axis, aPos);
+	//vec3 rotated_pos = quat_rotate_vector(angle, axis, aPos);
+	quat rot_q = quat(rot.x, rot.y, rot.z, rot.w);
+	quat rot_q_in = quat(rot.x, -rot.y, -rot.z, -rot.w);
+	quat qp = vec_to_quat(aPos);
+	quat rotated_pos = quat_mul(rot_q, qp);
+	rotated_pos = quat_mul(rotated_pos, rot_q_in);
+
+	vec3 rots = vec3(rotated_pos.i, rotated_pos.j, rotated_pos.k);
+
+	//rots *= aPos;
 
 	mat4 coordinates = projection * view * model;
-	gl_Position = coordinates * vec4(rotated_pos, 1.0);
+	gl_Position = coordinates * vec4(rots, 1.0);
 	pos = aPos;
 }

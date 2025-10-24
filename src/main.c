@@ -9,6 +9,45 @@
 #include "model.h"
 //#include "vec3.h"
 //#include "quat.h"
+//
+//
+
+void quat_mul(vec4 q1, vec4 q2, vec4 out) {
+	vec3 q1_i = {q1[1], q1[2], q1[3]};
+	vec3 q2_i = {q2[1], q2[2], q2[3]};
+
+	//float scalar = q1.w * q2.w - glm_vec3_dot(q1_i, q2_i);
+	float scalar = q1[0] * q2[0] - glm_vec3_dot(q1_i, q2_i);
+
+	vec3 qm;
+	vec3 qm2;
+	vec3 qc;
+	glm_vec3_scale(q2_i, q1[0], qm);
+	glm_vec3_scale(q1_i, q2[0], qm2);
+	glm_vec3_add(qm, qm2, qm);
+	glm_vec3_cross(q1_i, q2_i, qc);
+	vec3 imaginary;// = qm + cross(q1_i, q2_i);
+	glm_vec3_add(qm, qc, imaginary);
+
+	out = (vec4){scalar, imaginary[0], imaginary[1], imaginary[2]};
+}
+
+void quat_rotate_vector(float theta, vec3 axis, vec4 out) {
+	float ca = cos(theta/2.0);
+	float sa = sin(theta/2.0);
+
+	glm_normalize(axis);
+
+	vec4 q = {ca, sa * axis[0], sa * axis[1], sa * axis[2]};
+	glm_vec3_copy(q, out);
+	//out = q;
+}
+
+
+
+
+
+
 
 
 // model
@@ -229,6 +268,7 @@ int main() {
 
 
 
+
 	float scalemin_val = -2;
 	float scalemax_val = 2;
 	float diff = scalemax_val - scalemin_val;
@@ -266,17 +306,9 @@ int main() {
 		glm_vec3_add(cameraPos, cameraFront, cam_total_front);
 		glm_lookat(cameraPos, cam_total_front, cameraUp, view.matrix);
 
-		// while loop space stuff
-		//view.translate(&view, (vec3){x, -y, 0});
 		view.set_uniform(&view);
-
 		model.set_uniform(&model);
 
-		/*
-		float gun_pitch = tan(cameraPos[1] / cameraPos[0]);
-		float gun_
-		glm_rotate_x(model.matrix, 
-		*/
 
 
 
@@ -295,6 +327,8 @@ int main() {
 			scalemax_val -= diff / 100;	
 		}
 
+		vec3 old_cameraPos;
+		glm_vec3_copy(cameraPos, old_cameraPos);
 
 		float cameraSpeed = 0.05f;
 		state = glfwGetKey(window, GLFW_KEY_W);
@@ -349,45 +383,19 @@ int main() {
 
 
 
-		int q_loc = glGetUniformLocation(program, "q");
-
-		float time = glfwGetTime();
-
-		vec4 q_vec = {cos(time), 0, 1 * sin(time), sin(time) * 1};
-		//mag = sqrt (x, y, z) squaeredn
-		//
-		//
-		//v_norm = v / mag;
-		//
-		//// this is on the unit sphere now
-		//
-		//
-		//
-		//
-		//v_new = v_norm;
-		//theta = v_norm.dot(v_new);
-		//axis = v_norm.cross(v_new);
-		//
-		//
-		//new_q = {cos(theta), sin(theta)(axis)}
-
-
-
-//		GLint glGetUniformLocation( 	GLuint program,
-//  	const GLchar *name);
-
 		int timeLoc = glGetUniformLocation(program, "time");
 		//printf("%f\n", time);
 		glUniform1f(timeLoc, time);
-		
 
 
 
 
-		int pointLoc = glGetUniformLocation(program, "point");
-		glUniform4fv(pointLoc, 1, cameraPos);
+		vec4 acc_rot = {1, 0, 0, 0};
+		quat_rotate_vector(time, (vec3){1, 0, 0}, acc_rot);
 
-
+		//printf("%f, %f, %f\n", acc_rot[1], acc_rot[2], acc_rot[3]);
+		int rotloc = glGetUniformLocation(program, "rot");
+		glUniform4fv(rotloc, 1, acc_rot);
 
 
 
@@ -407,6 +415,18 @@ int main() {
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
+
+		struct space model2;
+		setup_space(&model2, "model", program);
+		vec3 model2_position;// = old_cameraPosition;//{3, 0, 0};
+		glm_vec3_copy(old_cameraPos, model2_position);
+		model2_position[1] -= 4;
+		model.translate(&model2, model2_position);
+		model2.set_uniform(&model2);
+
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
+
 
 		glfwSwapBuffers(window);
 
