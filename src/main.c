@@ -37,6 +37,17 @@ const unsigned int SCR_HEIGHT = 600;
 
 int main() {
 
+	vec4 q1 = {1, 0, 0, 0};
+
+	vec4 q1_i;
+
+	quat_inverse(q1, q1_i);
+
+	print_quat(q1_i);
+	//printf("%f, %f, %f, %f\n", q1_i[0], q1_i[1], q1_i[2], q1_i[3]);
+
+	return 0;
+
 	if (!glfwInit()) {
 		return 1;
 	}
