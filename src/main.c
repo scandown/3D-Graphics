@@ -17,15 +17,6 @@ double to_degrees(double radians) {
     return radians * (180.0 / M_PI);
 }
 
-
-
-
-
-
-
-
-
-
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -362,21 +353,27 @@ int main() {
 
 		// q = (q2 * q1_in) ^t * q1
 
-		vec4 start_inv = {-start[0], start[1], start[2], start[3]};
+		vec4 start_inv;
+		quat_inverse(start, start_inv);
 		quat_mul(end, start_inv, result);
+
+		static float t = 0;
+		quat_power(result, t, result);
+		quat_mul(result, start, result);
 	
 
 
-		glm_vec4_copy((vec4){0.90, 0.25, 0.28, -0.23}, result);
+		//glm_vec4_copy((vec4){0.90, 0.25, 0.28, -0.23}, result);
 
 		static vec4 q1 = {1, 1, 1, 0};
 		static vec4 q1_i;
-		static float t = 0;
-		static float amount = 0.01;
+		static float amount = 0.001;
 		quat_power(q1, t, q1_i);
 		glm_vec4_normalize(q1_i);
 
+		//t = 0;
 		t += amount;
+		printf("%f\n", t);
 
 		if (t >= 1 || t <= 0) {
 			amount *= -1;
@@ -384,9 +381,9 @@ int main() {
 
 
 
-		printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
+		//printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
-		glUniform4fv(rotloc, 1, q1_i);
+		glUniform4fv(rotloc, 1, result);
 
 
 
