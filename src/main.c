@@ -72,9 +72,6 @@ int main() {
 	if (model_load("assets/cube.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
-	
-	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
-	unsigned int teapot_vertex_length = sizeof(v_teapot) / sizeof(float);
 
 	bool debug = false;
 	bool debug_cube = true;
@@ -185,12 +182,6 @@ int main() {
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
-	} else if (debug_cube_header) {
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(v_teapot), v_teapot, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(f_teapot), f_teapot, GL_STATIC_DRAW);
 	} else {
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);

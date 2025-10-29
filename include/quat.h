@@ -1,4 +1,5 @@
 #pragma once
+#include "cglm/cglm.h"
 
 
 void quat_mul(vec4 q1, vec4 q2, vec4 out);
