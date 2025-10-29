@@ -12,34 +12,31 @@
 //
 //
 
-void quat_mul(vec4 q1, vec4 q2, vec4 out) {
-	vec3 q1_i = {q1[1], q1[2], q1[3]};
-	vec3 q2_i = {q2[1], q2[2], q2[3]};
-
-	//float scalar = q1.w * q2.w - glm_vec3_dot(q1_i, q2_i);
-	float scalar = q1[0] * q2[0] - glm_vec3_dot(q1_i, q2_i);
-
-	vec3 qm;
-	vec3 qm2;
-	vec3 qc;
-	glm_vec3_scale(q2_i, q1[0], qm);
-	glm_vec3_scale(q1_i, q2[0], qm2);
-	glm_vec3_add(qm, qm2, qm);
-	glm_vec3_cross(q1_i, q2_i, qc);
-	vec3 imaginary;// = qm + cross(q1_i, q2_i);
-	glm_vec3_add(qm, qc, imaginary);
-
-	out = (vec4){scalar, imaginary[0], imaginary[1], imaginary[2]};
+double to_degrees(double radians) {
+    return radians * (180.0 / M_PI);
 }
 
-void quat_rotate_vector(float theta, vec3 axis, vec4 out) {
+void quat_mul(vec4 q1, vec4 q2, vec4 out) {
+	float real = q1[0] - (q1[1] * q2[1]) - (q1[2] * q2[2]) - (q1[3] * q2[3]);
+	float i = (q1[0] * q2[1]) + (q2[0] * q1[1]) + (q1[2] * q2[3]) - (q1[3] * q2[2]);
+	float j = (q1[0] * q2[2]) - (q1[1] * q2[3]) + (q2[0] * q1[2]) + (q1[3] * q2[1]);
+	float k = (q1[0] * q2[3]) + (q1[1] * q2[2]) - (q1[2] * q2[1]) + (q2[0] * q1[3]);
+
+	out[0] = real;
+	out[1] = i;
+	out[2] = j;
+	out[3] = k;
+}
+
+
+void get_rotate_quat(float theta, vec3 axis, vec4 out) {
 	float ca = cos(theta/2.0);
 	float sa = sin(theta/2.0);
 
 	glm_normalize(axis);
 
 	vec4 q = {ca, sa * axis[0], sa * axis[1], sa * axis[2]};
-	glm_vec3_copy(q, out);
+	glm_vec4_copy(q, out);
 	//out = q;
 }
 
@@ -50,8 +47,6 @@ void quat_rotate_vector(float theta, vec3 axis, vec4 out) {
 
 
 
-// model
-#include "modely.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -102,9 +97,6 @@ int main() {
 	
 	unsigned int teapot_face_length = sizeof(f_teapot) / sizeof(int);
 	unsigned int teapot_vertex_length = sizeof(v_teapot) / sizeof(float);
-	//int wrong = check_int_equality(ftest, fsize, f_teapot, teapot_face_length);
-
-	//wrong = check_float_equality(vtest, vsize, v_teapot, teapot_vertex_length);
 
 	bool debug = false;
 	bool debug_cube = true;
@@ -382,6 +374,7 @@ int main() {
 		glUniform1f(scalemax_loc, scalemax_val);
 
 
+		float time = glfwGetTime();
 
 		int timeLoc = glGetUniformLocation(program, "time");
 		//printf("%f\n", time);
@@ -390,12 +383,23 @@ int main() {
 
 
 
-		vec4 acc_rot = {1, 0, 0, 0};
-		quat_rotate_vector(time, (vec3){1, 0, 0}, acc_rot);
+		static vec4 result = {1, 0, 0, 0};
 
-		//printf("%f, %f, %f\n", acc_rot[1], acc_rot[2], acc_rot[3]);
+		vec4 start = {0.88, 0.14, -0.17, 0.41};
+		vec4 end = {-0.22, 0.42, 0.31, 0.82};
+
+		// q = (q2 * q1_in) ^t * q1
+
+		vec4 start_inv = {-start[0], start[1], start[2], start[3]};
+		quat_mul(end, start_inv, result);
+	
+
+
+		glm_vec4_copy((vec4){0.90, 0.25, 0.28, -0.23}, result);
+
+		printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
-		glUniform4fv(rotloc, 1, acc_rot);
+		glUniform4fv(rotloc, 1, result);
 
 
 
@@ -412,17 +416,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(program);
 
-
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
-
-		struct space model2;
-		setup_space(&model2, "model", program);
-		vec3 model2_position;// = old_cameraPosition;//{3, 0, 0};
-		glm_vec3_copy(old_cameraPos, model2_position);
-		model2_position[1] -= 4;
-		model.translate(&model2, model2_position);
-		model2.set_uniform(&model2);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
