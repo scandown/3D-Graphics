@@ -37,16 +37,8 @@ const unsigned int SCR_HEIGHT = 600;
 
 int main() {
 
-	vec4 q1 = {1, 1, 1, 0};
 
-	vec4 q1_i;
 
-	quat_exp(q1, q1_i);
-
-	print_quat(q1_i);
-	//printf("%f, %f, %f, %f\n", q1_i[0], q1_i[1], q1_i[2], q1_i[3]);
-
-	return 0;
 
 	if (!glfwInit()) {
 		return 1;
@@ -377,9 +369,24 @@ int main() {
 
 		glm_vec4_copy((vec4){0.90, 0.25, 0.28, -0.23}, result);
 
+		static vec4 q1 = {1, 1, 1, 0};
+		static vec4 q1_i;
+		static float t = 0;
+		static float amount = 0.01;
+		quat_power(q1, t, q1_i);
+		glm_vec4_normalize(q1_i);
+
+		t += amount;
+
+		if (t >= 1 || t <= 0) {
+			amount *= -1;
+		}
+
+
+
 		printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
-		glUniform4fv(rotloc, 1, result);
+		glUniform4fv(rotloc, 1, q1_i);
 
 
 

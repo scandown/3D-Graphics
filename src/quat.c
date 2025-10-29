@@ -78,6 +78,37 @@ void quat_exp(vec4 q1, vec4 out) {
 		out[2] = w * v[1] / v_mag * sin(v_mag);
 		out[3] = w * v[2] / v_mag * sin(v_mag);
 	}
+}
 
-	printf("%f\n", out[0]);
+
+void quat_log(vec4 q1, vec4 out) {
+	// w = ln(|q|);
+	// v = v / |v| * arccos(w / |q|)
+	
+	float w = log(quat_mag(q1));
+
+	vec3 v = {q1[1], q1[2], q1[3]};
+	float v_mag = vec_mag(v);
+	float q_mag = quat_mag(q1);
+	out[0] = w;
+	out[1] = v[0] / v_mag * acosf(q1[0] / q_mag);
+	out[2] = v[1] / v_mag * acosf(q1[0] / q_mag);
+	out[3] = v[2] / v_mag * acosf(q1[0] / q_mag);
+}
+
+void quat_power(vec4 q1, float power, vec4 out) {
+	// q^t = exp(ln(q) * t);
+	
+	vec4 q_log;
+	quat_log(q1, q_log);
+
+	vec4 scaled_log = {
+		q_log[0] * power,
+		q_log[1] * power,
+		q_log[2] * power,
+		q_log[3] * power
+	};
+
+	quat_exp(scaled_log, out);
+
 }
