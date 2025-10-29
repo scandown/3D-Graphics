@@ -32,6 +32,10 @@ float quat_mag(vec4 q1) {
 	return sqrt((q1[0] * q1[0]) + (q1[1] * q1[1]) + (q1[2] * q1[2]) + (q1[3] * q1[3]));
 }
 
+float vec_mag(vec3 v1) {
+	return sqrt((v1[0] * v1[0]) + (v1[1] * v1[1]) + (v1[2] * v1[2]));
+}
+
 void print_quat(vec4 q1) {
 	printf("q = {%f, %f, %f, %f}\n", q1[0], q1[1], q1[2], q1[3]);
 }
@@ -53,5 +57,27 @@ void quat_inverse(vec4 q1, vec4 out) {
 }
 
 void quat_exp(vec4 q1, vec4 out) {
-	float s = exp(q1[0]);
+	float w = expf(q1[0]);
+	glm_vec4_copy(q1, out);
+	
+	// v = Vector component of q1
+	// exp(s) * cos(|v|);
+	//
+	// v: v / |v| * sin(|v|)
+	
+	vec3 v = {q1[1], q1[2], q1[3]};
+	float v_mag = vec_mag(v);
+	if (v_mag < 0.0001f) {  // Small epsilon to avoid division by zero
+		out[0] = w;         // exp(w) * cos(0) = exp(w) * 1
+		out[1] = 0.0f;
+		out[2] = 0.0f;
+		out[3] = 0.0f;
+	} else {
+		out[0] = w * cos(v_mag);
+		out[1] = w * v[0] / v_mag * sin(v_mag);
+		out[2] = w * v[1] / v_mag * sin(v_mag);
+		out[3] = w * v[2] / v_mag * sin(v_mag);
+	}
+
+	printf("%f\n", out[0]);
 }
