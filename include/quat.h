@@ -12,3 +12,5 @@ void quat_conj(vec4 q1, vec4 out);
 float quat_mag(vec4 q1);
 void quat_inverse(vec4 q1, vec4 out);
 void quat_exp(vec4 q1, vec4 out);
+void quat_log(vec4 q1, vec4 out);
+void quat_power(vec4 q1, float power, vec4 out);
