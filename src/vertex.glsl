@@ -46,10 +46,10 @@ void main() {
 	// Rotate the position using quaternion rotation
 	//vec3 rotated_pos = quat_rotate_vector(angle, axis, aPos);
 	quat rot_q = quat(rot.x, rot.y, rot.z, rot.w);
-	quat rot_q_in = quat(rot.x, -rot.y, -rot.z, -rot.w);
+	quat rot_q_conj = quat(rot.x, -rot.y, -rot.z, -rot.w);
 	quat qp = vec_to_quat(aPos);
 	quat rotated_pos = quat_mul(rot_q, qp);
-	rotated_pos = quat_mul(rotated_pos, rot_q_in);
+	rotated_pos = quat_mul(rotated_pos, rot_q_conj);
 
 	vec3 rots = vec3(rotated_pos.i, rotated_pos.j, rotated_pos.k);
 
