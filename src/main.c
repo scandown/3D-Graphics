@@ -373,7 +373,7 @@ int main() {
 
 		//t = 0;
 		t += amount;
-		printf("%f\n", t);
+		//printf("%f\n", t);
 
 		if (t >= 1 || t <= 0) {
 			amount *= -1;
