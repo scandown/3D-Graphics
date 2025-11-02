@@ -73,46 +73,10 @@ int main() {
 
 
 	//setup for opengl :3
-	
-	/*
-	const char *shaders = load_shader_list("src/shaderList.txt");
-	unsigned int program = program_create(shaders);
-	*/
 
+	// shaders !
+	unsigned int program = program_create("src/shaderList.txt");
 
-	long size;
-	const char *fragmentShaderSource = loadShader("src/red.glsl", &size);
-	const char *vertexShaderSource = loadShader("src/vertex.glsl", &size);
-	int test_program = program_create("src/shaderList.txt");
-
-	if (test_program == -1) {
-		return 1;
-	}
-
-	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
-	int fragment_success = shaderErrorCheck(fragmentShader);
-	int vertex_success = shaderErrorCheck(vertexShader);
-
-	if (!(fragment_success || vertex_success)) {
-		return 1;
-	}
-
-
-
-
-
-
-
-
-
-	unsigned int program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-
-	glLinkProgram(program);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
 
 
 	float v_cube[] = {

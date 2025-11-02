@@ -129,7 +129,6 @@ void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up) {
 	glm_vec3_normalize(new_up);
 
 
-	glm_vec3_print(forward, stdout);
 	for (int i = 0; i < 3; i++) {
 		mat[0][i] = right[i];
 		mat[1][i] = new_up[i];

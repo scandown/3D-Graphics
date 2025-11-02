@@ -18,4 +18,5 @@ int shaderErrorCheck(unsigned int shader);
 
 int shader_validity_check(char ascii);
 
+char **get_shader_strings(char *shaders, int *size, long file_size);
 int program_create(char *shader_list_source);
