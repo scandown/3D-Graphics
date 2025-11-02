@@ -73,8 +73,21 @@ int main() {
 
 
 	//setup for opengl :3
-	const char *fragmentShaderSource = loadShader("src/red.glsl");
-	const char *vertexShaderSource = loadShader("src/vertex.glsl");
+	
+	/*
+	const char *shaders = load_shader_list("src/shaderList.txt");
+	unsigned int program = program_create(shaders);
+	*/
+
+
+	long size;
+	const char *fragmentShaderSource = loadShader("src/red.glsl", &size);
+	const char *vertexShaderSource = loadShader("src/vertex.glsl", &size);
+	int test_program = program_create("src/shaderList.txt");
+
+	if (test_program == -1) {
+		return 1;
+	}
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
