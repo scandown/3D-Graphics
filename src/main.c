@@ -61,75 +61,17 @@ int main() {
 		return -1;
 	}
 
-	bool debug = false;
-	bool debug_cube = true;
-	bool debug_cube_header = false;
-	if (debug) {
-		printf("vsize = %i, fsize = %i\n", vsize, fsize);
-		free(vtest);
-		free(ftest);
-		return 0;
-	}
+
+
+
+
+
 
 
 	//setup for opengl :3
 
 	// shaders !
 	unsigned int program = program_create("src/shaderList.txt");
-
-
-
-	float v_cube[] = {
-		// front
-		-1, -1, -1, // -1
-		1, -1, -1,  // 1
-		1, 1, -1,   // 2
-		-1, 1, -1,  // 3
-
-		//back
-		-1, -1, 1, // 4
-		1, -1, 1,  // 5
-		1, 1, 1,   // 6
-		-1, 1, 1,  // 7
-	};
-
-	unsigned int i_cube[] = {
-		// front
-		0, 1, 2,
-		0, 3, 2,
-
-		//side r
-		2, 6, 5,
-		2, 1, 5,
-
-		// back
-		4, 5, 6,
-		4, 7, 6,
-
-		// side l
-		0, 4, 7,
-		0, 3, 7,
-
-		// top
-		3, 2, 6,
-		3, 7, 6,
-
-		// bottom
-		0, 1, 5,
-		0, 4, 5
-	};
-
-	float vertices[] = {
-		-1,  -1, 0,
-		1, -1, 0,
-		1, 1, 0,
-		-1,  1, 0
-	};
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 2,
-		0, 3, 2
-	};
-
 
 	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -140,20 +82,11 @@ int main() {
 	glBindVertexArray(VAO);
 
 
-	if (debug_cube) {
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vsize * sizeof(float), vtest, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vsize * sizeof(float), vtest, GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
-	} else {
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(v_cube), v_cube, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(i_cube), i_cube, GL_STATIC_DRAW);
-	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
