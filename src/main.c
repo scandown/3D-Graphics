@@ -10,12 +10,6 @@
 #include "quat.h"
 //#include "vec3.h"
 //#include "quat.h"
-//
-//
-
-double to_degrees(double radians) {
-    return radians * (180.0 / M_PI);
-}
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -84,7 +78,6 @@ int main() {
 
 	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
 	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
-
 	int fragment_success = shaderErrorCheck(fragmentShader);
 	int vertex_success = shaderErrorCheck(vertexShader);
 
@@ -209,8 +202,8 @@ int main() {
 
 	vec3 model_position = {0, 0, 0};
 
-	model.translate(&model, model_position);
 	view.translate(&view, (vec3){0, 0, -2});
+	model.translate(&model, model_position);
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	//glm_ortho(0.0f, 800.0f, 0.0f, 600.0f, -1, 100.0f, projection.matrix);
 	projection.set_uniform(&projection);
@@ -260,6 +253,13 @@ int main() {
 
 		glm_vec3_add(cameraPos, cameraFront, cam_total_front);
 		glm_lookat(cameraPos, cam_total_front, cameraUp, view.matrix);
+
+		vec3 c_up = {0, 1, 0};
+		vec3 cam_right;
+		glm_vec3_cross(c_up, direction, cam_right);
+		lookat_cube(model.matrix, direction, model_position, (vec3){0, 1, 0});
+		//void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up) {
+		//glm_mat4_print(model.matrix, stdout);
 
 		view.set_uniform(&view);
 		model.set_uniform(&model);
@@ -372,7 +372,7 @@ int main() {
 		glm_vec4_normalize(q1_i);
 
 		//t = 0;
-		t += amount;
+		//t += amount;
 		//printf("%f\n", t);
 
 		if (t >= 1 || t <= 0) {
@@ -380,10 +380,34 @@ int main() {
 		}
 
 
+		mat4 m; 
+		glm_mat4_identity(m);
+
+		//glm_vec3_copy(cameraPos, to);
+		static vec3 forward = {0, 0, 1};
+		vec3 up = {0, 1, 0};
+
+		vec4 quat;
+
+
+
+		//glm_mat4_print(m, stdout);
+
+		//print_quat(result);
+
+		int matloc = glGetUniformLocation(program, "mat");
+		glUniformMatrix4fv(matloc, 1, false, (const float *)m);
+
+		result[0] = 1;
+		result[1] = 0;
+		result[2] = 0;
+		result[3] = 0;
 
 		//printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
 		glUniform4fv(rotloc, 1, result);
+
+		//print_quat(result);
 
 
 
