@@ -112,3 +112,27 @@ void quat_power(vec4 q1, float power, vec4 out) {
 	quat_exp(scaled_log, out);
 
 }
+
+
+void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up) {
+	vec3 new_up, right, forward;
+
+	for (int i = 0; i < 3; i++) {
+		forward[i] = trans[i] - target[i];
+	}
+
+	glm_vec3_normalize(forward);
+	glm_vec3_cross(forward, up, right);
+	glm_vec3_normalize(right);
+
+	glm_vec3_cross(right, forward, new_up);
+	glm_vec3_normalize(new_up);
+
+
+	glm_vec3_print(forward, stdout);
+	for (int i = 0; i < 3; i++) {
+		mat[0][i] = right[i];
+		mat[1][i] = new_up[i];
+		mat[2][i] = -forward[i];
+	}
+}
