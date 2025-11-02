@@ -72,38 +72,6 @@ int shaderErrorCheck(unsigned int shader) {
 
 
 
-/*
-	const char *shaders = load_shader_list("src/shaderList.txt");
-	unsigned int program = program_create(shaders);
-	free(shaders);
-
-
-	const char *fragmentShaderSource = loadShader("src/red.glsl");
-	const char *vertexShaderSource = loadShader("src/vertex.glsl");
-
-	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
-	int fragment_success = shaderErrorCheck(fragmentShader);
-	int vertex_success = shaderErrorCheck(vertexShader);
-
-	if (!(fragment_success || vertex_success)) {
-		return 1;
-	}
-
-	unsigned int program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-
-	glLinkProgram(program);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	*/
-
-
-// v:red.glsl
-// f:fragment.glsl
-
 
 int shader_validity_check(char ascii) {
 	switch (ascii) {
@@ -119,14 +87,7 @@ int shader_validity_check(char ascii) {
 	}
 }
 
-int program_create(char *shader_list_source) {
-	long file_size;
-	char *shaders = loadShader(shader_list_source, &file_size);
-
-	if (shaders == NULL) {
-		return -1;
-	}
-
+char **get_shader_strings(char *shaders, int *size, long file_size) {
 	int shader_amount = 0;
 
 	// edge case for when first line has a shader file on it
@@ -143,7 +104,7 @@ int program_create(char *shader_list_source) {
 		}
 	}
 
-	char *shader_list[shader_amount];
+	char **shader_list = malloc(shader_amount * sizeof(char*));
 	int index = 0;
 
 	for (int i = 0; i < file_size; i++) {
@@ -180,11 +141,81 @@ int program_create(char *shader_list_source) {
 			index++;
 		}
 	}
+	*size = index;
+
+	return shader_list;
+}
+
+/*
+	const char *shaders = load_shader_list("src/shaderList.txt");
+	unsigned int program = program_create(shaders);
+	free(shaders);
+
+
+
+	*/
+
+
+// v:red.glsl
+// f:fragment.glsl
+
+
+int program_create(char *shader_list_source) {
+	long file_size;
+	char *shaders = loadShader(shader_list_source, &file_size);
+
+	if (shaders == NULL) {
+		return -1;
+	}
+
+	int size = 0;
+	char **shader_list = get_shader_strings(shaders, &size, file_size);
+
+	unsigned int program = glCreateProgram();
+
+	for (int i = 0; i < size; i++) {
+		long n_size;
+		const char *shaderSource = loadShader(shader_list[i] + 2, &n_size);
+		char shaderType = shader_list[i][0];
+
+		unsigned int shader;
+		GLenum type;
+		switch (shaderType) {
+			case 'f':
+				type = GL_FRAGMENT_SHADER;
+				break;
+			case 'v':
+				type = GL_VERTEX_SHADER;
+				break;
+			default:
+				type = -1;
+				break;
+		}
+		if (type == -1) {
+			printf("Invalid type %c\n", shaderType);
+			return -1;
+		}
+
+		shader = createShader(type, shaderSource);
+		int success = shaderErrorCheck(shader);
+
+		if (!(success)) {
+			return 1;
+		}
+
+		glAttachShader(program, shader);
+		glDeleteShader(shader);
+	}
+	glLinkProgram(program);
+	
+
 
 
 	// free up all the strings
-	for (int i = 0; i < index; i++) {
+	for (int i = 0; i < size; i++) {
+		printf("%c\n", shader_list[i][0]);
 		free(shader_list[i]);
 	}
-	return 1;
+	free(shader_list);
+	return program;
 }

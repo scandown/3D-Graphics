@@ -1,2 +1,2 @@
-v:vertex.glsl
-f:red.glsl
+v:src/vertex.glsl
+f:src/red.glsl
