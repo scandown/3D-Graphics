@@ -74,9 +74,9 @@ void quat_exp(vec4 q1, vec4 out) {
 		out[3] = 0.0f;
 	} else {
 		out[0] = w * cos(v_mag);
-		out[1] = w * v[0] / v_mag * sin(v_mag);
-		out[2] = w * v[1] / v_mag * sin(v_mag);
-		out[3] = w * v[2] / v_mag * sin(v_mag);
+		out[1] = w * ((v[0] / v_mag) * sin(v_mag));
+		out[2] = w * ((v[1] / v_mag) * sin(v_mag));
+		out[3] = w * ((v[2] / v_mag) * sin(v_mag));
 	}
 }
 
@@ -91,9 +91,9 @@ void quat_log(vec4 q1, vec4 out) {
 	float v_mag = vec_mag(v);
 	float q_mag = quat_mag(q1);
 	out[0] = w;
-	out[1] = v[0] / v_mag * acosf(q1[0] / q_mag);
-	out[2] = v[1] / v_mag * acosf(q1[0] / q_mag);
-	out[3] = v[2] / v_mag * acosf(q1[0] / q_mag);
+	out[1] = (v[0] / v_mag) * acosf(q1[0] / q_mag);
+	out[2] = (v[1] / v_mag) * acosf(q1[0] / q_mag);
+	out[3] = (v[2] / v_mag) * acosf(q1[0] / q_mag);
 }
 
 void quat_power(vec4 q1, float power, vec4 out) {
