@@ -167,8 +167,7 @@ int main() {
 		vec3 c_up = {0, 1, 0};
 		vec3 cam_right;
 		glm_vec3_cross(c_up, direction, cam_right);
-		lookat_cube(model.matrix, direction, model_position, (vec3){0, 1, 0});
-		//void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up) {
+		//lookat_cube(model.matrix, direction, model_position, (vec3){0, 1, 0});
 		//glm_mat4_print(model.matrix, stdout);
 
 		view.set_uniform(&view);
@@ -258,8 +257,8 @@ int main() {
 
 		static vec4 result = {1, 0, 0, 0};
 
-		vec4 start = {0.88, 0.14, -0.17, 0.41};
-		vec4 end = {-0.22, 0.42, 0.31, 0.82};
+		vec4 start = {0, 0, 0, 1};
+		vec4 end = {0.5, 0, 0, 0.5};
 
 		// q = (q2 * q1_in) ^t * q1
 
@@ -269,7 +268,14 @@ int main() {
 
 		static float t = 0;
 		quat_power(result, t, result);
+		glm_vec4_print(result, stdout);
+		printf("%f\n", t);
 		quat_mul(result, start, result);
+		//quat_normalize(result, result);
+		glm_vec4_normalize(result);
+
+		//glm_vec4_copy(end, result);
+
 	
 
 
@@ -282,7 +288,7 @@ int main() {
 		glm_vec4_normalize(q1_i);
 
 		//t = 0;
-		//t += amount;
+		t += amount;
 		//printf("%f\n", t);
 
 		if (t >= 1 || t <= 0) {
@@ -307,11 +313,6 @@ int main() {
 
 		int matloc = glGetUniformLocation(program, "mat");
 		glUniformMatrix4fv(matloc, 1, false, (const float *)m);
-
-		result[0] = 1;
-		result[1] = 0;
-		result[2] = 0;
-		result[3] = 0;
 
 		//printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
@@ -350,8 +351,10 @@ int main() {
 
 	glDeleteProgram(program);
 
+	/*
 	free((void *)fragmentShaderSource);
 	free((void *)vertexShaderSource);
+	*/
 
 	// free model data
 	free(vtest);
