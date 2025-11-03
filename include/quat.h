@@ -15,3 +15,4 @@ void quat_exp(vec4 q1, vec4 out);
 void quat_log(vec4 q1, vec4 out);
 void quat_power(vec4 q1, float power, vec4 out);
 void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up);
+void quat_slerp(vec4 start, vec4 end, float t, vec4 out);

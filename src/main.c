@@ -255,41 +255,16 @@ int main() {
 
 
 
-		static vec4 result = {1, 0, 0, 0};
+		// quat_slerp(vec4 start, vec4 end, float t, vec4 out);
 
+		vec4 result = {1, 0, 0, 0};
 		vec4 start = {0, 0, 0, 1};
 		vec4 end = {0.5, 0, 0, 0.5};
-
-		// q = (q2 * q1_in) ^t * q1
-
-		vec4 start_inv;
-		quat_inverse(start, start_inv);
-		quat_mul(end, start_inv, result);
-
 		static float t = 0;
-		quat_power(result, t, result);
-		glm_vec4_print(result, stdout);
-		printf("%f\n", t);
-		quat_mul(result, start, result);
-		//quat_normalize(result, result);
-		glm_vec4_normalize(result);
+		quat_slerp(start, end, t, result);
 
-		//glm_vec4_copy(end, result);
-
-	
-
-
-		//glm_vec4_copy((vec4){0.90, 0.25, 0.28, -0.23}, result);
-
-		static vec4 q1 = {1, 1, 1, 0};
-		static vec4 q1_i;
 		static float amount = 0.001;
-		quat_power(q1, t, q1_i);
-		glm_vec4_normalize(q1_i);
-
-		//t = 0;
 		t += amount;
-		//printf("%f\n", t);
 
 		if (t >= 1 || t <= 0) {
 			amount *= -1;

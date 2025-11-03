@@ -135,3 +135,16 @@ void lookat_cube(mat4 mat, vec3 trans, vec3 target, vec3 up) {
 		mat[2][i] = -forward[i];
 	}
 }
+
+
+void quat_slerp(vec4 start, vec4 end, float t, vec4 out) {
+	// q = (q2 * q1_in) ^t * q1
+
+	vec4 start_inv;
+	quat_inverse(start, start_inv);
+	quat_mul(end, start_inv, out);
+
+	quat_power(out, t, out);
+	quat_mul(out, start, out);
+	glm_vec4_normalize(out);
+}
