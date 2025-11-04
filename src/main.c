@@ -25,6 +25,7 @@ int main() {
 
 
 
+	// GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
 	if (!glfwInit()) {
 		return 1;
 	}
@@ -49,8 +50,15 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// end
 
 
+	
+
+
+
+
+	// possible model loading class
 	int vsize = 0;
 	int fsize = 0;
 	float *vtest;
@@ -73,6 +81,11 @@ int main() {
 	// shaders !
 	unsigned int program = program_create("src/shaderList.txt");
 
+
+
+
+
+	// data storage
 	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -96,6 +109,10 @@ int main() {
 	glBindVertexArray(0);
 
 	glUseProgram(program);
+
+
+
+
 
 
 
@@ -179,6 +196,7 @@ int main() {
 
 
 		// input
+		// use better system where all the inputs are inside one function
 
 		int state = glfwGetKey(window, GLFW_KEY_E);
 		if (state == GLFW_PRESS)
@@ -236,6 +254,10 @@ int main() {
 		{
 			cameraPos[1] -= cameraSpeed;
 		}
+
+
+
+
 
 
 
