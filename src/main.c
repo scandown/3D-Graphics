@@ -8,16 +8,16 @@
 #include "spaces.h"
 #include "model.h"
 #include "quat.h"
+#include "window.h"
 //#include "vec3.h"
 //#include "quat.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 
 int main() {
@@ -25,37 +25,12 @@ int main() {
 
 
 
-	// GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
-	if (!glfwInit()) {
+	//GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
+
+	GLFWwindow *window = setup_window(SCR_WIDTH, SCR_HEIGHT, "game");
+	if (window == NULL) {
 		return 1;
 	}
-
-	GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Hello World", NULL, NULL);
-	if (!window)
-	{
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-
-
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		printf("Failed to initialize GLAD\n");
-		return -1;
-	}
-
-	glEnable(GL_DEPTH_TEST);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	// end
-
-
-	
-
-
 
 
 	// possible model loading class
@@ -362,11 +337,6 @@ int main() {
 }
 
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity) {
 	double xpos, ypos;
