@@ -42,7 +42,7 @@ int main() {
 
 	// data storage
 	unsigned int VAO, VBO, EBO;
-	model_send_to_gpu(program, &VAO, &VBO, &EBO);
+	model_send_to_gpu(program, &VAO, &VBO, &EBO, vsize, fsize, vtest, ftest);
 
 
 
