@@ -111,3 +111,29 @@ int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float 
 	return 0;
 }
 
+
+
+void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VBO, unsigned int *EBO) {
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+
+	glBindVertexArray(VAO);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vsize * sizeof(float), vtest, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glUseProgram(program);
+}

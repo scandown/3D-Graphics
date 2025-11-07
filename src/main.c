@@ -22,11 +22,6 @@ const unsigned int SCR_HEIGHT = 1080;
 
 int main() {
 
-
-
-
-	//GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
-
 	GLFWwindow *window = setup_window(SCR_WIDTH, SCR_HEIGHT, "game");
 	if (window == NULL) {
 		return 1;
@@ -38,52 +33,16 @@ int main() {
 	int fsize = 0;
 	float *vtest;
 	unsigned int *ftest;
-
-
 	if (model_load("assets/cube.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
-
-
-
-
-
-
-
-
 	//setup for opengl :3
-
 	// shaders !
 	unsigned int program = program_create("src/shaderList.txt");
 
-
-
-
-
 	// data storage
 	unsigned int VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-
-	glBindVertexArray(VAO);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vsize * sizeof(float), vtest, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, fsize * sizeof(int), ftest, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	glUseProgram(program);
+	model_send_to_gpu(program, &VAO, &VBO, &EBO);
 
 
 
