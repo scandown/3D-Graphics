@@ -6,39 +6,46 @@ void camera_movement(Camera *cam) {
 	vec3 cameraMove;
 	vec3 cameraRight;
 
-	printf("%i\n", cam->key);
+	//printf("%i\n", cam->key);
 
-	switch (cam->key){
-		case GLFW_KEY_W:
-			glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
-			glm_vec3_add(cam->pos, cameraMove, cam->pos);
-			break;
-		case GLFW_KEY_A:
-			glm_vec3_cross(cam->front, cam->up, cameraRight);
-			glm_vec3_normalize(cameraRight);
-			glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+	int mask = 1;
+	for (int i = 0; i < GLFW_KEY_Z - 65; i++) {
+		mask = mask << 1;
+		//printf("%i\n", mask & cam->key);
+		if ((mask & cam->key) != 0) {
+			switch (i + 65){
+				case GLFW_KEY_W:
+					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
+					glm_vec3_add(cam->pos, cameraMove, cam->pos);
+					break;
+				case GLFW_KEY_A:
+					glm_vec3_cross(cam->front, cam->up, cameraRight);
+					glm_vec3_normalize(cameraRight);
+					glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
 
-			glm_vec3_sub(cam->pos, cameraRight, cam->pos);
-			break;
-		case GLFW_KEY_S:
-			glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
-			glm_vec3_sub(cam->pos, cameraMove, cam->pos);
-			break;
-		case GLFW_KEY_D:
-			glm_vec3_cross(cam->front, cam->up, cameraRight);
-			glm_vec3_normalize(cameraRight);
-			glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+					glm_vec3_sub(cam->pos, cameraRight, cam->pos);
+					break;
+				case GLFW_KEY_S:
+					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
+					glm_vec3_sub(cam->pos, cameraMove, cam->pos);
+					break;
+				case GLFW_KEY_D:
+					glm_vec3_cross(cam->front, cam->up, cameraRight);
+					glm_vec3_normalize(cameraRight);
+					glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
 
-			glm_vec3_add(cam->pos, cameraRight, cam->pos);
-			break;
-		case GLFW_KEY_SPACE:
-			cam->pos[1] += cameraSpeed;
-			break;
-		case GLFW_KEY_LEFT_SHIFT:
-			cam->pos[1] -= cameraSpeed;
-			break;
-		default:
-			break;
+					glm_vec3_add(cam->pos, cameraRight, cam->pos);
+					break;
+				case GLFW_KEY_SPACE:
+					cam->pos[1] += cameraSpeed;
+					break;
+				case GLFW_KEY_LEFT_SHIFT:
+					cam->pos[1] -= cameraSpeed;
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
 
