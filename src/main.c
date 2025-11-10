@@ -194,9 +194,7 @@ int main() {
 		//print_quat(result);
 
 
-		if (cam->pressed) {
-			camera_movement(cam);
-		}
+		camera_movement(cam);
 
 
 
@@ -273,11 +271,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (action == GLFW_PRESS) {
 		cam->pressed = true;
 		get_mask(key, cam, key_or);
-		printf("%i\n", cam->key);
 	} else if (action == GLFW_RELEASE) {
 		cam->pressed = false;
 		get_mask(key, cam, key_not);
-		printf("%i\n", cam->key);
 	}
 }
 
