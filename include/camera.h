@@ -1,5 +1,6 @@
 #pragma once
 #include "glad/glad.h"
+#include "cglm/cglm.h"
 #include "GLFW/glfw3.h"
 
 
@@ -14,4 +15,4 @@ typedef struct {
 void camera_movement(Camera *cam);
 void key_or(int mask, Camera *cam);
 void key_not(int mask, Camera *cam);
-int get_mask(int key, Camera *cam, void (*key_func)(int, Camera *));
+void get_mask(int key, Camera *cam, void (*key_func)(int, Camera *));
