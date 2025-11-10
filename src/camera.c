@@ -1,11 +1,10 @@
 #include "camera.h"
 
-void camera_movement() {
+void camera_movement(Camera *cam) {
 	float cameraSpeed = 0.05f;
 	//set this
 	vec3 cameraMove;
 	vec3 cameraRight;
-	Camera *cam = c_ptr;
 
 	printf("%i\n", cam->key);
 
@@ -51,7 +50,7 @@ void key_not(int mask, Camera *cam) {
 	cam->key = cam->key & ~mask;
 }
 
-int get_mask(int key, Camera *cam, void (*key_func)(int, Camera *)) {
+void get_mask(int key, Camera *cam, void (*key_func)(int, Camera *)) {
 	int mask = 1;
 	int new_key = key - 64;
 	if (key <= GLFW_KEY_Z && key >= GLFW_KEY_A) {
