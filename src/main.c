@@ -87,8 +87,7 @@ int main() {
 	glm_vec3_copy((vec3){0, 0, 3}, cam->pos);
 	glm_vec3_copy((vec3){0, 0, -1}, cam->front);
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
-	cam->pressed = false;
-	cam->key = 0;
+	cam->mask1 = 0;
 
 	float pitch = 0;
 	float yaw = -90;
@@ -269,10 +268,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	Camera *cam = c_ptr;
 
 	if (action == GLFW_PRESS) {
-		cam->pressed = true;
 		get_mask(key, cam, key_or);
 	} else if (action == GLFW_RELEASE) {
-		cam->pressed = false;
 		get_mask(key, cam, key_not);
 	}
 }
