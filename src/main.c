@@ -131,6 +131,7 @@ int main() {
 
 		// input
 		// use better system where all the inputs are inside one function
+		camera_movement(cam);
 
 		// end of input
 
@@ -193,7 +194,6 @@ int main() {
 		//print_quat(result);
 
 
-		camera_movement(cam);
 
 
 
