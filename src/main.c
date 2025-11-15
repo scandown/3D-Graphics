@@ -9,18 +9,15 @@
 #include "model.h"
 #include "quat.h"
 #include "window.h"
+#include "state.h"
 #include "camera.h"
+#include "uniform.h"
 //#include "vec3.h"
 //#include "quat.h"
 
 void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
 void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-// settings
-const unsigned int SCR_WIDTH = 1920;
-const unsigned int SCR_HEIGHT = 1080;
-
 
 // access camera from input callback
 Camera *c_ptr = NULL;
@@ -29,8 +26,14 @@ int main() {
 	Camera *cam = malloc(sizeof(Camera));
 	c_ptr = cam;
 
-	GLFWwindow *window = setup_window(SCR_WIDTH, SCR_HEIGHT, "game");
-	if (window == NULL) {
+
+	State game;
+	game.SCR_WIDTH = 1920;
+	game.SCR_HEIGHT = 1080;
+	game.title = "game";
+
+	game.window = setup_window(game.SCR_WIDTH, game.SCR_HEIGHT, game.title);
+	if (game.window == NULL) {
 		return 1;
 	}
 
@@ -49,11 +52,11 @@ int main() {
 
 	//setup for opengl :3
 	// shaders !
-	unsigned int program = program_create("src/shaderList.txt");
+	game.program = program_create("src/shaderList.txt");
 
 	// data storage
 	unsigned int VAO, VBO, EBO;
-	model_send_to_gpu(program, &VAO, &VBO, &EBO, vsize, fsize, vtest, ftest);
+	model_send_to_gpu(game.program, &VAO, &VBO, &EBO, vsize, fsize, vtest, ftest);
 
 
 
@@ -66,16 +69,16 @@ int main() {
 
 	// coordinate systems
 	struct space model, view, projection;
-	setup_space(&model, "model", program);
+	setup_space(&model, "model", game.program);
 	vec3 model_position = {0, 0, 0};
 	model.translate(&model, model_position);
 	model.set_uniform(&model);
 
-	setup_space(&view, "view", program);
+	setup_space(&view, "view", game.program);
 	view.translate(&view, (vec3){0, 0, -2});
 
-	setup_space(&projection, "projection", program);
-	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
+	setup_space(&projection, "projection", game.program);
+	glm_perspective(45.0, game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
 	projection.set_uniform(&projection);
 
 
@@ -95,7 +98,7 @@ int main() {
 	cam->mask1 = 0;
 
 
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(game.window))
 	{
 		glfwPollEvents();
 
@@ -103,8 +106,8 @@ int main() {
 		float yaw = -90;
 		double prev_xpos = 0;
 		double prev_ypos = 0;
-		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
-		glfwSetKeyCallback(window, key_callback);
+		cursor_position_callback(game.window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
+		glfwSetKeyCallback(game.window, key_callback);
 
 
 
@@ -143,8 +146,15 @@ int main() {
 		if (t >= 1 || t <= 0) {
 			amount *= -1;
 		}
-		int rotloc = glGetUniformLocation(program, "rot");
-		glUniform4fv(rotloc, 1, result);
+
+		Uniform rotation = uniform_init(&game, "rot", UNIFORM_FLOAT4);
+		rotation.values.f4[0] = result[0];
+		rotation.values.f4[1] = result[1];
+		rotation.values.f4[2] = result[2];
+		rotation.values.f4[3] = result[3];
+		uniform_send(&rotation);
+		//int rotloc = glGetUniformLocation(game.program, "rot");
+		//glUniform4fv(rotloc, 1, result);
 
 
 		// end loop
@@ -153,14 +163,14 @@ int main() {
 	        glClearColor(0, 0, 0, 1);
 		//glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(program);
+		glUseProgram(game.program);
 
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
 
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(game.window);
 
 	}
 
@@ -169,7 +179,7 @@ int main() {
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	glDeleteProgram(program);
+	glDeleteProgram(game.program);
 
 
 	// free model data
