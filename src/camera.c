@@ -94,20 +94,57 @@ void camera_movement(Camera *cam) {
 	long mask = 1;
 	int amount = 0;
 
+	float cameraSpeed = 0.05f;
+        //set this
+        vec3 cameraMove;
+        vec3 cameraRight;
+
 	for (int i = 0; i < 64; i++) {
 		mask = mask << 1;	
 		amount++;
 		int amount_copy = amount;
 
-		if ((cam->mask1 & mask) != 0) {
-			key_check_inv(&amount_copy);
-			printf("%d\n", amount_copy);
-		}
-		if ((cam->mask2 & mask) != 0) {
-			amount_copy += 64;
-			key_check_inv(&amount_copy);
-			printf("%d\n", amount_copy);
-		}
+		if ((cam->mask1 & mask) != 0 || (cam->mask2 & mask) != 0) {
+			if ((cam->mask1 & mask) != 0) {
+				key_check_inv(&amount_copy);
+			}
+			if ((cam->mask2 & mask) != 0) {
+				amount_copy += 64;
+				key_check_inv(&amount_copy);
+			}
 
+			switch (amount_copy){
+				case GLFW_KEY_W:
+					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
+					glm_vec3_add(cam->pos, cameraMove, cam->pos);
+					break;
+				case GLFW_KEY_A:
+					glm_vec3_cross(cam->front, cam->up, cameraRight);
+					glm_vec3_normalize(cameraRight);
+					glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+
+					glm_vec3_sub(cam->pos, cameraRight, cam->pos);
+					break;
+				case GLFW_KEY_S:
+					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
+					glm_vec3_sub(cam->pos, cameraMove, cam->pos);
+					break;
+				case GLFW_KEY_D:
+					glm_vec3_cross(cam->front, cam->up, cameraRight);
+					glm_vec3_normalize(cameraRight);
+					glm_vec3_scale(cameraRight, cameraSpeed, cameraRight);
+
+					glm_vec3_add(cam->pos, cameraRight, cam->pos);
+					break;
+				case GLFW_KEY_SPACE:
+					cam->pos[1] += cameraSpeed;
+					break;
+				case GLFW_KEY_LEFT_SHIFT:
+					cam->pos[1] -= cameraSpeed;
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
