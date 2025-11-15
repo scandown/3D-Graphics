@@ -36,9 +36,7 @@ out vec3 pos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 mat;
 
-uniform float time;
 uniform vec4 rot;
 
 
@@ -57,7 +55,6 @@ void main() {
 	//rots *= aPos;
 
 	mat4 coordinates = projection * view * model;
-	//coordinates *= mat;
 	gl_Position = coordinates * vec4(rots, 1.0);
 	pos = aPos;
 }

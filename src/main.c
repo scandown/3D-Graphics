@@ -43,6 +43,10 @@ int main() {
 	if (model_load("assets/cube.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
 		return -1;
 	}
+
+
+
+
 	//setup for opengl :3
 	// shaders !
 	unsigned int program = program_create("src/shaderList.txt");
@@ -63,13 +67,14 @@ int main() {
 	// coordinate systems
 	struct space model, view, projection;
 	setup_space(&model, "model", program);
-	setup_space(&view, "view", program);
-	setup_space(&projection, "projection", program);
-
 	vec3 model_position = {0, 0, 0};
-
-	view.translate(&view, (vec3){0, 0, -2});
 	model.translate(&model, model_position);
+	model.set_uniform(&model);
+
+	setup_space(&view, "view", program);
+	view.translate(&view, (vec3){0, 0, -2});
+
+	setup_space(&projection, "projection", program);
 	glm_perspective(45.0, SCR_WIDTH/SCR_HEIGHT, 0.1, 100, projection.matrix);
 	projection.set_uniform(&projection);
 
@@ -89,40 +94,31 @@ int main() {
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
 	cam->mask1 = 0;
 
-	float pitch = 0;
-	float yaw = -90;
-
-	double prev_xpos = 0;
-	double prev_ypos = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+
+		float pitch = 0;
+		float yaw = -90;
+		double prev_xpos = 0;
+		double prev_ypos = 0;
 		cursor_position_callback(window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
 		glfwSetKeyCallback(window, key_callback);
 
 
-		const float speed = 0.01;
 
+		//camera_look(cam, yaw, pitch, &view);
 		vec3 direction;
 		direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
 		direction[1] = sin(glm_rad(pitch));
 		direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
 		glm_vec3_normalize_to(direction, cam->front);
-
 		vec3 camera_total_front;
 		glm_vec3_copy(cam->front, camera_total_front);
 		glm_vec3_add(cam->pos, cam->front, camera_total_front);
 		glm_lookat(cam->pos, camera_total_front, cam->up, view.matrix);
-
-		vec3 c_up = {0, 1, 0};
-		vec3 cam_right;
-		glm_vec3_cross(c_up, direction, cam_right);
-		//lookat_cube(model.matrix, direction, model_position, (vec3){0, 1, 0});
-		//glm_mat4_print(model.matrix, stdout);
-
 		view.set_uniform(&view);
-		model.set_uniform(&model);
 
 
 
@@ -130,31 +126,11 @@ int main() {
 
 
 		// input
-		// use better system where all the inputs are inside one function
 		camera_movement(cam);
-
 		// end of input
 
-
-
-
-
-
-
-
-
-
-		float time = glfwGetTime();
-
-		int timeLoc = glGetUniformLocation(program, "time");
-		//printf("%f\n", time);
-		glUniform1f(timeLoc, time);
-
-
-
-
-		// quat_slerp(vec4 start, vec4 end, float t, vec4 out);
-
+		
+		// quaternion stuff
 		vec4 result = {1, 0, 0, 0};
 		vec4 start = {0, 0, 0, 1};
 		vec4 end = {0.5, 0, 0, 0.5};
@@ -167,39 +143,8 @@ int main() {
 		if (t >= 1 || t <= 0) {
 			amount *= -1;
 		}
-
-
-		mat4 m; 
-		glm_mat4_identity(m);
-
-		//glm_vec3_copy(cameraPos, to);
-		static vec3 forward = {0, 0, 1};
-		vec3 up = {0, 1, 0};
-
-		vec4 quat;
-
-
-
-		//glm_mat4_print(m, stdout);
-
-		//print_quat(result);
-
-		int matloc = glGetUniformLocation(program, "mat");
-		glUniformMatrix4fv(matloc, 1, false, (const float *)m);
-
-		//printf("%f, %f, %f, %f\n", result[0], result[1], result[2], result[3]);
 		int rotloc = glGetUniformLocation(program, "rot");
 		glUniform4fv(rotloc, 1, result);
-
-		//print_quat(result);
-
-
-
-
-
-
-
-
 
 
 		// end loop
@@ -226,10 +171,6 @@ int main() {
 
 	glDeleteProgram(program);
 
-	/*
-	free((void *)fragmentShaderSource);
-	free((void *)vertexShaderSource);
-	*/
 
 	// free model data
 	free(vtest);
