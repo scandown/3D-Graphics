@@ -148,3 +148,16 @@ void camera_movement(Camera *cam) {
 		}
 	}
 }
+void camera_look(Camera *cam, float yaw, float pitch, Space *view) {
+	//camera_look(cam, yaw, pitch, &view);
+	vec3 direction;
+	direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+	direction[1] = sin(glm_rad(pitch));
+	direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+	glm_vec3_normalize_to(direction, cam->front);
+	vec3 camera_total_front;
+	glm_vec3_copy(cam->front, camera_total_front);
+	glm_vec3_add(cam->pos, cam->front, camera_total_front);
+	glm_lookat(cam->pos, camera_total_front, cam->up, view->matrix);
+	view->set_uniform(view);
+}

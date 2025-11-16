@@ -68,7 +68,8 @@ int main() {
 
 
 	// coordinate systems
-	struct space model, view, projection;
+	// 
+	Space model, view, projection;
 	setup_space(&model, "model", game.program);
 	vec3 model_position = {0, 0, 0};
 	model.translate(&model, model_position);
@@ -109,30 +110,14 @@ int main() {
 		cursor_position_callback(game.window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
 		glfwSetKeyCallback(game.window, key_callback);
 
-
-
-		//camera_look(cam, yaw, pitch, &view);
-		vec3 direction;
-		direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
-		direction[1] = sin(glm_rad(pitch));
-		direction[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
-		glm_vec3_normalize_to(direction, cam->front);
-		vec3 camera_total_front;
-		glm_vec3_copy(cam->front, camera_total_front);
-		glm_vec3_add(cam->pos, cam->front, camera_total_front);
-		glm_lookat(cam->pos, camera_total_front, cam->up, view.matrix);
-		view.set_uniform(&view);
-
-
-
-
-
-
-		// input
+		camera_look(cam, yaw, pitch, &view);
 		camera_movement(cam);
-		// end of input
 
 		
+
+
+
+
 		// quaternion stuff
 		vec4 result = {1, 0, 0, 0};
 		vec4 start = {0, 0, 0, 1};
@@ -147,14 +132,8 @@ int main() {
 			amount *= -1;
 		}
 
-		Uniform rotation = uniform_init(&game, "rot", UNIFORM_FLOAT4);
-		rotation.values.f4[0] = result[0];
-		rotation.values.f4[1] = result[1];
-		rotation.values.f4[2] = result[2];
-		rotation.values.f4[3] = result[3];
+		Uniform rotation = uniform_init(&game, "rot", &result, UNIFORM_FLOAT4);
 		uniform_send(&rotation);
-		//int rotloc = glGetUniformLocation(game.program, "rot");
-		//glUniform4fv(rotloc, 1, result);
 
 
 		// end loop
