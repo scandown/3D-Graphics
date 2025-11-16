@@ -7,4 +7,8 @@ typedef struct {
 	unsigned int SCR_HEIGHT;
 	char *title;
 	GLFWwindow *window;
+
+	unsigned int VAO;
+	unsigned int VBO;
+	unsigned int EBO;
 } State;

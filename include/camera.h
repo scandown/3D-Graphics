@@ -12,6 +12,12 @@ typedef struct {
 	long mask1;
 	long mask2;
 	int key;
+
+
+	float pitch;
+	float yaw;
+	double prev_xpos;
+	double prev_ypos;
 } Camera;
 
 void camera_movement(Camera *cam);
