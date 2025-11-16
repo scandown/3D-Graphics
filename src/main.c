@@ -38,12 +38,8 @@ int main() {
 	}
 
 
-	// possible model loading class
-	int vsize = 0;
-	int fsize = 0;
-	float *vtest;
-	unsigned int *ftest;
-	if (model_load("assets/cube.obj", &vsize, &fsize, &vtest, &ftest) == -1) {
+	Model cube = model_load("assets/cube.obj");
+	if (cube.location == NULL) {
 		return -1;
 	}
 
@@ -51,12 +47,10 @@ int main() {
 
 
 	//setup for opengl :3
-	// shaders !
 	game.program = program_create("src/shaderList.txt");
 
-	// data storage
 	unsigned int VAO, VBO, EBO;
-	model_send_to_gpu(game.program, &VAO, &VBO, &EBO, vsize, fsize, vtest, ftest);
+	model_send_to_gpu(game.program, &VAO, &VBO, &EBO, &cube);
 
 
 
@@ -146,7 +140,7 @@ int main() {
 
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, fsize, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, cube.face_size, GL_UNSIGNED_INT, 0);
 
 
 		glfwSwapBuffers(game.window);
@@ -162,8 +156,6 @@ int main() {
 
 
 	// free model data
-	free(vtest);
-	free(ftest);
 	free(cam);
 
 	glfwTerminate();
