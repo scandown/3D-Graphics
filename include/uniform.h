@@ -1,4 +1,5 @@
 #pragma once
+#include <string.h>
 #include "glad/glad.h"
 #include "state.h"
 
@@ -32,6 +33,6 @@ typedef struct {
 	Uniform_Members values;
 } Uniform;
 
-Uniform uniform_init(State *state, char *name, Uniform_Type type);
+Uniform uniform_init(State *state, char *name, void *value, Uniform_Type type);
 void uniform_send(Uniform *uniform);
 

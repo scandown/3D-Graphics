@@ -2,6 +2,7 @@
 #include "glad/glad.h"
 #include "cglm/cglm.h"
 #include "GLFW/glfw3.h"
+#include "spaces.h"
 
 
 typedef struct {
@@ -20,3 +21,4 @@ void get_mask(int key, Camera *cam, void (*key_func)(int, long, Camera *));
 
 void key_check(int *key);
 void key_check_inv(int *inv_key);
+void camera_look(Camera *cam, float yaw, float pitch, Space *view);

@@ -2,7 +2,7 @@
 #include "cglm/cglm.h"
 #include "glad/glad.h"
 
-struct space {
+typedef struct space {
 
 	mat4 matrix;
 	int location;
@@ -11,6 +11,6 @@ struct space {
 	void (*translate)(struct space *space, vec3 translation);
 	// maybe rename apply uniform
 	void (*set_uniform)(struct space *space);
-};
+} Space;
 
-void setup_space(struct space *space, char *name, int program);
+void setup_space(Space *space, char *name, int program);
