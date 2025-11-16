@@ -1,5 +1,8 @@
 #pragma once
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "shader.h"
+#include "window.h"
 
 typedef struct {
 	unsigned int program;
@@ -12,3 +15,6 @@ typedef struct {
 	unsigned int VBO;
 	unsigned int EBO;
 } State;
+
+
+State setup_state(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *shader_location);

@@ -31,13 +31,7 @@ int main() {
 
 
 	//setup for opengl :3
-	State game;
-	game.SCR_WIDTH = 1920;
-	game.SCR_HEIGHT = 1080;
-	game.title = "game";
-
-	game.window = setup_window(game.SCR_WIDTH, game.SCR_HEIGHT, game.title);
-	game.program = program_create("src/shaderList.txt");
+	State game = setup_state(1920, 1080, "game", "src/shaderList.txt");
 	if (game.window == NULL) {
 		return 1;
 	}
