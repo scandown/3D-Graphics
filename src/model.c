@@ -57,12 +57,15 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 }
 
 
-int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float **vert, unsigned int **faces) {
+Model model_load(char *model_name) {
+	Model model;
+	memset(&model, 0, sizeof(model));
 
 	FILE *fptr = fopen(model_name, "r");	
 	if (fptr == NULL) {
 		printf("Couldn't open: %s\n", model_name);
-		return -1;
+		model.location = NULL;
+		return model;
 	}
 
 
@@ -98,21 +101,19 @@ int model_load(char *model_name, int *num_of_vertices, int *num_of_faces, float 
 
 	//printf("%f\n", vertices[0]);
 
-
 	file[file_size] = '\0';
 
 	fclose(fptr);
 
-	*num_of_vertices = i_vertices;
-	*num_of_faces = i_faces;
-
-	*vert = vertices;
-	*faces = faces_full;
-	return 0;
+	model.vertex_size = i_vertices;
+	model.face_size = i_faces;
+	model.vertices = vertices;
+	model.faces = faces_full;
+	model.location = model_name;
+	return model;
 }
 
-void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VBO, unsigned int *EBO, int vertex_size,
-			int face_size, float *vertex, unsigned int *face) {
+void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VBO, unsigned int *EBO, Model *model) {
 	glGenVertexArrays(1, VAO);
 	glGenBuffers(1, VBO);
 	glGenBuffers(1, EBO);
@@ -120,10 +121,10 @@ void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VB
 	glBindVertexArray(*VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertex_size * sizeof(float), vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, face_size * sizeof(int), face, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->face_size * sizeof(int), model->faces, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
