@@ -113,17 +113,17 @@ Model model_load(char *model_name) {
 	return model;
 }
 
-void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VBO, unsigned int *EBO, Model *model) {
-	glGenVertexArrays(1, VAO);
-	glGenBuffers(1, VBO);
-	glGenBuffers(1, EBO);
+void model_send_to_gpu(State *state, Model *model) {
+	glGenVertexArrays(1, &state->VAO);
+	glGenBuffers(1, &state->VBO);
+	glGenBuffers(1, &state->EBO);
 
-	glBindVertexArray(*VAO);
+	glBindVertexArray(state->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, state->VBO);
 	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->face_size * sizeof(int), model->faces, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
@@ -133,5 +133,5 @@ void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VB
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	glUseProgram(program);
+	glUseProgram(state->program);
 }

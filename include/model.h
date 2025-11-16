@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "glad/glad.h"
+#include "state.h"
 
 
 typedef struct {
@@ -20,5 +21,5 @@ int check_int_equality(int *array1, int array1_length, int *array2, int array2_l
 int check_float_equality(float *array1, int array1_length, float *array2, int array2_length);
 
 Model model_load(char *model_name);
-void model_send_to_gpu(unsigned int program, unsigned int *VAO, unsigned int *VBO, unsigned int *EBO, Model *model);
+void model_send_to_gpu(State *state, Model *model);
 

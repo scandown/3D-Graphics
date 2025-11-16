@@ -15,7 +15,7 @@
 //#include "vec3.h"
 //#include "quat.h"
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity);
+void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -27,30 +27,30 @@ int main() {
 	c_ptr = cam;
 
 
+
+
+
+	//setup for opengl :3
 	State game;
 	game.SCR_WIDTH = 1920;
 	game.SCR_HEIGHT = 1080;
 	game.title = "game";
 
 	game.window = setup_window(game.SCR_WIDTH, game.SCR_HEIGHT, game.title);
+	game.program = program_create("src/shaderList.txt");
 	if (game.window == NULL) {
 		return 1;
 	}
 
 
+
+
+	// model
 	Model cube = model_load("assets/cube.obj");
 	if (cube.location == NULL) {
 		return -1;
 	}
-
-
-
-
-	//setup for opengl :3
-	game.program = program_create("src/shaderList.txt");
-
-	unsigned int VAO, VBO, EBO;
-	model_send_to_gpu(game.program, &VAO, &VBO, &EBO, &cube);
+	model_send_to_gpu(&game, &cube);
 
 
 
@@ -97,19 +97,15 @@ int main() {
 	{
 		glfwPollEvents();
 
-		float pitch = 0;
-		float yaw = -90;
-		double prev_xpos = 0;
-		double prev_ypos = 0;
-		cursor_position_callback(game.window, &prev_xpos, &prev_ypos, &yaw, &pitch, 0.10);
+		cam->pitch = 0;
+		cam->yaw = -90;
+		cam->prev_xpos = 0;
+		cam->prev_ypos = 0;
+		cursor_position_callback(game.window, cam, 0.10);
+		camera_look(cam, cam->yaw, cam->pitch, &view);
+
 		glfwSetKeyCallback(game.window, key_callback);
-
-		camera_look(cam, yaw, pitch, &view);
 		camera_movement(cam);
-
-		
-
-
 
 
 		// quaternion stuff
@@ -126,21 +122,31 @@ int main() {
 			amount *= -1;
 		}
 
+
+
+
+
+
+
+
+
 		Uniform rotation = uniform_init(&game, "rot", &result, UNIFORM_FLOAT4);
 		uniform_send(&rotation);
 
 
-		// end loop
+
+
 
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
-		//glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		// draw call
 		glUseProgram(game.program);
-
-
-		glBindVertexArray(VAO);
+		glBindVertexArray(game.VAO);
 		glDrawElements(GL_TRIANGLES, cube.face_size, GL_UNSIGNED_INT, 0);
+
 
 
 		glfwSwapBuffers(game.window);
@@ -148,9 +154,9 @@ int main() {
 	}
 
 	// freeing unused stuff at end
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &game.VAO);
+	glDeleteBuffers(1, &game.VBO);
+	glDeleteBuffers(1, &game.EBO);
 
 	glDeleteProgram(game.program);
 
@@ -164,23 +170,23 @@ int main() {
 
 
 
-void cursor_position_callback(GLFWwindow* window, double *prev_xpos, double *prev_ypos, float *yaw, float *pitch, float sensitivity) {
+void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity) {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	double xpos_diff = xpos - *prev_xpos;
-	double ypos_diff = -(ypos - *prev_ypos);
+	double xpos_diff = xpos - cam->prev_xpos;
+	double ypos_diff = -(ypos - cam->prev_ypos);
 
-	*prev_xpos = xpos;
-	*prev_ypos = ypos;
+	cam->prev_xpos = xpos;
+	cam->prev_ypos = ypos;
 
-	*pitch += ypos_diff * sensitivity;
-	if (*pitch > 89.9) {
-		*pitch = 89.9;
-	} else if (*pitch < -89.9) {
-		*pitch = -89.9;
+	cam->pitch += ypos_diff * sensitivity;
+	if (cam->pitch > 89.9) {
+		cam->pitch = 89.9;
+	} else if (cam->pitch < -89.9) {
+		cam->pitch = -89.9;
 	}
-	*yaw += xpos_diff * sensitivity;
+	cam->yaw += xpos_diff * sensitivity;
 
 }
 
