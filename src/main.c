@@ -25,35 +25,17 @@ Camera *c_ptr = NULL;
 int main() {
 	Camera *cam = malloc(sizeof(Camera));
 	c_ptr = cam;
-
-
-
-
-
 	//setup for opengl :3
 	State game = setup_state(1920, 1080, "game", "src/shaderList.txt");
 	if (game.window == NULL) {
 		return 1;
 	}
-
-
-
-
 	// model
 	Model cube = model_load("assets/cube.obj");
 	if (cube.location == NULL) {
 		return -1;
 	}
 	model_send_to_gpu(&game, &cube);
-
-
-
-
-
-
-
-
-
 
 	// coordinate systems
 	// 
@@ -69,16 +51,6 @@ int main() {
 	setup_space(&projection, "projection", game.program);
 	glm_perspective(45.0, game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
 	projection.set_uniform(&projection);
-
-
-
-
-
-
-
-
-
-
 
 	// camera move setup
 	glm_vec3_copy((vec3){0, 0, 3}, cam->pos);
@@ -115,21 +87,8 @@ int main() {
 		if (t >= 1 || t <= 0) {
 			amount *= -1;
 		}
-
-
-
-
-
-
-
-
-
 		Uniform rotation = uniform_init(&game, "rot", &result, UNIFORM_FLOAT4);
 		uniform_send(&rotation);
-
-
-
-
 
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
@@ -190,9 +149,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	Camera *cam = c_ptr;
 
 	if (action == GLFW_PRESS) {
-		get_mask(key, cam, key_or);
+		set_input_mask(key, cam, key_or);
 	} else if (action == GLFW_RELEASE) {
-		get_mask(key, cam, key_not);
+		set_input_mask(key, cam, key_not);
 	}
 }
 

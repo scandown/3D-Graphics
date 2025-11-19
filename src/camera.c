@@ -76,7 +76,7 @@ void key_check_inv(int *inv_key) {
 }
 
 
-void get_mask(int key, Camera *cam, void (*key_func)(int, long, Camera *)) {
+void set_input_mask(int key, Camera *cam, void (*key_func)(int, long, Camera *)) {
 	long mask = 1;
 	key_check(&key);
 	cam->key = key;
