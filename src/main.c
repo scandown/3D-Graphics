@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "cglm/cglm.h"
 #include <stdlib.h>
+#include <setjmp.h>
 
 #include "shader.h"
 #include "spaces.h"
@@ -26,15 +27,14 @@ int main() {
 	Camera *cam = malloc(sizeof(Camera));
 	c_ptr = cam;
 	//setup for opengl :3
-	State game = setup_state(1920, 1080, "game", "src/shaderList.txt");
-	if (game.window == NULL) {
+	jmp_buf error;
+	if (setjmp(error)) {
+		printf("Error Detected!\n");
 		return 1;
 	}
-	// model
-	Model cube = model_load("assets/cube.obj");
-	if (cube.location == NULL) {
-		return -1;
-	}
+
+	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
+	Model cube = model_load(error, "assets/ceube.obj");
 	model_send_to_gpu(&game, &cube);
 
 	// coordinate systems
