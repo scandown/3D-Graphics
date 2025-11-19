@@ -57,7 +57,7 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 }
 
 
-Model model_load(char *model_name) {
+Model model_load(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
 
@@ -65,7 +65,7 @@ Model model_load(char *model_name) {
 	if (fptr == NULL) {
 		printf("Couldn't open: %s\n", model_name);
 		model.location = NULL;
-		return model;
+		longjmp(error, 1);
 	}
 
 

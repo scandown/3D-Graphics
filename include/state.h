@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "shader.h"
 #include "window.h"
+#include <setjmp.h>
 
 typedef struct {
 	unsigned int program;
@@ -17,4 +18,4 @@ typedef struct {
 } State;
 
 
-State setup_state(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *shader_location);
+State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *shader_location);
