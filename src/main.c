@@ -27,6 +27,8 @@ int main() {
 	Camera *cam = malloc(sizeof(Camera));
 	c_ptr = cam;
 	//setup for opengl :3
+	
+
 	jmp_buf error;
 	if (setjmp(error)) {
 		printf("Error Detected!\n");
