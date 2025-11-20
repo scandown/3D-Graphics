@@ -1,3 +1,6 @@
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "texture.h"
 
 unsigned int texture_setup(jmp_buf error, GLenum format, char *name) {
