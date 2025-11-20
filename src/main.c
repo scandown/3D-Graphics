@@ -13,8 +13,7 @@
 #include "state.h"
 #include "camera.h"
 #include "uniform.h"
-//#include "vec3.h"
-//#include "quat.h"
+#include "texture.h"
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -38,6 +37,9 @@ int main() {
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
 	Model cube = model_load(error, "assets/cube.obj");
 	model_send_to_gpu(&game, &cube);
+
+
+	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 
 	// coordinate systems
 	// 
@@ -99,6 +101,7 @@ int main() {
 
 		// draw call
 		glUseProgram(game.program);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(game.VAO);
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 

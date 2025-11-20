@@ -31,7 +31,9 @@ quat quat_mul(quat q1, quat q2) {
 }
 
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
 out vec3 pos;
+out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -57,4 +59,5 @@ void main() {
 	mat4 coordinates = projection * view * model;
 	gl_Position = coordinates * vec4(rots, 1.0);
 	pos = aPos;
+	TexCoord = aTexCoord;
 }

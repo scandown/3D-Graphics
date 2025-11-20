@@ -5,4 +5,3 @@ in vec3 pos;
 void main() {
 	fragColour = vec4(1, 0, 0, 1);
 }
-
