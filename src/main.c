@@ -100,7 +100,7 @@ int main() {
 		// draw call
 		glUseProgram(game.program);
 		glBindVertexArray(game.VAO);
-		glDrawElements(GL_TRIANGLES, cube.face_size, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 
