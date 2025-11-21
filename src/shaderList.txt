@@ -1,2 +1,2 @@
 v:src/vertex.glsl
-f:src/red.glsl
+f:src/textured.glsl
