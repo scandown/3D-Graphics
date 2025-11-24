@@ -1,5 +1,10 @@
 #include "model.h"
 
+typedef struct {
+	float vertices[3];
+	float texture[2];
+} model_vals;
+
 Model model_load(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
@@ -37,47 +42,52 @@ Model model_load(jmp_buf error, char *model_name) {
 	int i_vertex_faces = 0;
 	int i_texture_faces = 0;
 
+
+	char vertex[3][10];
+	char texture[2][10];
+
 	
 	while (line != NULL) {
 		if (line[0] == 'v' && line[1] == ' ') {
-			string_search_vertex_point(&i_vertices, vertices, line);
+			sscanf(line+2, "%s %s %s", vertex[0], vertex[1], vertex[2]);
+			printf("%s %s %s\n", vertex[0], vertex[1], vertex[2]);
+			i_vertices++;
 		}
 		else if (line[0] == 'v' && line[1] == 't') {
-			string_search_texture_point(&i_textures, textures, line);
+			sscanf(line+2, "%s %s", texture[0], texture[1]);
+			printf("%s %s\n", texture[0], texture[1]);
+			i_textures++;
 		}
 		else if (line[0] == 'f' && line[1] == ' ') {
-			if (i_vertices && i_textures == 0 && i_normals == 0) {
-				string_search_vertex_face(&i_vertex_faces, vertex_faces, line);
-			}
-			else if (i_vertices && i_textures && i_normals == 0) {
-				string_search_vertex_face(&i_vertex_faces, vertex_faces, line);
-				string_search_texture_face(&i_texture_faces, texture_faces, line);
-			}
 		}
 
 		line = strtok_r(NULL, "\n", &save_line);
 	}
 
-	// combine vertex array into format for opengl
 	int verts_size = i_textures + i_vertices;
+
+	// combine vertex array into format for opengl
 	printf("%d, %d\n", verts_size, i_vertex_faces);
-	float *verts_total = malloc(verts_size * sizeof(float));
+	model_vals *verts_total = malloc(verts_size * sizeof(model_vals));
 	int vert_diff = 0;
-	for (int i = 0; i < i_vertex_faces + i_texture_faces; i++) {
-		if (i % 5 < 3) {
-			verts_total[i] = vertices[i-vert_diff];
-			printf("%f, ", verts_total[i]);
+	for (int i = 0; i < i_vertex_faces; i++) {
+		for (int j = 0; j < 3; j++) {
+			// verts[vertex_faces[i]].vertices = vertices[vertex_faces[i]]
+			verts_total[i].vertices[j] = vertices[(3 * i) + j];
 		}
-		else {
-			verts_total[i] = textures[vert_diff + (4 - (i % 5))];
-			printf("%f, ", verts_total[i]);
-		}
-		if (i % 5 == 4) {
-			printf("\n");
-			vert_diff += 2;
+	}
+	for (int i = 0; i < i_texture_faces; i++) {
+		for (int j = 0; j < 2; j++) {
+			verts_total[i].texture[j] = textures[(2 * i) + j];
 		}
 	}
 
+	for (int i = 0; i < i_vertex_faces; i++) {
+		for (int j = 0; j < 5; j++) {
+			printf("%f, ", verts_total[i].vertices[j]);
+		}
+		printf("\n");
+	}
 	
 
 	file[file_size] = '\0';
@@ -87,7 +97,7 @@ Model model_load(jmp_buf error, char *model_name) {
 
 	model.location = model_name;
 
-	model.vertices = verts_total;
+	model.vertices = (float *)verts_total;
 	model.vertex_size = verts_size;
 
 	model.vertex_faces = vertex_faces;
@@ -98,52 +108,6 @@ Model model_load(jmp_buf error, char *model_name) {
 	return model;
 }
 
-void string_search_vertex_point(int *i,float *array, char *line) {
-	char *save = NULL;
-	char *vertex = strtok_r(line + 2, " ", &save);
-	while (vertex != NULL) {
-		array[(*i)++] = atof(vertex);
-		vertex = strtok_r(NULL, " ", &save);
-	}
-}
-void string_search_texture_point(int *i,float *array, char *line) {
-	char *save = NULL;
-	char *vertex = strtok_r(line + 2, " ", &save);
-	while (vertex != NULL) {
-		array[(*i)++] = atof(vertex);
-		vertex = strtok_r(NULL, "/", &save);
-	}
-}
-
-
-void string_search_vertex_face(int *i, unsigned int *array, char *line) {
-	char *save = NULL;
-	char *vertex = strtok_r(line + 2, " ", &save);
-	while (vertex != NULL) {
-		int type_size = length_to_token(vertex, '/');
-		if (type_size == -1) {
-			// incase of not having texture coords or normals
-			type_size = length_to_token(vertex, ' ');
-		}
-		if (type_size == -1) {
-			// incase value is at the end of line
-			type_size = length_to_token(vertex, '\n');
-		}
-		char *end;
-		char vertex_copy[type_size];
-		strncpy(vertex_copy, vertex, type_size);
-		array[(*i)++] = strtol(vertex_copy, &end, 10) - 1;
-		vertex = strtok_r(NULL, " ", &save);
-	}
-}
-void string_search_texture_face(int *i, unsigned int *array, char *line) {
-	char *save = NULL;
-	char *vertex = strtok_r(line + 2, " ", &save);
-	while (vertex != NULL) {
-		array[(*i)++] = atoi(vertex) - 1;
-		vertex = strtok_r(NULL, "/", &save);
-	}
-}
 
 
 
