@@ -2,3 +2,5 @@ build/
 nob
 nob.old
 external/sources/
+
+.gdb_history
