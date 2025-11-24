@@ -27,6 +27,7 @@ int main(void)
 		    SRC_FOLDER"binary_tree.c");
     nob_cmd_append(&cmd, "-lglfw3", "-lm", "-ldl", "-lpthread", "-lGL", "-lX11");
     nob_cmd_append(&cmd, "-Wno-unused-variable", "-Wno-unused-parameter");
+    nob_cmd_append(&cmd, "-Wno-sign-compare");
     if (!cmd_run(&cmd)) return 1;
     return 0;
 }
