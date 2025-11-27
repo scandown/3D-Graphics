@@ -19,6 +19,8 @@ void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity
 void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+
+
 // access camera from input callback
 Camera *c_ptr = NULL;
 
