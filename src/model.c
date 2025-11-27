@@ -1,8 +1,8 @@
 #include "model.h"
 
 typedef struct {
-	float vertices[3];
-	float texture[2];
+	unsigned int vertices[3];
+	unsigned int texture[2];
 } model_vals;
 
 Model model_load(jmp_buf error, char *model_name) {
@@ -22,88 +22,109 @@ Model model_load(jmp_buf error, char *model_name) {
 	long file_size = ftell(fptr);
 	rewind(fptr);
 
-	char *file = malloc(file_size + 1);
-	fread(file, 1, file_size, fptr);
-
-	// 4 for the size of a float
-	// remember to clean up after
-	float *vertices = malloc((file_size) * sizeof(float));
-	float *textures = malloc((file_size) * sizeof(float));
-	unsigned int *vertex_faces = malloc((file_size) * sizeof(unsigned int));
-	unsigned int *texture_faces = malloc((file_size) * sizeof(unsigned int));
+	float temp_vertices[100][3];
+	float temp_uvs[100][2];
 
 
-	// get each line of the vertices
-	char *save_line;
-	char *line = strtok_r(file, "\n", &save_line);
-	int i_vertices = 0;
-	int i_textures = 0;
-	int i_normals = 0;
-	int i_vertex_faces = 0;
-	int i_texture_faces = 0;
+	model_vals *array;
+	BST *face_bst = NULL;
 
+	int i = 0;
+	int j = 0;
+	int indicy = 0;
+	float index_array[100];
+	while (1) {
+		char *lineHeader = NULL;
+		size_t size = 0;
+		int res = getline(&lineHeader, &size, fptr);
 
-	char vertex[3][10];
-	char texture[2][10];
-
-	
-	while (line != NULL) {
-		if (line[0] == 'v' && line[1] == ' ') {
-			sscanf(line+2, "%s %s %s", vertex[0], vertex[1], vertex[2]);
-			printf("%s %s %s\n", vertex[0], vertex[1], vertex[2]);
-			i_vertices++;
-		}
-		else if (line[0] == 'v' && line[1] == 't') {
-			sscanf(line+2, "%s %s", texture[0], texture[1]);
-			printf("%s %s\n", texture[0], texture[1]);
-			i_textures++;
-		}
-		else if (line[0] == 'f' && line[1] == ' ') {
+		//printf("%s\n", lineHeader);
+		if (res == EOF) {
+			break;
 		}
 
-		line = strtok_r(NULL, "\n", &save_line);
+		if (strncmp(lineHeader, "v ", 2) == 0) {
+			float vertex[3];
+			fscanf(fptr, "%f %f %f\n", &vertex[0], &vertex[1], &vertex[2] );
+			temp_vertices[i][0] = vertex[0];
+			temp_vertices[i][1] = vertex[1];
+			temp_vertices[i][2] = vertex[2];
+			i++;
+		}
+		else if (strncmp(lineHeader, "vt", 2) == 0) {
+			float uv[2];
+			fscanf(fptr, "%f %f\n", &uv[0], &uv[1] );
+			temp_uvs[j][0] = uv[0];
+			temp_uvs[j][1] = uv[1];
+			j++;
+		}
+		else if (strncmp(lineHeader, "f ", 2) == 0) {
+			unsigned int vertexIndex[3] = {0};
+			unsigned int uvIndex[3] = {0};
+			int matches = sscanf(lineHeader + 2, "%d/%d %d/%d %d/%d", &vertexIndex[0], &uvIndex[0],
+					&vertexIndex[1], &uvIndex[1],
+					&vertexIndex[2], &uvIndex[2]);
+			if (face_bst == NULL) {
+				insertnumber(&face_bst, vertexIndex[0], uvIndex[0], indicy);
+				indicy++;
+			}
+			for (int i = 0; i < 3; i++) {
+				if (!getnumber(face_bst, vertexIndex[i], uvIndex[i])) {
+					// and faceIndex, store this {vertex, face}
+					insertnumber(&face_bst, vertexIndex[i], uvIndex[i], indicy);
+					// now get another bst for the vertex and face vertices
+					// then store in seperate array just go through the bst and add
+					// them all, each vertex store in first bst indicy
+					indicy++;
+				}
+			}
+		}
+		free(lineHeader);
+
 	}
 
-	int verts_size = i_textures + i_vertices;
+	print_tree(face_bst);
+	free_bst(&face_bst);
 
-	// combine vertex array into format for opengl
-	printf("%d, %d\n", verts_size, i_vertex_faces);
-	model_vals *verts_total = malloc(verts_size * sizeof(model_vals));
-	int vert_diff = 0;
-	for (int i = 0; i < i_vertex_faces; i++) {
-		for (int j = 0; j < 3; j++) {
-			// verts[vertex_faces[i]].vertices = vertices[vertex_faces[i]]
-			verts_total[i].vertices[j] = vertices[(3 * i) + j];
-		}
-	}
-	for (int i = 0; i < i_texture_faces; i++) {
-		for (int j = 0; j < 2; j++) {
-			verts_total[i].texture[j] = textures[(2 * i) + j];
-		}
-	}
+	printf("%d, %d\n", i, j);
 
-	for (int i = 0; i < i_vertex_faces; i++) {
-		for (int j = 0; j < 5; j++) {
-			printf("%f, ", verts_total[i].vertices[j]);
-		}
-		printf("\n");
-	}
-	
+	float *verts_total = malloc(15 * sizeof(float));
+	verts_total[0] = 0;
+	verts_total[1] = 0;
+	verts_total[2] = 0;
+	verts_total[3] = 0;
+	verts_total[4] = 0;
 
-	file[file_size] = '\0';
+	verts_total[5] = 0;
+	verts_total[6] = 1;
+	verts_total[7] = 0;
+	verts_total[8] = 0;
+	verts_total[9] = 1;
 
-	fclose(fptr);
+	verts_total[10] = 1;
+	verts_total[11] = 0;
+	verts_total[12] = 0;
+	verts_total[13] = 1;
+	verts_total[14] = 1;
 
+	int verts_size = 15;
 
 	model.location = model_name;
 
 	model.vertices = (float *)verts_total;
 	model.vertex_size = verts_size;
 
+	unsigned int *vertex_faces = malloc(3 * sizeof(unsigned int));
+	int i_vertices = 3;
+	vertex_faces[0] = 0;
+	vertex_faces[1] = 1;
+	vertex_faces[2] = 2;
+	
+	
 	model.vertex_faces = vertex_faces;
-	model.texture_faces = texture_faces;
-	model.vertex_face_size = i_vertex_faces;
-	model.texture_face_size = i_texture_faces;
+	model.vertex_face_size = i_vertices;
+
+	fclose(fptr);
 
 	return model;
 }

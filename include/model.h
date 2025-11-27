@@ -5,15 +5,14 @@
 #include <setjmp.h>
 #include "glad/glad.h"
 #include "state.h"
+#include "binary_tree.h"
 
 
 typedef struct {
 	float *vertices;
+	unsigned int *vertex_faces;
 	int vertex_size;
 	int vertex_face_size;
-	int texture_face_size;
-	unsigned int *vertex_faces;
-	unsigned int *texture_faces;
 	char *location;
 } Model;
 
