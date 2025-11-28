@@ -69,6 +69,34 @@ bool getnumber(BST *rootptr, float value, float value2) {
 	return false;
 }
 
+BST *getvalue(BST *rootptr, float value, float value2) {
+	if (rootptr == NULL) {
+		return NULL;
+	}
+
+	if (rootptr->value.vertex == value && rootptr->value.texture == value2) {
+		return rootptr;
+	}
+
+	if (value == rootptr->value.vertex) {
+		if (value2 < rootptr->value.texture) {
+			return getvalue(rootptr->left, value, value2);
+		}
+		else if (value2 > rootptr->value.texture) {
+			return getvalue(rootptr->right, value, value2);
+		}
+	} else {
+		if (value < rootptr->value.vertex) {
+			return getvalue(rootptr->left, value, value2);	
+		} else {
+			// if all else is false then this must be true
+			return getvalue(rootptr->right, value, value2);	
+		}
+	}
+
+	return NULL;
+}
+
 bool free_bst(BST **rootptr) {
 	BST *root = *rootptr;
 	if (root == NULL) {
@@ -94,6 +122,6 @@ void print_tree(BST *rootptr) {
     if (rootptr == NULL) return;
     
     print_tree(rootptr->left);
-    printf("Vertex: %f, Texture: %f / Linked: %f\n", rootptr->value.vertex, rootptr->value.texture, rootptr->linked);
+    printf("Vertex: %d, Texture: %d / Linked: %d\n", rootptr->value.vertex, rootptr->value.texture, rootptr->linked);
     print_tree(rootptr->right);
 }
