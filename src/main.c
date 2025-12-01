@@ -37,7 +37,7 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model cube = model_load(error, "assets/cube.obj");
+	Model cube = model_load(error, "assets/pen.obj");
 	model_send_to_gpu(&game, &cube);
 
 
