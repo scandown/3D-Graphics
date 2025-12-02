@@ -66,7 +66,11 @@ int main() {
 	view.translate(&view, (vec3){0, 0, -2});
 
 	setup_space(&projection, "projection", game.program);
-	glm_perspective(45.0, game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
+	glm_perspective(glm_rad(70), game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
+	//glm_perspective_default(game.SCR_WIDTH/game.SCR_HEIGHT, projection.matrix);
+	//glm_ortho(0, 1920, 0, 1080, 0.1, 100, projection.matrix);
+	//glm_ortho_default(1920/1080, projection.matrix);
+	//void glm_ortho(float left, float right, float bottom, float top, float nearVal, float farVal, mat4 dest)
 	projection.set_uniform(&projection);
 
 	// camera move setup
@@ -130,6 +134,9 @@ int main() {
 	glDeleteBuffers(1, &game.EBO);
 
 	glDeleteProgram(game.program);
+
+	free(cube.vertices);
+	free(cube.vertex_faces);
 
 
 	// free model data
