@@ -73,22 +73,16 @@ Model model_load(jmp_buf error, char *model_name) {
 			if (face_bst == NULL) {
 				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], indicy);
 				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0]);
-				verts[indicy].vertices[0] = temp_vertices[pointer->value.vertex][0];
-				verts[indicy].vertices[1] = temp_vertices[pointer->value.vertex][1];
-				verts[indicy].vertices[2] = temp_vertices[pointer->value.vertex][2];
-				verts[indicy].texture[0] = temp_uvs[pointer->value.texture][0];
-				verts[indicy].texture[1] = temp_uvs[pointer->value.texture][1];
+				memcpy(verts[indicy].vertices, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
+				memcpy( verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
 				indicy++;
 			}
 			for (int i = 0; i < 3; i++) {
 				if (!getnumber(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i])) {
 					insertnumber(&face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], indicy);
 					BST *pointer = getvalue(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i]);
-					verts[indicy].vertices[0] = temp_vertices[pointer->value.vertex][0];
-					verts[indicy].vertices[1] = temp_vertices[pointer->value.vertex][1];
-					verts[indicy].vertices[2] = temp_vertices[pointer->value.vertex][2];
-					verts[indicy].texture[0] = temp_uvs[pointer->value.texture][0];
-					verts[indicy].texture[1] = temp_uvs[pointer->value.texture][1];
+					memcpy(verts[indicy].vertices, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
+					memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
 					indicy++;
 				}
 			}
@@ -102,67 +96,22 @@ Model model_load(jmp_buf error, char *model_name) {
 		for (int j = 0; j < 3; j++) {
 			BST *pointer = getvalue(face_bst, vertexIndex[i][j], uvIndex[i][j]);
 			if (pointer != NULL) {
-				index2[i*3 + j] = pointer->linked;
+				index2[i * 3 + j] = pointer->linked;
 			} else {
 				index2[i * 3 + j] = 0;
 			}
 		}
 	}
 
-	unsigned int index[face_i][3];
-	for (int i = 0; i < face_i; i++) {
-		for (int j = 0; j < 3; j++) {
-			BST *pointer = getvalue(face_bst, vertexIndex[i][j], uvIndex[i][j]);
-			if (pointer != NULL) {
-				index[i][j] = pointer->linked;
-				printf("%d, ", pointer->linked);
-			} else {
-				index[i][j] = 0;
-			}
-		}
-		printf("\n");
-	}
-
-
-
-
-
-	//print_tree(face_bst);
 	free_bst(&face_bst);
 
 
-	float *verts_total = (float *)verts;
-
-	int verts_size = indicy;
-
 	model.location = model_name;
+	model.vertices = (float *)verts;
+	model.vertex_size = indicy * 5;
 
-	model.vertices = (float *)verts_total;
-	for (int i = 0; i < indicy; i++) {
-		for (int j = 0; j < 5; j++) {
-			printf("%f, ", model.vertices[(i * 5) + j]);
-		}
-		printf("\n");
-	}
-	model.vertex_size = verts_size * 5;
-
-	//int inds[] = {0, 1, 2, 3, 4, 1, 5, 6, 4, 7, 8, 6, 4, 9, 10, 11, 7, 5, 0, 3, 1, 3, 5, 4, 5, 7, 6, 7, 12, 8, 4, 6, 9, 11, 13, 7};
 
 	unsigned int *vertex_faces = malloc(sizeof(index2));
-	/*
-	printf("HEO);\n");
-
-	int i_vertices = 12 * 3;
-	vertex_faces[0] = 0;
-	vertex_faces[1] = 1;
-	vertex_faces[2] = 2;
-
-	// set indices to be index
-	memcpy(vertex_faces, index, 12 * 3);
-	*/
-	
-
-
 	memcpy(vertex_faces, index2, sizeof(index2));
 	
 	model.vertex_faces = vertex_faces;
@@ -170,11 +119,6 @@ Model model_load(jmp_buf error, char *model_name) {
 	printf("%d\n", model.vertex_face_size);
 
 	fclose(fptr);
-
-	printf("Vertex count: %d\n", model.vertex_size);  // Should be 14
-	printf("Index count: %d\n", model.vertex_face_size);  // Should be 36
-	printf("Triangle count: %d\n", model.vertex_face_size / 3);  // Should be 12
-
 	return model;
 }
 
