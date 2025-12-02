@@ -37,13 +37,11 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model cube = model_load(error, "assets/pen.obj");
-
-
+	Model pen = model_load(error, "assets/pen.obj");
+	Model cube = model_load(error, "assets/cube.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	
 
-	glUseProgram(game.program);
 
 
 
@@ -51,9 +49,6 @@ int main() {
 	// 
 	Space model, view, projection;
 	setup_space(&model, "model", game.program);
-	vec3 model_position = {0, 0, 0};
-	model.translate(&model, model_position);
-	model.set_uniform(&model);
 
 	setup_space(&view, "view", game.program);
 	view.translate(&view, (vec3){0, 0, -2});
@@ -105,13 +100,26 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		// draw call
-		model_send_to_gpu(&game, &cube);
-		glUseProgram(game.program);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glBindVertexArray(game.VAO);
-		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
+		// binding
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		// draw call
+		model_send_to_gpu(&game, &pen);
+		vec3 model_position = {0, 0, 0};
+		model.translate(&model, model_position);
+		model.set_uniform(&model);
+		glBindVertexArray(game.VAO);
+
+		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
+
+		model_send_to_gpu(&game, &cube);
+		vec3 nmodel_position = {0.1, 0, 0};
+		model.translate(&model, nmodel_position);
+		model.set_uniform(&model);
+		glBindVertexArray(game.VAO);
+
+		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 		glfwSwapBuffers(game.window);

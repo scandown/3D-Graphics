@@ -202,6 +202,4 @@ void model_send_to_gpu(State *state, Model *model) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	glUseProgram(state->program);
 }
