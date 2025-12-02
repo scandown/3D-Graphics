@@ -108,14 +108,22 @@ int main() {
 		model_send_to_gpu(&game, &pen);
 		vec3 model_position = {0, 0, 0};
 		model.translate(&model, model_position);
-		model.set_uniform(&model);
 		glBindVertexArray(game.VAO);
+		model.matrix[3][0] = 0;
+		model.matrix[3][1] = 0;
+		model.matrix[3][2] = 0;
+		model.matrix[3][3] = 1;
+		model.set_uniform(&model);
 
 		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0.1, 0, 0};
-		model.translate(&model, nmodel_position);
+		//model.translate(&model, nmodel_position);
+		model.matrix[3][0] = 3;
+		model.matrix[3][1] = 3;
+		model.matrix[3][2] = 0;
+		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
 		glBindVertexArray(game.VAO);
 
