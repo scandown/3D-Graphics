@@ -25,6 +25,7 @@ Model model_load(jmp_buf error, char *model_name) {
 	float temp_vertices[10000][3] = {0};
 	float temp_uvs[10000][2] = {0};
 
+	const int num_elements = 5;
 
 	BST *face_bst = NULL;
 
@@ -40,7 +41,6 @@ Model model_load(jmp_buf error, char *model_name) {
 		size_t size = 0;
 		int res = getline(&lineHeader, &size, fptr);
 
-		//printf("%s\n", lineHeader);
 		if (res == EOF) {
 			break;
 		}
@@ -64,12 +64,12 @@ Model model_load(jmp_buf error, char *model_name) {
 			int matches = sscanf(lineHeader + 2, "%d/%d %d/%d %d/%d", &vertexIndex[face_i][0], &uvIndex[face_i][0],
 					&vertexIndex[face_i][1], &uvIndex[face_i][1],
 					&vertexIndex[face_i][2], &uvIndex[face_i][2]);
-			vertexIndex[face_i][0] -= 1;
-			vertexIndex[face_i][1] -= 1;
-			vertexIndex[face_i][2] -= 1;
-			uvIndex[face_i][0] -= 1;
-			uvIndex[face_i][1] -= 1;
-			uvIndex[face_i][2] -= 1;
+
+			for (int i = 0; i < 3; i++) {
+				vertexIndex[face_i][i]--;
+				uvIndex[face_i][i]--;
+			}
+
 			if (face_bst == NULL) {
 				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], indicy);
 				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0]);
@@ -108,7 +108,7 @@ Model model_load(jmp_buf error, char *model_name) {
 
 	model.location = model_name;
 	model.vertices = (float *)verts;
-	model.vertex_size = indicy * 5;
+	model.vertex_size = indicy * num_elements;
 
 
 	unsigned int *vertex_faces = malloc(sizeof(index2));
