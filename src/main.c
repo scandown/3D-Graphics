@@ -38,11 +38,12 @@ int main() {
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
 	Model cube = model_load(error, "assets/pen.obj");
-	model_send_to_gpu(&game, &cube);
 
 
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	
+
+	glUseProgram(game.program);
 
 
 
@@ -59,10 +60,6 @@ int main() {
 
 	setup_space(&projection, "projection", game.program);
 	glm_perspective(glm_rad(70), game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
-	//glm_perspective_default(game.SCR_WIDTH/game.SCR_HEIGHT, projection.matrix);
-	//glm_ortho(0, 1920, 0, 1080, 0.1, 100, projection.matrix);
-	//glm_ortho_default(1920/1080, projection.matrix);
-	//void glm_ortho(float left, float right, float bottom, float top, float nearVal, float farVal, mat4 dest)
 	projection.set_uniform(&projection);
 
 	// camera move setup
@@ -109,6 +106,7 @@ int main() {
 
 
 		// draw call
+		model_send_to_gpu(&game, &cube);
 		glUseProgram(game.program);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(game.VAO);

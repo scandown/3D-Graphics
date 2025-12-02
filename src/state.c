@@ -13,5 +13,7 @@ State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT
 		longjmp(error, 1);
 	}
 
+	glUseProgram(state.program);
+
 	return state;
 }
