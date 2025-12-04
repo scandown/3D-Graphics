@@ -83,6 +83,7 @@ int main() {
 		vec4 start = {1, 0, 0, 0};
 		vec4 end = {0.25, 0, 0.5, 0.25};
 		static float t = 0;
+		t = 0;
 		quat_slerp(start, end, t, result);
 
 		static float amount = 0.001;
@@ -125,8 +126,8 @@ int main() {
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0.1, 0, 0};
 		//model.translate(&model, nmodel_position);
-		model.matrix[3][0] = 3;
-		model.matrix[3][1] = 3;
+		model.matrix[3][0] = 0;
+		model.matrix[3][1] = 0;
 		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
