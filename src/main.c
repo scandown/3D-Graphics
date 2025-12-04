@@ -133,6 +133,13 @@ int main() {
 		model.set_uniform(&model);
 		glBindVertexArray(game.VAO);
 
+		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
+		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
+
+		uniform_send(&objectColor);
+		uniform_send(&lightColor);
+
+
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
