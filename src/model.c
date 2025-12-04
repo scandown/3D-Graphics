@@ -1,8 +1,9 @@
 #include "model.h"
 
 typedef struct {
-	float vertices[3];
+	float vertex[3];
 	float texture[2];
+	float normal[3];
 } model_vals;
 
 Model model_load(jmp_buf error, char *model_name) {
@@ -24,17 +25,20 @@ Model model_load(jmp_buf error, char *model_name) {
 
 	float temp_vertices[10000][3] = {0};
 	float temp_uvs[10000][2] = {0};
+	float temp_normals[10000][2] = {0};
 
-	const int num_elements = 5;
+	const int num_elements = 8;
 
 	BST *face_bst = NULL;
 
 	int vertex_i = 0;
 	int texture_i = 0;
+	int normal_i = 0;
 	int face_i = 0;
 	int indicy = 0;
 	unsigned int vertexIndex[10000][3] = {0};
 	unsigned int uvIndex[10000][3] = {0};
+	unsigned int normalIndex[10000][3] = {0};
 	model_vals *verts = malloc(50000 * sizeof(model_vals));
 	while (1) {
 		char *lineHeader = NULL;
@@ -60,12 +64,20 @@ Model model_load(jmp_buf error, char *model_name) {
 			temp_uvs[texture_i][1] = uv[1];
 			texture_i++;
 		}
+		else if (strncmp(lineHeader, "vn", 2) == 0) {
+			float normal[3];
+			sscanf(lineHeader + 2, "%f %f %f", &normal[0], &normal[1], &normal[2]);
+			temp_normals[normal_i][0] = normal[0];
+			temp_normals[normal_i][1] = normal[1];
+			temp_normals[normal_i][2] = normal[2];
+			normal_i++;
+		}
 		else if (strncmp(lineHeader, "f ", 2) == 0) {
-			int matches = sscanf(lineHeader + 2, "%d/%d %d/%d %d/%d", &vertexIndex[face_i][0], &uvIndex[face_i][0],
-					&vertexIndex[face_i][1], &uvIndex[face_i][1],
-					&vertexIndex[face_i][2], &uvIndex[face_i][2]);
+			int matches = sscanf(lineHeader + 2, "%d/%d/%d %d/%d/%d %d/%d/%d", &vertexIndex[face_i][0], &uvIndex[face_i][0], &normalIndex[face_i][0],
+					&vertexIndex[face_i][1], &uvIndex[face_i][1], &normalIndex[face_i][1],
+					&vertexIndex[face_i][2], &uvIndex[face_i][2], &normalIndex[face_i][2]);
 
-			if (!matches) {
+			if (matches != 9) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
 				longjmp(error, 1);
 			}
@@ -73,21 +85,25 @@ Model model_load(jmp_buf error, char *model_name) {
 			for (int i = 0; i < 3; i++) {
 				vertexIndex[face_i][i]--;
 				uvIndex[face_i][i]--;
+				normalIndex[face_i][i]--;
 			}
 
 			if (face_bst == NULL) {
-				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], indicy);
-				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0]);
-				memcpy(verts[indicy].vertices, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
+				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], normalIndex[face_i][0], indicy);
+
+				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], normalIndex[face_i][0]);
+				memcpy(verts[indicy].vertex, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
 				memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
+				memcpy(verts[indicy].normal, temp_normals[pointer->value.normal], 3 * sizeof(float));
 				indicy++;
 			}
 			for (int i = 0; i < 3; i++) {
-				if (!getnumber(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i])) {
-					insertnumber(&face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], indicy);
-					BST *pointer = getvalue(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i]);
-					memcpy(verts[indicy].vertices, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
+				if (!getnumber(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i])) {
+					insertnumber(&face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i], indicy);
+					BST *pointer = getvalue(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i]);
+					memcpy(verts[indicy].vertex, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
 					memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
+					memcpy(verts[indicy].normal, temp_normals[pointer->value.normal], 3 * sizeof(float));
 					indicy++;
 				}
 			}
@@ -99,7 +115,7 @@ Model model_load(jmp_buf error, char *model_name) {
 	unsigned int index2[face_i * 3];
 	for (int i = 0; i < face_i; i++) {
 		for (int j = 0; j < 3; j++) {
-			BST *pointer = getvalue(face_bst, vertexIndex[i][j], uvIndex[i][j]);
+			BST *pointer = getvalue(face_bst, vertexIndex[i][j], uvIndex[i][j], normalIndex[i][j]);
 			if (pointer != NULL) {
 				index2[i * 3 + j] = pointer->linked;
 			} else {
@@ -108,6 +124,7 @@ Model model_load(jmp_buf error, char *model_name) {
 		}
 	}
 
+	//print_tree(face_bst);
 	free_bst(&face_bst);
 
 
@@ -199,10 +216,12 @@ void model_send_to_gpu(State *state, Model *model) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(int), model->vertex_faces, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
