@@ -19,5 +19,5 @@ void main() {
 	float diff = max(dot(norm, lightDir), 0.1);
 	vec3 diffuse = diff * vec3(1, 1, 1);
 	vec3 result = (0.1 + diffuse);
-	fragColour = vec4(diffuse, 1) * texture(tex, TexCoord);
+	fragColour = vec4(result, 1) * texture(tex, TexCoord);
 }
