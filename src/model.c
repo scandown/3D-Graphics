@@ -65,6 +65,11 @@ Model model_load(jmp_buf error, char *model_name) {
 					&vertexIndex[face_i][1], &uvIndex[face_i][1],
 					&vertexIndex[face_i][2], &uvIndex[face_i][2]);
 
+			if (!matches) {
+				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
+				longjmp(error, 1);
+			}
+
 			for (int i = 0; i < 3; i++) {
 				vertexIndex[face_i][i]--;
 				uvIndex[face_i][i]--;
@@ -74,7 +79,7 @@ Model model_load(jmp_buf error, char *model_name) {
 				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], indicy);
 				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0]);
 				memcpy(verts[indicy].vertices, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
-				memcpy( verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
+				memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
 				indicy++;
 			}
 			for (int i = 0; i < 3; i++) {

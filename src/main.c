@@ -54,8 +54,7 @@ int main() {
 	view.translate(&view, (vec3){0, 0, -2});
 
 	setup_space(&projection, "projection", game.program);
-	glm_perspective(glm_rad(70), game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
-	projection.set_uniform(&projection);
+	//glm_perspective(glm_rad(70), game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
 
 	// camera move setup
 	glm_vec3_copy((vec3){0, 0, 3}, cam->pos);
@@ -82,7 +81,7 @@ int main() {
 		// quaternion stuff
 		vec4 result = {1, 0, 0, 0};
 		vec4 start = {0, 0, 0, 1};
-		vec4 end = {0.5, 0, 0, 0.5};
+		vec4 end = {0.25, 0.25, 0, 0.5};
 		static float t = 0;
 		quat_slerp(start, end, t, result);
 
@@ -104,6 +103,9 @@ int main() {
 		// binding
 		glBindTexture(GL_TEXTURE_2D, texture);
 
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100, projection.matrix);
+		projection.set_uniform(&projection);
+
 		// draw call
 		model_send_to_gpu(&game, &pen);
 		vec3 model_position = {0, 0, 0};
@@ -116,6 +118,7 @@ int main() {
 		model.set_uniform(&model);
 
 		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
+
 
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0.1, 0, 0};
@@ -143,6 +146,8 @@ int main() {
 
 	free(cube.vertices);
 	free(cube.vertex_faces);
+	free(pen.vertices);
+	free(pen.vertex_faces);
 
 
 	// free model data
