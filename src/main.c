@@ -37,7 +37,7 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model pen = model_load(error, "assets/pen.obj");
+	//Model pen = model_load(error, "assets/pen.obj");
 	Model cube = model_load(error, "assets/cube.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	
@@ -79,9 +79,9 @@ int main() {
 
 
 		// quaternion stuff
-		vec4 result = {1, 0, 0, 0};
-		vec4 start = {0, 0, 0, 1};
-		vec4 end = {0.25, 0.25, 0, 0.5};
+		vec4 result = {0, 0, 0, 1};
+		vec4 start = {1, 0, 0, 0};
+		vec4 end = {0.25, 0, 0.5, 0.25};
 		static float t = 0;
 		quat_slerp(start, end, t, result);
 
@@ -106,6 +106,7 @@ int main() {
 		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100, projection.matrix);
 		projection.set_uniform(&projection);
 
+		/*
 		// draw call
 		model_send_to_gpu(&game, &pen);
 		vec3 model_position = {0, 0, 0};
@@ -118,6 +119,7 @@ int main() {
 		model.set_uniform(&model);
 
 		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
+		*/
 
 
 		model_send_to_gpu(&game, &cube);
@@ -146,8 +148,10 @@ int main() {
 
 	free(cube.vertices);
 	free(cube.vertex_faces);
+	/*
 	free(pen.vertices);
 	free(pen.vertex_faces);
+	*/
 
 
 	// free model data

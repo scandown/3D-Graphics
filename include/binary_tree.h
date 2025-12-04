@@ -7,6 +7,7 @@
 typedef struct {
 	int vertex;
 	int texture;
+	int normal;
 } Val;
 
 typedef struct bst{
@@ -17,9 +18,9 @@ typedef struct bst{
 } BST;
 
 
-BST *createnode(float value, float value2, float linked_number);
-bool insertnumber(BST **rootptr, float value, float value2, float linked_number);
-bool getnumber(BST *rootptr, float value, float value2);
-BST *getvalue(BST *rootptr, float value, float value2);
+BST *createnode(int value, int value2, int value3, int linked_number);
+bool insertnumber(BST **rootptr, int value, int value2, int value3, int linked_number);
+bool getnumber(BST *rootptr, int value, int value2, int value3);
+BST *getvalue(BST *rootptr, int value, int value2, int value3);
 bool free_bst(BST **rootptr);
 void print_tree(BST *rootptr);
