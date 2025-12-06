@@ -40,7 +40,16 @@ int main() {
 	//Model pen = model_load(error, "assets/pen.obj");
 	Model cube = model_load(error, "assets/cube.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
+	unsigned int light_program = program_create("src/light_shaderlist.txt");
 	
+	/*
+	for (int i = 0; i < cube.vertex_size; i++) {
+		for (int j = 0; j < 8; j++) {
+			printf("%f,", cube.vertices[i * 8 + j]);
+		}
+		printf("\n");
+	}
+	*/
 
 
 
@@ -48,6 +57,9 @@ int main() {
 	// coordinate systems
 	// 
 	Space model, view, projection;
+	glm_mat4_identity(view.matrix);
+	glm_mat4_identity(model.matrix);
+	glm_mat4_identity(projection.matrix);
 	setup_space(&model, "model", game.program);
 
 	setup_space(&view, "view", game.program);
@@ -62,6 +74,10 @@ int main() {
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
 	cam->mask1 = 0;
 
+
+
+	// create VAO, VBO, EBO
+	create_buffers(&game);
 
 	while (!glfwWindowShouldClose(game.window))
 	{
@@ -123,34 +139,61 @@ int main() {
 		*/
 
 
+		glUseProgram(game.program);
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0.1, 0, 0};
 		//model.translate(&model, nmodel_position);
-		model.matrix[3][0] = 0;
+		model.matrix[3][0] = 3;
 		model.matrix[3][1] = 0;
 		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
+		view.set_uniform(&view);
 		glBindVertexArray(game.VAO);
+
+		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){6, 1, 0}, UNIFORM_FLOAT3);
 
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
 		uniform_send(&objectColor);
 		uniform_send(&lightColor);
+		uniform_send(&lightPos);
 
 
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
+
+
+
+
+		glUseProgram(light_program);
+
+		setup_space(&model, "model", light_program);
+		setup_space(&view, "view", light_program);
+		setup_space(&projection, "projection", light_program);
+
+		//projection.set_uniform(&projection);
+		//view.set_uniform(&view);
+		//camera_look(cam, cam->yaw, cam->pitch, &view);
+		//model.set_uniform(&model);
+
+
+
+		model.matrix[3][0] = 6;
+		model.matrix[3][1] = 1;
+		model.matrix[3][2] = 0;
+		model.matrix[3][3] = 1;
+		model.set_uniform(&model);
+		glBindVertexArray(game.VAO);
+		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(game.window);
 
 	}
 
 	// freeing unused stuff at end
-	glDeleteVertexArrays(1, &game.VAO);
-	glDeleteBuffers(1, &game.VBO);
-	glDeleteBuffers(1, &game.EBO);
+	delete_buffers(&game);
 
 	glDeleteProgram(game.program);
 

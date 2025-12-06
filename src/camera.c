@@ -41,9 +41,11 @@ void key_check(int *key) {
 
 		Groups2[i] = Groups[i][0] - Groups[i][1];
 
-		if ((*key < Groups[i+1][0]) && (*key >= Groups[i][0])) {
-			*key -= total_diff + 32;
-			*key += i;
+		if (i + 1 < 11) {
+			if ((*key < Groups[i+1][0]) && (*key >= Groups[i][0])) {
+				*key -= total_diff + 32;
+				*key += i;
+			}
 		}
 	}
 }
