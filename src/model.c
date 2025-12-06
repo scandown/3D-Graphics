@@ -18,6 +18,8 @@ Model model_load(jmp_buf error, char *model_name) {
 	}
 
 
+
+
 	// get file_size
 	fseek(fptr, 0L, SEEK_END);
 	long file_size = ftell(fptr);
@@ -25,7 +27,7 @@ Model model_load(jmp_buf error, char *model_name) {
 
 	float temp_vertices[10000][3] = {0};
 	float temp_uvs[10000][2] = {0};
-	float temp_normals[10000][2] = {0};
+	float temp_normals[10000][3] = {0};
 
 	const int num_elements = 8;
 
@@ -40,9 +42,11 @@ Model model_load(jmp_buf error, char *model_name) {
 	unsigned int uvIndex[10000][3] = {0};
 	unsigned int normalIndex[10000][3] = {0};
 	model_vals *verts = malloc(50000 * sizeof(model_vals));
+
+
+	char *lineHeader = NULL;
+	size_t size = 0;
 	while (1) {
-		char *lineHeader = NULL;
-		size_t size = 0;
 		int res = getline(&lineHeader, &size, fptr);
 
 		if (res == EOF) {
@@ -79,6 +83,10 @@ Model model_load(jmp_buf error, char *model_name) {
 
 			if (matches != 9) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
+				free(lineHeader);
+				free(verts);
+				free_bst(&face_bst);
+				fclose(fptr);
 				longjmp(error, 1);
 			}
 
@@ -109,9 +117,9 @@ Model model_load(jmp_buf error, char *model_name) {
 			}
 			face_i++;
 		}
-		free(lineHeader);
 
 	}
+	free(lineHeader);
 	unsigned int index2[face_i * 3];
 	for (int i = 0; i < face_i; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -200,13 +208,13 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 
 
 
-
-
-
-void model_send_to_gpu(State *state, Model *model) {
+void create_buffers(State *state) {
 	glGenVertexArrays(1, &state->VAO);
 	glGenBuffers(1, &state->VBO);
 	glGenBuffers(1, &state->EBO);
+}
+
+void model_send_to_gpu(State *state, Model *model) {
 
 	glBindVertexArray(state->VAO);
 
@@ -226,4 +234,10 @@ void model_send_to_gpu(State *state, Model *model) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+void delete_buffers(State *state) {
+	glDeleteVertexArrays(1, &state->VAO);
+	glDeleteBuffers(1, &state->VBO);
+	glDeleteBuffers(1, &state->EBO);
 }

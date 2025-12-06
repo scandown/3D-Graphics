@@ -88,76 +88,43 @@ int shader_validity_check(char ascii) {
 }
 
 char **get_shader_strings(char *shaders, int *size, long file_size) {
-	int shader_amount = 0;
 
-	// edge case for when first line has a shader file on it
-	shader_amount += shader_validity_check(shaders[0]);
-	for (int i = 0; i < file_size; i++) {
+	char *save_ptr = NULL;
+	// unmodified shader for later;
+	char *shader_copy = malloc(sizeof(char) * strlen(shaders));
+	strncpy(shader_copy, shaders, strlen(shaders));
+	char *token = strtok_r(shaders, "\n", &save_ptr);
+	
+	int shader_list_size = 0;
 
-		if (shaders[i+1] == '\0') {
-			break;
-		}
-
-		// check new line to see if you should check for shader files
-		if (shaders[i-1] == '\n') {
-			shader_amount += shader_validity_check(shaders[i]);
-		}
+	while (token != NULL) {
+		printf("%s\n", token);
+		token = strtok_r(NULL, "\n", &save_ptr);
+		shader_list_size++;
 	}
 
-	char **shader_list = malloc(shader_amount * sizeof(char*));
-	int index = 0;
 
-	for (int i = 0; i < file_size; i++) {
+	save_ptr = NULL;
+	char **shader_list = malloc(sizeof(char **) * shader_list_size);
 
-		if (shaders[i+1] == '\0') {
-			break;
-		}
-
-		if (i != 0) {
-			if (shaders[i-1] != '\n') {
-				continue;
-			}
-		}
-
-
-		if (shader_validity_check(shaders[i])) {
-			size_t string_space = 0;
-			
-			// go to end of the shader file name and declare amount of space required
-			int j = 0;
-			for (j = i; shaders[j] != '\n'; j++) {
-				string_space++;
-			}
-			// set the null terminator so strcpy copies to that point
-			shaders[j] = '\0';
-
-			shader_list[index] = malloc(string_space);
-			// even though strcpy is unsafe, I have declared how much space there is so its okay
-			strcpy(shader_list[index], shaders + i);
-			shaders[j] = '\n';
-
-			// set i so that it skips the null terminator
-			i = j;
-			index++;
-		}
+	token = strtok_r(shader_copy, "\n", &save_ptr);
+	int i = 0;
+	printf("%lu\n", strlen(shaders));
+	printf("%s YEAAA\n", token);
+	while (token != NULL) {
+		//printf("%s YEAAA\n", token);
+		shader_list[i] = malloc(sizeof(char *) * strlen(token));
+		strcpy(shader_list[i], token);
+		token = strtok_r(NULL, "\n", &save_ptr);
+		i++;
 	}
-	*size = index;
+	free(shader_copy);
+
+	*size = shader_list_size;
 
 	return shader_list;
 }
 
-/*
-	const char *shaders = load_shader_list("src/shaderList.txt");
-	unsigned int program = program_create(shaders);
-	free(shaders);
-
-
-
-	*/
-
-
-// v:red.glsl
-// f:fragment.glsl
 
 
 int program_create(char *shader_list_source) {
@@ -175,7 +142,7 @@ int program_create(char *shader_list_source) {
 
 	for (int i = 0; i < size; i++) {
 		long n_size;
-		const char *shaderSource = loadShader(shader_list[i] + 2, &n_size);
+		char *shaderSource = loadShader(shader_list[i] + 2, &n_size);
 		char shaderType = shader_list[i][0];
 
 		unsigned int shader;
@@ -193,6 +160,13 @@ int program_create(char *shader_list_source) {
 		}
 		if (type == -1) {
 			printf("Invalid type %c\n", shaderType);
+			for (int i = 0; i < size; i++) {
+				printf("%c\n", shader_list[i][0]);
+				free(shader_list[i]);
+			}
+			free(shader_list);
+			free(shaders);
+			free(shaderSource);
 			return -1;
 		}
 
@@ -200,11 +174,19 @@ int program_create(char *shader_list_source) {
 		int success = shaderErrorCheck(shader);
 
 		if (!(success)) {
+			for (int i = 0; i < size; i++) {
+				printf("%c\n", shader_list[i][0]);
+				free(shader_list[i]);
+			}
+			free(shader_list);
+			free(shaderSource);
+			free(shaders);
 			return 1;
 		}
 
 		glAttachShader(program, shader);
 		glDeleteShader(shader);
+		free(shaderSource);
 	}
 	glLinkProgram(program);
 	
@@ -217,5 +199,6 @@ int program_create(char *shader_list_source) {
 		free(shader_list[i]);
 	}
 	free(shader_list);
+	free(shaders);
 	return program;
 }

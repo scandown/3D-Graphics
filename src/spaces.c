@@ -15,7 +15,6 @@ void space_set_uniform(Space *space) {
 
 
 void setup_space(Space *space, char *name, int program) {
-       glm_mat4_identity(space->matrix);
        space->location = glGetUniformLocation(program, name);
 
        space->scale = space_scale;
