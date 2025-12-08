@@ -114,6 +114,7 @@ void camera_movement(Camera *cam) {
 				amount_copy += 64;
 				key_check_inv(&amount_copy);
 			}
+			printf("%d\n", amount_copy);
 
 			switch (amount_copy){
 				case GLFW_KEY_W:
