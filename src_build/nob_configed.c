@@ -4,7 +4,7 @@
 #include "nob.h"
 #include "config.h"
 #include "folders.h"
-#define mem_check
+//#define mem_check
 
 int main(void)
 {
