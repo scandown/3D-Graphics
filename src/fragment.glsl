@@ -1,6 +1,11 @@
 #version 330 core
 out vec4 fragColour;
 in vec3 pos;
+in vec2 TexCoord;
+
+
+
+uniform sampler2D tex;
 
 uniform vec2 point; // line passes through origin (0,0) and this point
 
@@ -19,9 +24,10 @@ void main() {
 
 
 	if (d < LINE_THICKNESS && sign(pos.x) == sign(point.x) && sign(pos.y) == sign(point.y)) {
-		fragColour = vec4(0, distance, 0, 1);
+		fragColour = vec4(0, distance, 0, 1) * texture(tex, TexCoord);
 	} else {
-		fragColour = vec4(1, 0, 0, 1);
+		fragColour = vec4(1, 0, 0, 1) * texture(tex, TexCoord);
 	}
 }
 
+	//fragColour = vec4(result, 1) * texture(tex, TexCoord);
