@@ -137,7 +137,7 @@ int main() {
 		view.set_uniform(&view);
 		glBindVertexArray(game.VAO);
 
-		Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
+		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){6, 2, 0}, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
