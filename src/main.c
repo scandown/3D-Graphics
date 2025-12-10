@@ -56,6 +56,7 @@ int main() {
 
 	// coordinate systems
 	// 
+	// setup_spaces(&model, &view, &projection);
 	Space model, view, projection;
 	glm_mat4_identity(view.matrix);
 	glm_mat4_identity(model.matrix);
@@ -95,21 +96,6 @@ int main() {
 
 
 		// quaternion stuff
-		vec4 result = {0, 0, 0, 1};
-		vec4 start = {1, 0, 0, 0};
-		vec4 end = {0.25, 0, 0.5, 0.25};
-		static float t = 0;
-		t = 0;
-		quat_slerp(start, end, t, result);
-
-		static float amount = 0.001;
-		t += amount;
-
-		if (t >= 1 || t <= 0) {
-			amount *= -1;
-		}
-		Uniform rotation = uniform_init(&game, "rot", &result, UNIFORM_FLOAT4);
-		uniform_send(&rotation);
 
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
@@ -141,7 +127,7 @@ int main() {
 
 		glUseProgram(game.program);
 		model_send_to_gpu(&game, &cube);
-		vec3 nmodel_position = {0.1, 0, 0};
+		vec3 nmodel_position = {0, 0, 0};
 		//model.translate(&model, nmodel_position);
 		model.matrix[3][0] = 3;
 		model.matrix[3][1] = 0;
@@ -151,8 +137,7 @@ int main() {
 		view.set_uniform(&view);
 		glBindVertexArray(game.VAO);
 
-		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){6, 1, 0}, UNIFORM_FLOAT3);
-
+		Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
