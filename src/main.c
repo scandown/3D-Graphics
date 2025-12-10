@@ -129,7 +129,7 @@ int main() {
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0, 0, 0};
 		//model.translate(&model, nmodel_position);
-		model.matrix[3][0] = 3;
+		model.matrix[3][0] = 1;
 		model.matrix[3][1] = 0;
 		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
@@ -137,7 +137,20 @@ int main() {
 		view.set_uniform(&view);
 		glBindVertexArray(game.VAO);
 
-		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){6, 2, 0}, UNIFORM_FLOAT3);
+		static float x = 0;
+		static float y = 0;
+
+		float time = glfwGetTime();
+
+		// sin(theta) = o;
+		// cos(theta) = a;
+		//
+		// theta = acos(a);
+		//
+		x = cos(time) * 10;
+		y = sin(time) * 10;
+
+		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, 0}, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
@@ -165,8 +178,8 @@ int main() {
 
 
 
-		model.matrix[3][0] = 6;
-		model.matrix[3][1] = 1;
+		model.matrix[3][0] = x;
+		model.matrix[3][1] = y;
 		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
