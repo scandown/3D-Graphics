@@ -150,13 +150,17 @@ int main() {
 		x = cos(time) * 10;
 		y = sin(time) * 10;
 
-		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, 0}, UNIFORM_FLOAT3);
+		//Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, 0}, UNIFORM_FLOAT3);
+		Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
+
+		Uniform viewPos = uniform_init(&game, "view_pos", cam->pos, UNIFORM_FLOAT3);
 
 		uniform_send(&objectColor);
 		uniform_send(&lightColor);
 		uniform_send(&lightPos);
+		uniform_send(&viewPos);
 
 
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
