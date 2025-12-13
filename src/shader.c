@@ -54,13 +54,13 @@ int shaderErrorCheck(unsigned int shader) {
 
 		switch (type) {
 			case GL_FRAGMENT_SHADER:
-				printf("fragment: %s\n", errorLog);
+				fprintf(stderr, "fragment: %s\n", errorLog);
 				break;
 			case GL_VERTEX_SHADER:
-				printf("vertex: %s\n", errorLog);
+				fprintf(stderr, "vertex: %s\n", errorLog);
 				break;
 			default:
-				printf("%s\n", errorLog);
+				fprintf(stderr, "%s\n", errorLog);
 				break;
 		}
 
@@ -98,7 +98,6 @@ char **get_shader_strings(char *shaders, int *size, long file_size) {
 	int shader_list_size = 0;
 
 	while (token != NULL) {
-		printf("%s\n", token);
 		token = strtok_r(NULL, "\n", &save_ptr);
 		shader_list_size++;
 	}
@@ -109,10 +108,7 @@ char **get_shader_strings(char *shaders, int *size, long file_size) {
 
 	token = strtok_r(shader_copy, "\n", &save_ptr);
 	int i = 0;
-	printf("%lu\n", strlen(shaders));
-	printf("%s YEAAA\n", token);
 	while (token != NULL) {
-		//printf("%s YEAAA\n", token);
 		shader_list[i] = malloc(sizeof(char *) * strlen(token));
 		strcpy(shader_list[i], token);
 		token = strtok_r(NULL, "\n", &save_ptr);
@@ -195,7 +191,6 @@ int program_create(char *shader_list_source) {
 
 	// free up all the strings
 	for (int i = 0; i < size; i++) {
-		printf("%c\n", shader_list[i][0]);
 		free(shader_list[i]);
 	}
 	free(shader_list);
