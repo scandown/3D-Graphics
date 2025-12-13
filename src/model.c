@@ -146,7 +146,6 @@ Model model_load(jmp_buf error, char *model_name) {
 	
 	model.vertex_faces = vertex_faces;
 	model.vertex_face_size = sizeof(index2) / sizeof(unsigned int);
-	printf("%d\n", model.vertex_face_size);
 
 	fclose(fptr);
 	return model;
@@ -222,7 +221,7 @@ void model_send_to_gpu(State *state, Model *model) {
 	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(int), model->vertex_faces, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);

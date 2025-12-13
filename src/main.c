@@ -37,7 +37,7 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	//Model pen = model_load(error, "assets/pen.obj");
+	Model pen = model_load(error, "assets/pen.obj");
 	Model cube = model_load(error, "assets/cube.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
@@ -109,7 +109,13 @@ int main() {
 		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100, projection.matrix);
 		projection.set_uniform(&projection);
 
-		/*
+
+
+		glUseProgram(game.program);
+		//
+		//
+
+
 		// draw call
 		model_send_to_gpu(&game, &pen);
 		vec3 model_position = {0, 0, 0};
@@ -122,10 +128,14 @@ int main() {
 		model.set_uniform(&model);
 
 		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
-		*/
 
 
-		glUseProgram(game.program);
+
+
+
+
+
+
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0, 0, 0};
 		//model.translate(&model, nmodel_position);
@@ -150,10 +160,10 @@ int main() {
 		x = cos(time) * 10;
 		y = sin(time) * 10;
 
-		//Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, 0}, UNIFORM_FLOAT3);
-		Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
-		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 0.5, 0.31}, UNIFORM_FLOAT3);
-		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
+		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, x}, UNIFORM_FLOAT3);
+		//Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
+		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 1.0, 1.00}, UNIFORM_FLOAT3);
+		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 0.0, 1.0}, UNIFORM_FLOAT3);
 
 		Uniform viewPos = uniform_init(&game, "view_pos", cam->pos, UNIFORM_FLOAT3);
 
@@ -184,7 +194,7 @@ int main() {
 
 		model.matrix[3][0] = x;
 		model.matrix[3][1] = y;
-		model.matrix[3][2] = 0;
+		model.matrix[3][2] = x;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
 		glBindVertexArray(game.VAO);
