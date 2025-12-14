@@ -6,6 +6,18 @@ typedef struct {
 	float normal[3];
 } model_vals;
 
+typedef struct {
+	unsigned int *items;
+	size_t count;
+	size_t capacity;
+} Indices_Array;
+
+typedef struct {
+	float *items;
+	size_t count;
+	size_t capacity;
+} Array;
+
 Model model_load(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
@@ -25,9 +37,9 @@ Model model_load(jmp_buf error, char *model_name) {
 	long file_size = ftell(fptr);
 	rewind(fptr);
 
-	float temp_vertices[10000][3] = {0};
-	float temp_uvs[10000][2] = {0};
-	float temp_normals[10000][3] = {0};
+	Array temp_vertices[3] = {0};
+	Array temp_uvs[2] = {0};
+	Array temp_normals[3] = {0};
 
 	const int num_elements = 8;
 
@@ -38,9 +50,10 @@ Model model_load(jmp_buf error, char *model_name) {
 	int normal_i = 0;
 	int face_i = 0;
 	int indicy = 0;
-	unsigned int vertexIndex[10000][3] = {0};
-	unsigned int uvIndex[10000][3] = {0};
-	unsigned int normalIndex[10000][3] = {0};
+
+	Indices_Array vertexIndex[3] = {0};
+	Indices_Array uvIndex[3] = {0};
+	Indices_Array normalIndex[3] = {0};
 	model_vals *verts = malloc(50000 * sizeof(model_vals));
 
 
@@ -56,30 +69,34 @@ Model model_load(jmp_buf error, char *model_name) {
 		if (strncmp(lineHeader, "v ", 2) == 0) {
 			float vertex[3];
 			sscanf(lineHeader + 2, "%f %f %f", &vertex[0], &vertex[1], &vertex[2]);
-			temp_vertices[vertex_i][0] = vertex[0];
-			temp_vertices[vertex_i][1] = vertex[1];
-			temp_vertices[vertex_i][2] = vertex[2];
+			da_push(temp_vertices[0], vertex[0]);
+			da_push(temp_vertices[1], vertex[1]);
+			da_push(temp_vertices[2], vertex[2]);
 			vertex_i++;
 		}
 		else if (strncmp(lineHeader, "vt", 2) == 0) {
 			float uv[2];
 			sscanf(lineHeader + 2, "%f %f", &uv[0], &uv[1]);
-			temp_uvs[texture_i][0] = uv[0];
-			temp_uvs[texture_i][1] = uv[1];
+			da_push(temp_uvs[0], uv[0]);
+			da_push(temp_uvs[1], uv[1]);
 			texture_i++;
 		}
 		else if (strncmp(lineHeader, "vn", 2) == 0) {
 			float normal[3];
 			sscanf(lineHeader + 2, "%f %f %f", &normal[0], &normal[1], &normal[2]);
-			temp_normals[normal_i][0] = normal[0];
-			temp_normals[normal_i][1] = normal[1];
-			temp_normals[normal_i][2] = normal[2];
+			da_push(temp_normals[0], normal[0]);
+			da_push(temp_normals[1], normal[1]);
+			da_push(temp_normals[2], normal[2]);
 			normal_i++;
 		}
 		else if (strncmp(lineHeader, "f ", 2) == 0) {
-			int matches = sscanf(lineHeader + 2, "%d/%d/%d %d/%d/%d %d/%d/%d", &vertexIndex[face_i][0], &uvIndex[face_i][0], &normalIndex[face_i][0],
-					&vertexIndex[face_i][1], &uvIndex[face_i][1], &normalIndex[face_i][1],
-					&vertexIndex[face_i][2], &uvIndex[face_i][2], &normalIndex[face_i][2]);
+			unsigned int v_index[3];
+			unsigned int uv_index[3];
+			unsigned int vn_index[3];
+			int matches = sscanf(lineHeader + 2, "%d/%d/%d %d/%d/%d %d/%d/%d", &v_index[0], &uv_index[0], &vn_index[0],
+					&v_index[1], &uv_index[1], &vn_index[1],
+					&v_index[2], &uv_index[2], &vn_index[2]);
+
 
 			if (matches != 9) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
@@ -91,27 +108,35 @@ Model model_load(jmp_buf error, char *model_name) {
 			}
 
 			for (int i = 0; i < 3; i++) {
-				vertexIndex[face_i][i]--;
-				uvIndex[face_i][i]--;
-				normalIndex[face_i][i]--;
+				da_push(vertexIndex[i], v_index[i]-1);
+				da_push(uvIndex[i], uv_index[i]-1);
+				da_push(normalIndex[i], vn_index[i]-1);
 			}
 
 			if (face_bst == NULL) {
-				insertnumber(&face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], normalIndex[face_i][0], indicy);
+				insertnumber(&face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i], indicy);
 
-				BST *pointer = getvalue(face_bst, vertexIndex[face_i][0], uvIndex[face_i][0], normalIndex[face_i][0]);
-				memcpy(verts[indicy].vertex, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
-				memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
-				memcpy(verts[indicy].normal, temp_normals[pointer->value.normal], 3 * sizeof(float));
+				BST *pointer = getvalue(face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i]);
+				for (int i = 0; i < 3; i++) {
+					verts[indicy].vertex[i] = temp_vertices[i].items[pointer->value.vertex];
+					verts[indicy].normal[i] = temp_normals[i].items[pointer->value.normal];
+				}
+				for (int i = 0; i < 2; i++) {
+					verts[indicy].texture[i] = temp_uvs[i].items[pointer->value.texture];
+				}
 				indicy++;
 			}
 			for (int i = 0; i < 3; i++) {
-				if (!getnumber(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i])) {
-					insertnumber(&face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i], indicy);
-					BST *pointer = getvalue(face_bst, vertexIndex[face_i][i], uvIndex[face_i][i], normalIndex[face_i][i]);
-					memcpy(verts[indicy].vertex, temp_vertices[pointer->value.vertex], 3 * sizeof(float));
-					memcpy(verts[indicy].texture, temp_uvs[pointer->value.texture], 2 * sizeof(float));
-					memcpy(verts[indicy].normal, temp_normals[pointer->value.normal], 3 * sizeof(float));
+				if (!getnumber(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i])) {
+					insertnumber(&face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i], indicy);
+					BST *pointer = getvalue(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i]);
+					for (int i = 0; i < 3; i++) {
+						verts[indicy].vertex[i] = temp_vertices[i].items[pointer->value.vertex];
+						verts[indicy].normal[i] = temp_normals[i].items[pointer->value.normal];
+					}
+					for (int i = 0; i < 2; i++) {
+						verts[indicy].texture[i] = temp_uvs[i].items[pointer->value.texture];
+					}
 					indicy++;
 				}
 			}
@@ -123,7 +148,7 @@ Model model_load(jmp_buf error, char *model_name) {
 	unsigned int index2[face_i * 3];
 	for (int i = 0; i < face_i; i++) {
 		for (int j = 0; j < 3; j++) {
-			BST *pointer = getvalue(face_bst, vertexIndex[i][j], uvIndex[i][j], normalIndex[i][j]);
+			BST *pointer = getvalue(face_bst, vertexIndex[j].items[i], uvIndex[j].items[i], normalIndex[j].items[i]);
 			if (pointer != NULL) {
 				index2[i * 3 + j] = pointer->linked;
 			} else {
@@ -132,8 +157,6 @@ Model model_load(jmp_buf error, char *model_name) {
 		}
 	}
 
-	//print_tree(face_bst);
-	free_bst(&face_bst);
 
 
 	model.location = model_name;
@@ -146,6 +169,24 @@ Model model_load(jmp_buf error, char *model_name) {
 	
 	model.vertex_faces = vertex_faces;
 	model.vertex_face_size = sizeof(index2) / sizeof(unsigned int);
+
+
+
+
+	for (int i = 0; i < 3; i++) {
+		free(temp_vertices[i].items);
+		free(temp_normals[i].items);
+		free(vertexIndex[i].items);
+		free(uvIndex[i].items);
+		free(normalIndex[i].items);
+	}
+	for (int i = 0; i < 2; i++) {
+		free(temp_uvs[i].items);
+	}
+
+	free_bst(&face_bst);
+	
+
 
 	fclose(fptr);
 	return model;
