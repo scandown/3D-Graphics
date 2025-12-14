@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "uniform.h"
 #include "texture.h"
+#include "dynamic_array.h"
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -52,6 +53,13 @@ int main() {
 	*/
 
 
+	Array yes = {0};
+
+	push(&yes, 4);
+
+	printf("%f\n", yes.items[0]);
+
+	free(yes.items);
 
 
 	// coordinate systems
