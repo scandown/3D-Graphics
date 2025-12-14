@@ -20,6 +20,12 @@ void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity
 void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+typedef struct {
+	float *items;
+	size_t count;
+	size_t capacity;
+} Array;
+
 
 
 // access camera from input callback
@@ -43,23 +49,7 @@ int main() {
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
 	
-	/*
-	for (int i = 0; i < cube.vertex_size; i++) {
-		for (int j = 0; j < 8; j++) {
-			printf("%f,", cube.vertices[i * 8 + j]);
-		}
-		printf("\n");
-	}
-	*/
 
-
-	Array yes = {0};
-
-	push(&yes, 4);
-
-	printf("%f\n", yes.items[0]);
-
-	free(yes.items);
 
 
 	// coordinate systems
@@ -75,7 +65,6 @@ int main() {
 	view.translate(&view, (vec3){0, 0, -2});
 
 	setup_space(&projection, "projection", game.program);
-	//glm_perspective(glm_rad(70), game.SCR_WIDTH/game.SCR_HEIGHT, 0.1, 100, projection.matrix);
 
 	// camera move setup
 	glm_vec3_copy((vec3){0, 0, 3}, cam->pos);
@@ -120,8 +109,6 @@ int main() {
 
 
 		glUseProgram(game.program);
-		//
-		//
 
 
 		// draw call
@@ -146,7 +133,6 @@ int main() {
 
 		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0, 0, 0};
-		//model.translate(&model, nmodel_position);
 		model.matrix[3][0] = 1;
 		model.matrix[3][1] = 0;
 		model.matrix[3][2] = 0;
@@ -160,16 +146,10 @@ int main() {
 
 		float time = glfwGetTime();
 
-		// sin(theta) = o;
-		// cos(theta) = a;
-		//
-		// theta = acos(a);
-		//
 		x = cos(time) * 10;
 		y = sin(time) * 10;
 
 		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, x}, UNIFORM_FLOAT3);
-		//Uniform lightPos = uniform_init(&game, "lightPos", cam->pos, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 1.0, 1.00}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 0.0, 1.0}, UNIFORM_FLOAT3);
 
@@ -193,11 +173,6 @@ int main() {
 		setup_space(&view, "view", light_program);
 		setup_space(&projection, "projection", light_program);
 
-		//projection.set_uniform(&projection);
-		//view.set_uniform(&view);
-		//camera_look(cam, cam->yaw, cam->pitch, &view);
-		//model.set_uniform(&model);
-
 
 
 		model.matrix[3][0] = x;
@@ -219,10 +194,8 @@ int main() {
 
 	free(cube.vertices);
 	free(cube.vertex_faces);
-	/*
 	free(pen.vertices);
 	free(pen.vertex_faces);
-	*/
 
 
 	// free model data

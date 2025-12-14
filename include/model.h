@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <setjmp.h>
+
 #include "glad/glad.h"
 #include "state.h"
 #include "binary_tree.h"
+#include "dynamic_array.h"
 
 
 typedef struct {
