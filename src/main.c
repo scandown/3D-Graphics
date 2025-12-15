@@ -46,6 +46,7 @@ int main() {
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
 	Model pen = model_load(error, "assets/pen.obj");
 	Model cube = model_load(error, "assets/cube.obj");
+	Model plane = model_load(error, "assets/plane.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
 	
@@ -88,8 +89,20 @@ int main() {
 		cursor_position_callback(game.window, cam, 0.10);
 		camera_look(cam, cam->yaw, cam->pitch, &view);
 
+		const int ground_level = 0;
+		static float vel = 0;
+		if (cam->pos[1] <= ground_level) {
+			cam->pos[1] = ground_level;
+			vel = 0;
+		}
+
+		if (cam->pos[1] > ground_level) {
+			cam->pos[1] -= vel;
+			vel += 0.0001;
+		}
 		glfwSetKeyCallback(game.window, key_callback);
 		camera_movement(cam);
+
 
 
 		// quaternion stuff
@@ -182,6 +195,18 @@ int main() {
 		model.set_uniform(&model);
 		glBindVertexArray(game.VAO);
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
+
+		glUseProgram(game.program);
+
+		model_send_to_gpu(&game, &plane);
+
+		model.matrix[3][0] = 1;
+		model.matrix[3][1] = -1;
+		model.matrix[3][2] = 10;
+		model.matrix[3][3] = 1;
+		model.set_uniform(&model);
+		glBindVertexArray(game.VAO);
+		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(game.window);
 
