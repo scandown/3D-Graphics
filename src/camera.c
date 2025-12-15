@@ -101,6 +101,7 @@ void camera_movement(Camera *cam) {
         vec3 cameraMove;
         vec3 cameraRight;
 
+	vec3 cameraForward;
 	for (int i = 0; i < 64; i++) {
 		mask = mask << 1;	
 		amount++;
@@ -116,9 +117,14 @@ void camera_movement(Camera *cam) {
 			}
 
 			switch (amount_copy){
+				vec3 front_temp;
 				case GLFW_KEY_W:
-					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
-					glm_vec3_add(cam->pos, cameraMove, cam->pos);
+					glm_vec3_copy(cam->front, front_temp);
+					front_temp[1] = 0;
+
+					glm_vec3_scale(front_temp, cameraSpeed, cameraForward);
+
+					glm_vec3_add(cam->pos, cameraForward, cam->pos);
 					break;
 				case GLFW_KEY_A:
 					glm_vec3_cross(cam->front, cam->up, cameraRight);
@@ -128,8 +134,12 @@ void camera_movement(Camera *cam) {
 					glm_vec3_sub(cam->pos, cameraRight, cam->pos);
 					break;
 				case GLFW_KEY_S:
-					glm_vec3_scale(cam->front, cameraSpeed, cameraMove);
-					glm_vec3_sub(cam->pos, cameraMove, cam->pos);
+					glm_vec3_copy(cam->front, front_temp);
+					front_temp[1] = 0;
+
+					glm_vec3_scale(front_temp, cameraSpeed, cameraForward);
+
+					glm_vec3_sub(cam->pos, cameraForward, cam->pos);
 					break;
 				case GLFW_KEY_D:
 					glm_vec3_cross(cam->front, cam->up, cameraRight);
@@ -142,7 +152,8 @@ void camera_movement(Camera *cam) {
 					cam->pos[1] += cameraSpeed;
 					break;
 				case GLFW_KEY_LEFT_SHIFT:
-					cam->pos[1] -= cameraSpeed;
+					//cam->pos[1] -= cameraSpeed;
+					cam->pos[1] = 10;
 					break;
 				default:
 					break;
