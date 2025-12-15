@@ -1,10 +1,5 @@
 #include "model.h"
 
-typedef struct {
-	float vertex[3];
-	float texture[2];
-	float normal[3];
-} model_vals;
 
 typedef struct {
 	unsigned int *items;
@@ -17,6 +12,7 @@ typedef struct {
 	size_t count;
 	size_t capacity;
 } Array;
+
 
 Model model_load(jmp_buf error, char *model_name) {
 	Model model;
@@ -54,7 +50,7 @@ Model model_load(jmp_buf error, char *model_name) {
 	Indices_Array vertexIndex[3] = {0};
 	Indices_Array uvIndex[3] = {0};
 	Indices_Array normalIndex[3] = {0};
-	model_vals *verts = malloc(50000 * sizeof(model_vals));
+	Array verts = {0};
 
 
 	char *lineHeader = NULL;
@@ -69,24 +65,24 @@ Model model_load(jmp_buf error, char *model_name) {
 		if (strncmp(lineHeader, "v ", 2) == 0) {
 			float vertex[3];
 			sscanf(lineHeader + 2, "%f %f %f", &vertex[0], &vertex[1], &vertex[2]);
-			da_push(temp_vertices[0], vertex[0]);
-			da_push(temp_vertices[1], vertex[1]);
-			da_push(temp_vertices[2], vertex[2]);
+			DA_PUSH(temp_vertices[0], vertex[0]);
+			DA_PUSH(temp_vertices[1], vertex[1]);
+			DA_PUSH(temp_vertices[2], vertex[2]);
 			vertex_i++;
 		}
 		else if (strncmp(lineHeader, "vt", 2) == 0) {
 			float uv[2];
 			sscanf(lineHeader + 2, "%f %f", &uv[0], &uv[1]);
-			da_push(temp_uvs[0], uv[0]);
-			da_push(temp_uvs[1], uv[1]);
+			DA_PUSH(temp_uvs[0], uv[0]);
+			DA_PUSH(temp_uvs[1], uv[1]);
 			texture_i++;
 		}
 		else if (strncmp(lineHeader, "vn", 2) == 0) {
 			float normal[3];
 			sscanf(lineHeader + 2, "%f %f %f", &normal[0], &normal[1], &normal[2]);
-			da_push(temp_normals[0], normal[0]);
-			da_push(temp_normals[1], normal[1]);
-			da_push(temp_normals[2], normal[2]);
+			DA_PUSH(temp_normals[0], normal[0]);
+			DA_PUSH(temp_normals[1], normal[1]);
+			DA_PUSH(temp_normals[2], normal[2]);
 			normal_i++;
 		}
 		else if (strncmp(lineHeader, "f ", 2) == 0) {
@@ -101,16 +97,16 @@ Model model_load(jmp_buf error, char *model_name) {
 			if (matches != 9) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
 				free(lineHeader);
-				free(verts);
+				free(verts.items);
 				free_bst(&face_bst);
 				fclose(fptr);
 				longjmp(error, 1);
 			}
 
 			for (int i = 0; i < 3; i++) {
-				da_push(vertexIndex[i], v_index[i]-1);
-				da_push(uvIndex[i], uv_index[i]-1);
-				da_push(normalIndex[i], vn_index[i]-1);
+				DA_PUSH(vertexIndex[i], v_index[i]-1);
+				DA_PUSH(uvIndex[i], uv_index[i]-1);
+				DA_PUSH(normalIndex[i], vn_index[i]-1);
 			}
 
 			if (face_bst == NULL) {
@@ -118,11 +114,13 @@ Model model_load(jmp_buf error, char *model_name) {
 
 				BST *pointer = getvalue(face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i]);
 				for (int i = 0; i < 3; i++) {
-					verts[indicy].vertex[i] = temp_vertices[i].items[pointer->value.vertex];
-					verts[indicy].normal[i] = temp_normals[i].items[pointer->value.normal];
+					DA_PUSH(verts, temp_vertices[i].items[pointer->value.vertex]);
 				}
 				for (int i = 0; i < 2; i++) {
-					verts[indicy].texture[i] = temp_uvs[i].items[pointer->value.texture];
+					DA_PUSH(verts, temp_uvs[i].items[pointer->value.texture]);
+				}
+				for (int i = 0; i < 3; i++) {
+					DA_PUSH(verts, temp_normals[i].items[pointer->value.normal]);
 				}
 				indicy++;
 			}
@@ -131,11 +129,13 @@ Model model_load(jmp_buf error, char *model_name) {
 					insertnumber(&face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i], indicy);
 					BST *pointer = getvalue(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i]);
 					for (int i = 0; i < 3; i++) {
-						verts[indicy].vertex[i] = temp_vertices[i].items[pointer->value.vertex];
-						verts[indicy].normal[i] = temp_normals[i].items[pointer->value.normal];
+						DA_PUSH(verts, temp_vertices[i].items[pointer->value.vertex]);
 					}
 					for (int i = 0; i < 2; i++) {
-						verts[indicy].texture[i] = temp_uvs[i].items[pointer->value.texture];
+						DA_PUSH(verts, temp_uvs[i].items[pointer->value.texture]);
+					}
+					for (int i = 0; i < 3; i++) {
+						DA_PUSH(verts, temp_normals[i].items[pointer->value.normal]);
 					}
 					indicy++;
 				}
@@ -160,7 +160,7 @@ Model model_load(jmp_buf error, char *model_name) {
 
 
 	model.location = model_name;
-	model.vertices = (float *)verts;
+	model.vertices = (float *)verts.items;
 	model.vertex_size = indicy * num_elements;
 
 

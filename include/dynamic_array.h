@@ -4,8 +4,7 @@
 #include <stdlib.h>
 
 
-
-#define da_push(arr, number) \
+#define DA_PUSH(arr, number) \
 	do { \
 	if (arr.count >= arr.capacity) { \
 		if (arr.capacity == 0) { \
