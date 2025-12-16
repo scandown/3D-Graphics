@@ -16,6 +16,10 @@ typedef struct {
 	int vertex_size;
 	int vertex_face_size;
 	char *location;
+
+	unsigned int VAO;
+	unsigned int VBO;
+	unsigned int EBO;
 } Model;
 
 void string_search_vertex_point(int *i,float *array, char *line);
@@ -28,6 +32,6 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 int length_to_token(char *src, char token);
 
 Model model_load(jmp_buf error, char *model_name);
-void create_buffers(State *state);
-void model_send_to_gpu(State *state, Model *model);
-void delete_buffers(State *state);
+void create_buffers(Model *model);
+void model_send_to_gpu(Model *model);
+void delete_buffers(Model *model);

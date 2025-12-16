@@ -248,20 +248,20 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 
 
 
-void create_buffers(State *state) {
-	glGenVertexArrays(1, &state->VAO);
-	glGenBuffers(1, &state->VBO);
-	glGenBuffers(1, &state->EBO);
+void create_buffers(Model *model) {
+	glGenVertexArrays(1, &model->VAO);
+	glGenBuffers(1, &model->VBO);
+	glGenBuffers(1, &model->EBO);
 }
 
-void model_send_to_gpu(State *state, Model *model) {
+void model_send_to_gpu(Model *model) {
 
-	glBindVertexArray(state->VAO);
+	glBindVertexArray(model->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, state->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
 	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
@@ -276,8 +276,8 @@ void model_send_to_gpu(State *state, Model *model) {
 	glBindVertexArray(0);
 }
 
-void delete_buffers(State *state) {
-	glDeleteVertexArrays(1, &state->VAO);
-	glDeleteBuffers(1, &state->VBO);
-	glDeleteBuffers(1, &state->EBO);
+void delete_buffers(Model *model) {
+	glDeleteVertexArrays(1, &model->VAO);
+	glDeleteBuffers(1, &model->VBO);
+	glDeleteBuffers(1, &model->EBO);
 }
