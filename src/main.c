@@ -74,9 +74,13 @@ int main() {
 	cam->mask1 = 0;
 
 
+	create_buffers(&cube);
+	model_send_to_gpu(&cube);
+	create_buffers(&pen);
+	model_send_to_gpu(&pen);
+	create_buffers(&plane);
+	model_send_to_gpu(&plane);
 
-	// create VAO, VBO, EBO
-	create_buffers(&game);
 
 	while (!glfwWindowShouldClose(game.window))
 	{
@@ -125,16 +129,15 @@ int main() {
 
 
 		// draw call
-		model_send_to_gpu(&game, &pen);
 		vec3 model_position = {0, 0, 0};
 		model.translate(&model, model_position);
-		glBindVertexArray(game.VAO);
 		model.matrix[3][0] = 0;
 		model.matrix[3][1] = 0;
 		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
 
+		glBindVertexArray(pen.VAO);
 		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
@@ -144,7 +147,6 @@ int main() {
 
 
 
-		model_send_to_gpu(&game, &cube);
 		vec3 nmodel_position = {0, 0, 0};
 		model.matrix[3][0] = 1;
 		model.matrix[3][1] = 0;
@@ -152,7 +154,7 @@ int main() {
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
 		view.set_uniform(&view);
-		glBindVertexArray(game.VAO);
+		glBindVertexArray(cube.VAO);
 
 		static float x = 0;
 		static float y = 0;
@@ -164,7 +166,7 @@ int main() {
 
 		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, x}, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 1.0, 1.00}, UNIFORM_FLOAT3);
-		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 0.0, 1.0}, UNIFORM_FLOAT3);
+		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
 		Uniform viewPos = uniform_init(&game, "view_pos", cam->pos, UNIFORM_FLOAT3);
 
@@ -176,6 +178,14 @@ int main() {
 
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
+
+		model.matrix[3][0] = 1;
+		model.matrix[3][1] = -1;
+		model.matrix[3][2] = 10;
+		model.matrix[3][3] = 1;
+		model.set_uniform(&model);
+		glBindVertexArray(plane.VAO);
+		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 
@@ -193,27 +203,26 @@ int main() {
 		model.matrix[3][2] = x;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
-		glBindVertexArray(game.VAO);
+		glBindVertexArray(cube.VAO);
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
-		glUseProgram(game.program);
 
-		model_send_to_gpu(&game, &plane);
 
-		model.matrix[3][0] = 1;
-		model.matrix[3][1] = -1;
-		model.matrix[3][2] = 10;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
-		glBindVertexArray(game.VAO);
-		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
+
+
+
+
+
+
 
 		glfwSwapBuffers(game.window);
 
 	}
+	delete_buffers(&pen);
+	delete_buffers(&cube);
+	delete_buffers(&plane);
 
 	// freeing unused stuff at end
-	delete_buffers(&game);
 
 	glDeleteProgram(game.program);
 
