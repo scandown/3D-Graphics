@@ -11,6 +11,7 @@ uniform vec3 view_pos;
 in vec3 FragPos;
 in vec3 normal;
 in vec2 TexCoord;
+in vec4 yoPos;
 
 void main() {
 
@@ -34,4 +35,5 @@ void main() {
 
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 	FragColor = vec4(result, 1.0) * texture(tex, TexCoord);
+
 }

@@ -44,7 +44,7 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model pen = model_load(error, "assets/pen.obj");
+	Model pen = model_load(error, "assets/penger.obj");
 	Model cube = model_load(error, "assets/cube.obj");
 	Model plane = model_load(error, "assets/plane.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
@@ -145,16 +145,9 @@ int main() {
 
 
 
-
-
-		vec3 nmodel_position = {0, 0, 0};
-		model.matrix[3][0] = 1;
-		model.matrix[3][1] = 0;
-		model.matrix[3][2] = 0;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
 		view.set_uniform(&view);
-		glBindVertexArray(cube.VAO);
+
+
 
 		static float x = 0;
 		static float y = 0;
@@ -164,7 +157,7 @@ int main() {
 		x = cos(time) * 10;
 		y = sin(time) * 10;
 
-		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){x, y, x}, UNIFORM_FLOAT3);
+		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){cam->pos[0], cam->pos[1], cam->pos[2]}, UNIFORM_FLOAT3);
 		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 1.0, 1.00}, UNIFORM_FLOAT3);
 		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
 
@@ -176,7 +169,6 @@ int main() {
 		uniform_send(&viewPos);
 
 
-		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 		model.matrix[3][0] = 1;

@@ -8,6 +8,7 @@ out vec3 pos;
 out vec2 TexCoord;
 out vec3 normal;
 out vec3 FragPos;
+out vec4 yoPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -23,7 +24,9 @@ void main() {
 	//rots *= aPos;
 
 	mat4 coordinates = projection * view * model;
-	gl_Position = coordinates * vec4(aPos, 1.0);
+	yoPos = coordinates * vec4(aPos, 1.0);
+	//gl_Position = coordinates * vec4(aPos, 1.0);
+	gl_Position = yoPos;
 	FragPos = vec3(model * vec4(aPos, 1.0));
 	pos = aPos;
 	//normal = aNormal;
