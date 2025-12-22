@@ -44,8 +44,6 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model pen = model_load(error, "assets/penger.obj");
-	Model cube = model_load(error, "assets/cube.obj");
 	Model plane = model_load(error, "assets/plane.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
@@ -74,10 +72,6 @@ int main() {
 	cam->mask1 = 0;
 
 
-	create_buffers(&cube);
-	model_send_to_gpu(&cube);
-	create_buffers(&pen);
-	model_send_to_gpu(&pen);
 	create_buffers(&plane);
 	model_send_to_gpu(&plane);
 
@@ -108,9 +102,6 @@ int main() {
 		camera_movement(cam);
 
 
-
-		// quaternion stuff
-
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,59 +116,9 @@ int main() {
 
 
 
-		glUseProgram(game.program);
-
-
-		// draw call
-		vec3 model_position = {0, 0, 0};
-		model.translate(&model, model_position);
-		model.matrix[3][0] = 0;
-		model.matrix[3][1] = 0;
-		model.matrix[3][2] = 0;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
-
-		glBindVertexArray(pen.VAO);
-		glDrawElements(GL_TRIANGLES, pen.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 
-
-
-
-		view.set_uniform(&view);
-
-
-
-		static float x = 0;
-		static float y = 0;
-
-		float time = glfwGetTime();
-
-		x = cos(time) * 10;
-		y = sin(time) * 10;
-
-		Uniform lightPos = uniform_init(&game, "lightPos", (vec3){cam->pos[0], cam->pos[1], cam->pos[2]}, UNIFORM_FLOAT3);
-		Uniform objectColor = uniform_init(&game, "objectColor", (vec3){1, 1.0, 1.00}, UNIFORM_FLOAT3);
-		Uniform lightColor = uniform_init(&game, "lightColor", (vec3){1, 1.0, 1.0}, UNIFORM_FLOAT3);
-
-		Uniform viewPos = uniform_init(&game, "view_pos", cam->pos, UNIFORM_FLOAT3);
-
-		uniform_send(&objectColor);
-		uniform_send(&lightColor);
-		uniform_send(&lightPos);
-		uniform_send(&viewPos);
-
-
-
-
-		model.matrix[3][0] = 1;
-		model.matrix[3][1] = -1;
-		model.matrix[3][2] = 10;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
-		glBindVertexArray(plane.VAO);
-		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 
@@ -190,13 +131,13 @@ int main() {
 
 
 
-		model.matrix[3][0] = x;
-		model.matrix[3][1] = y;
-		model.matrix[3][2] = x;
+		model.matrix[3][0] = 0;
+		model.matrix[3][1] = 0;
+		model.matrix[3][2] = 0;
 		model.matrix[3][3] = 1;
 		model.set_uniform(&model);
-		glBindVertexArray(cube.VAO);
-		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(plane.VAO);
+		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 
@@ -210,18 +151,14 @@ int main() {
 		glfwSwapBuffers(game.window);
 
 	}
-	delete_buffers(&pen);
-	delete_buffers(&cube);
 	delete_buffers(&plane);
 
 	// freeing unused stuff at end
 
 	glDeleteProgram(game.program);
 
-	free(cube.vertices);
-	free(cube.vertex_faces);
-	free(pen.vertices);
-	free(pen.vertex_faces);
+	free(plane.vertices);
+	free(plane.vertex_faces);
 
 
 	// free model data
