@@ -15,6 +15,7 @@
 #include "uniform.h"
 #include "texture.h"
 #include "dynamic_array.h"
+#include "sprite.h"
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -44,12 +45,13 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
-	Model plane = model_load(error, "assets/plane.obj");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
 	
 
 
+	Sprite test = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
+Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location);
 
 	// coordinate systems
 	// 
@@ -70,11 +72,6 @@ int main() {
 	glm_vec3_copy((vec3){0, 0, -1}, cam->front);
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
 	cam->mask1 = 0;
-
-
-	create_buffers(&plane);
-	model_send_to_gpu(&plane);
-
 
 	while (!glfwWindowShouldClose(game.window))
 	{
@@ -102,63 +99,34 @@ int main() {
 		camera_movement(cam);
 
 
+
+
+
+
 		// clearing up and displaying (Important stuff)
 	        glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
-		// binding
-		glBindTexture(GL_TEXTURE_2D, texture);
-
 		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100, projection.matrix);
 		projection.set_uniform(&projection);
-
-
-
-
-
-
-
-
-
-
-		glUseProgram(light_program);
-
-		setup_space(&model, "model", light_program);
-		setup_space(&view, "view", light_program);
 		setup_space(&projection, "projection", light_program);
 
-
-
-		model.matrix[3][0] = 0;
-		model.matrix[3][1] = 0;
-		model.matrix[3][2] = 0;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
-		glBindVertexArray(plane.VAO);
-		glDrawElements(GL_TRIANGLES, plane.vertex_face_size, GL_UNSIGNED_INT, 0);
-
-
-
-
-
-
-
-
+		draw_sprite(&test);
+		test.x+= 0.1;
 
 
 		glfwSwapBuffers(game.window);
 
 	}
-	delete_buffers(&plane);
+	delete_buffers(&test.plane);
 
 	// freeing unused stuff at end
-
 	glDeleteProgram(game.program);
 
-	free(plane.vertices);
-	free(plane.vertex_faces);
+	free(test.plane.vertices);
+	free(test.plane.vertex_faces);
 
 
 	// free model data
