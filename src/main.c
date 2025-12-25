@@ -50,8 +50,8 @@ int main() {
 	
 
 
-	Sprite test = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
-Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location);
+	Sprite test = load_sprite(error, (vec3){-3, -2, 0}, "assets/wall.jpg");
+	Sprite test2 = load_sprite(error, (vec3){3, -2, 0}, "assets/wall.jpg");
 
 	// coordinate systems
 	// 
@@ -113,7 +113,17 @@ Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location);
 		projection.set_uniform(&projection);
 		setup_space(&projection, "projection", light_program);
 
+
+
+
+
+
+		glUseProgram(test.program);
+
+
+
 		draw_sprite(&test);
+		draw_sprite(&test2);
 		test.x+= 0.1;
 
 
@@ -127,6 +137,9 @@ Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location);
 
 	free(test.plane.vertices);
 	free(test.plane.vertex_faces);
+
+	free(test2.plane.vertices);
+	free(test2.plane.vertex_faces);
 
 
 	// free model data
