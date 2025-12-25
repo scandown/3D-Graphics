@@ -36,7 +36,6 @@ Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location) {
 }
 
 void draw_sprite(Sprite *sprite) {
-		glUseProgram(sprite->program);
 
 		glBindTexture(GL_TEXTURE_2D, sprite->texture);
 
