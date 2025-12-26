@@ -109,7 +109,7 @@ int main() {
 
 
 
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100, projection.matrix);
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
 		projection.set_uniform(&projection);
 		setup_space(&projection, "projection", light_program);
 
@@ -121,6 +121,7 @@ int main() {
 		glUseProgram(test.program);
 
 
+		vec4 rot = {0, 1, 0, 1};
 
 		draw_sprite(&test);
 		draw_sprite(&test2);
