@@ -50,8 +50,8 @@ int main() {
 	
 
 
-	Sprite test = load_sprite(error, (vec3){-3, -2, 0}, "assets/wall.jpg");
-	Sprite test2 = load_sprite(error, (vec3){3, -2, 0}, "assets/wall.jpg");
+	Sprite test = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
+	Sprite test2 = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
 
 	// coordinate systems
 	// 
@@ -76,13 +76,13 @@ int main() {
 	while (!glfwWindowShouldClose(game.window))
 	{
 		glfwPollEvents();
-
 		cam->pitch = 0;
-		cam->yaw = -90;
+		cam->yaw = 0;
 		cam->prev_xpos = 0;
 		cam->prev_ypos = 0;
-		cursor_position_callback(game.window, cam, 0.10);
-		camera_look(cam, cam->yaw, cam->pitch, &view);
+		//cursor_position_callback(game.window, cam, 0.10);
+
+		/*
 
 		const int ground_level = 0;
 		static float vel = 0;
@@ -95,6 +95,12 @@ int main() {
 			cam->pos[1] -= vel;
 			vel += 0.0001;
 		}
+
+		*/
+		camera_look(cam, cam->yaw, cam->pitch, &view);
+
+
+
 		glfwSetKeyCallback(game.window, key_callback);
 		camera_movement(cam);
 
@@ -109,7 +115,8 @@ int main() {
 
 
 
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
+		//glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
+		glm_ortho_default(16.0/9.0, projection.matrix);
 		projection.set_uniform(&projection);
 		setup_space(&projection, "projection", light_program);
 
