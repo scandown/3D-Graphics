@@ -55,12 +55,11 @@ int main() {
 
 
 
-	//this
-	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/wall.jpg");
+	//Sprite test2 = load_sprite(error, (vec3){200, 200, 5}, 1, "assets/wall.jpg");
+	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
 
 
 
-	Sprite test2 = load_sprite(error, (vec3){200, 200, 5}, 1, "assets/wall.jpg");
 
 	// coordinate systems
 	// 
@@ -162,7 +161,6 @@ int main() {
 
 	}
 	delete_buffers(&test.plane);
-	delete_buffers(&test2.plane);
 	delete_buffers(&cube);
 
 	// freeing unused stuff at end
@@ -170,9 +168,6 @@ int main() {
 
 	free(test.plane.vertices);
 	free(test.plane.vertex_faces);
-
-	free(test2.plane.vertices);
-	free(test2.plane.vertex_faces);
 
 
 	// free model data
