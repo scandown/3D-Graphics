@@ -46,7 +46,7 @@ int main() {
 
 	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
-	unsigned int light_program = program_create("src/light_shaderlist.txt");
+	unsigned int light_program = program_create("src/shaderList.txt");
 	
 	Model cube = model_load(error, "assets/cube.obj");
 	create_buffers(&cube);
@@ -130,7 +130,6 @@ int main() {
 		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection.matrix);
 		projection.set_uniform(&projection);
 		setup_space(&projection, "projection", light_program);
-
 
 
 
