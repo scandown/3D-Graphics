@@ -9,7 +9,7 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 
 
 	unsigned int texture = texture_setup(error, GL_RGB, texture_location);
-	unsigned int light_program = program_create("src/light_shaderlist.txt");
+	unsigned int light_program = program_create("src/shaderList.txt");
 	sprite.program = light_program;
 
 
