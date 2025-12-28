@@ -8,7 +8,7 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	Model plane = model_load(error, "assets/plane.obj");
 
 
-	unsigned int texture = texture_setup(error, GL_RGB, texture_location);
+	unsigned int texture = texture_setup(error, GL_RGBA, texture_location);
 	unsigned int light_program = program_create("src/shaderList.txt");
 	sprite.program = light_program;
 
@@ -34,17 +34,6 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	sprite.x = pos[0];
 	sprite.y = pos[1];
 	sprite.z = pos[2];
-
-
-	printf("Scale value: %u\n", scale);
-	printf("Model matrix after scaling:\n");
-	for(int i = 0; i < 4; i++) {
-		printf("[ ");
-		for(int j = 0; j < 4; j++) {
-			printf("%6.2f ", sprite.model.matrix[j][i]);
-		}
-		printf("]\n");
-	}
 
 
 	return sprite;
