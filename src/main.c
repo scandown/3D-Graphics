@@ -48,10 +48,19 @@ int main() {
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
 	unsigned int light_program = program_create("src/light_shaderlist.txt");
 	
+	Model cube = model_load(error, "assets/cube.obj");
+	create_buffers(&cube);
+	model_send_to_gpu(&cube);
 
 
-	Sprite test = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
-	Sprite test2 = load_sprite(error, (vec3){0, -2, 0}, "assets/wall.jpg");
+
+
+	//this
+	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/wall.jpg");
+
+
+
+	Sprite test2 = load_sprite(error, (vec3){200, 200, 5}, 1, "assets/wall.jpg");
 
 	// coordinate systems
 	// 
@@ -68,19 +77,20 @@ int main() {
 	setup_space(&projection, "projection", game.program);
 
 	// camera move setup
-	glm_vec3_copy((vec3){0, 0, 3}, cam->pos);
+	glm_vec3_copy((vec3){0, 0, 20}, cam->pos);
 	glm_vec3_copy((vec3){0, 0, -1}, cam->front);
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
 	cam->mask1 = 0;
+
 
 	while (!glfwWindowShouldClose(game.window))
 	{
 		glfwPollEvents();
 		cam->pitch = 0;
-		cam->yaw = 0;
+		cam->yaw = -90;
 		cam->prev_xpos = 0;
 		cam->prev_ypos = 0;
-		//cursor_position_callback(game.window, cam, 0.10);
+	//	cursor_position_callback(game.window, cam, 0.10);
 
 		/*
 
@@ -116,9 +126,11 @@ int main() {
 
 
 		//glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
-		glm_ortho_default(16.0/9.0, projection.matrix);
+		//glm_ortho_default(16.0/9.0, projection.matrix);
+		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection.matrix);
 		projection.set_uniform(&projection);
 		setup_space(&projection, "projection", light_program);
+
 
 
 
@@ -131,14 +143,28 @@ int main() {
 		vec4 rot = {0, 1, 0, 1};
 
 		draw_sprite(&test);
-		draw_sprite(&test2);
+		// Add this debug code temporarily
+		//draw_sprite(&test2);
 		test.x+= 0.1;
+		//
+		model.matrix[3][0] = 1;
+		model.matrix[3][1] = -1;
+		model.matrix[3][2] = 10;
+		model.matrix[3][3] = 1;
+		model.set_uniform(&model);
+
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
+		projection.set_uniform(&projection);
+		glBindVertexArray(cube.VAO);
+		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 
 		glfwSwapBuffers(game.window);
 
 	}
 	delete_buffers(&test.plane);
+	delete_buffers(&test2.plane);
+	delete_buffers(&cube);
 
 	// freeing unused stuff at end
 	glDeleteProgram(game.program);

@@ -41,7 +41,7 @@ void main() {
 
 	//vec4 rot = {1, 0, 1, 0};
 	vec4 rot;
-	rot.x = 1;
+	rot.x = -1;
 	rot.y = 0;
 	rot.z = 0;
 	rot.w = 1;
