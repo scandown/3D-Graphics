@@ -1,7 +1,7 @@
 #include "sprite.h"
 
 
-Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location) {
+Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location) {
 
 	Sprite sprite;
 
@@ -28,9 +28,24 @@ Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location) {
 	sprite.texture = texture;
 	sprite.model = model;
 
+	glm_mat4_scale(sprite.model.matrix, scale);
+	//sprite.model.matrix[3][3] = 1;
+
 	sprite.x = pos[0];
 	sprite.y = pos[1];
 	sprite.z = pos[2];
+
+
+	printf("Scale value: %u\n", scale);
+	printf("Model matrix after scaling:\n");
+	for(int i = 0; i < 4; i++) {
+		printf("[ ");
+		for(int j = 0; j < 4; j++) {
+			printf("%6.2f ", sprite.model.matrix[j][i]);
+		}
+		printf("]\n");
+	}
+
 
 	return sprite;
 }

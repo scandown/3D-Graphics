@@ -20,5 +20,5 @@ typedef struct {
 	float z;
 } Sprite;
 
-Sprite load_sprite(jmp_buf error, vec3 pos, char *texture_location);
+Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location);
 void draw_sprite(Sprite *sprite);
