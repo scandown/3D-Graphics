@@ -1,8 +1,11 @@
 #include "uniform.h"
 
-Uniform uniform_init(State *state, char *name, void *value, Uniform_Type type) {
+//glGetUniformLocation(program, name);
+//glUniformMatrix4fv(space->location, 1, false, (const float *)space->matrix);
+
+Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type) {
 	Uniform uniform;
-	uniform.location = glGetUniformLocation(state->program, name);
+	uniform.location = glGetUniformLocation(program, name);
 	uniform.type = type;
 
 	switch (uniform.type) {
@@ -29,6 +32,15 @@ Uniform uniform_init(State *state, char *name, void *value, Uniform_Type type) {
 			break;
 		case UNIFORM_INT4:
 			memcpy(&uniform.values.i4, value, sizeof(int) * 4);
+			break;
+		case UNIFORM_MAT2:
+			memcpy(&uniform.values.m2, value, sizeof(float) * 4);
+			break;
+		case UNIFORM_MAT3:
+			memcpy(&uniform.values.m3, value, sizeof(float) * 9);
+			break;
+		case UNIFORM_MAT4:
+			memcpy(&uniform.values.m3, value, sizeof(float) * 16);
 			break;
 		default:
 			break;
@@ -64,6 +76,15 @@ void uniform_send(Uniform *uniform) {
 			break;
 		case UNIFORM_INT4:
 			glUniform4iv(uniform->location, 1, uniform->values.i4);
+			break;
+		case UNIFORM_MAT2:
+			glUniformMatrix2fv(uniform->location, 1, false, uniform->values.m2);
+			break;
+		case UNIFORM_MAT3:
+			glUniformMatrix3fv(uniform->location, 1, false, uniform->values.m3);
+			break;
+		case UNIFORM_MAT4:
+			glUniformMatrix4fv(uniform->location, 1, false, uniform->values.m4);
 			break;
 		default:
 			break;

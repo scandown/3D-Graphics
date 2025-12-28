@@ -12,7 +12,10 @@ typedef enum {
     UNIFORM_INT1,
     UNIFORM_INT2,
     UNIFORM_INT3,
-    UNIFORM_INT4
+    UNIFORM_INT4,
+    UNIFORM_MAT2,
+    UNIFORM_MAT3,
+    UNIFORM_MAT4
 } Uniform_Type;
 
 typedef union {
@@ -25,6 +28,10 @@ typedef union {
 	int i3[3];
 	int i2[2];
 	int i1;
+
+	float m2[4];
+	float m3[9];
+	float m4[16];
 } Uniform_Members;
 
 typedef struct {
@@ -33,6 +40,6 @@ typedef struct {
 	Uniform_Members values;
 } Uniform;
 
-Uniform uniform_init(State *state, char *name, void *value, Uniform_Type type);
+Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type);
 void uniform_send(Uniform *uniform);
 

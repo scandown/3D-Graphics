@@ -161,7 +161,7 @@ void camera_movement(Camera *cam) {
 		}
 	}
 }
-void camera_look(Camera *cam, float yaw, float pitch, Space *view) {
+void camera_look(Camera *cam, float yaw, float pitch, mat4 view_matrix, Uniform *view_uniform, unsigned int program) {
 	//camera_look(cam, yaw, pitch, &view);
 	vec3 direction;
 	direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
@@ -171,6 +171,7 @@ void camera_look(Camera *cam, float yaw, float pitch, Space *view) {
 	vec3 camera_total_front;
 	glm_vec3_copy(cam->front, camera_total_front);
 	glm_vec3_add(cam->pos, cam->front, camera_total_front);
-	glm_lookat(cam->pos, camera_total_front, cam->up, view->matrix);
-	view->set_uniform(view);
+	glm_lookat(cam->pos, camera_total_front, cam->up, view_matrix);
+
+	*view_uniform = uniform_init(program, "view", view_matrix, UNIFORM_MAT4);
 }
