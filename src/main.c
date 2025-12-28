@@ -59,21 +59,26 @@ int main() {
 	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
 
 
+	mat4 view_matrix;
+	mat4 projection_matrix;
+	mat4 model_matrix;
+	glm_mat4_identity(view_matrix);
+	glm_mat4_identity(model_matrix);
+	glm_mat4_identity(projection_matrix);
+
+	Uniform projection_uniform;
+	Uniform view_uniform;
+	Uniform model_uniform;
 
 
-	// coordinate systems
-	// 
-	// setup_spaces(&model, &view, &projection);
-	Space model, view, projection;
-	glm_mat4_identity(view.matrix);
-	glm_mat4_identity(model.matrix);
-	glm_mat4_identity(projection.matrix);
-	setup_space(&model, "model", game.program);
+	view_uniform = uniform_init(test.program, "view", view_matrix, UNIFORM_MAT4);
+	model_uniform = uniform_init(test.program, "model", model_matrix, UNIFORM_MAT4);
+	projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
+	uniform_send(&model_uniform);
+	uniform_send(&view_uniform);
 
-	setup_space(&view, "view", game.program);
-	view.translate(&view, (vec3){0, 0, -2});
+	glm_translate(view_matrix, (vec3){0, 0, -2});
 
-	setup_space(&projection, "projection", game.program);
 
 	// camera move setup
 	glm_vec3_copy((vec3){0, 0, 20}, cam->pos);
@@ -89,24 +94,9 @@ int main() {
 		cam->yaw = -90;
 		cam->prev_xpos = 0;
 		cam->prev_ypos = 0;
-	//	cursor_position_callback(game.window, cam, 0.10);
+		camera_look(cam, cam->yaw, cam->pitch, view_matrix, &view_uniform, test.program);
 
-		/*
-
-		const int ground_level = 0;
-		static float vel = 0;
-		if (cam->pos[1] <= ground_level) {
-			cam->pos[1] = ground_level;
-			vel = 0;
-		}
-
-		if (cam->pos[1] > ground_level) {
-			cam->pos[1] -= vel;
-			vel += 0.0001;
-		}
-
-		*/
-		camera_look(cam, cam->yaw, cam->pitch, &view);
+		uniform_send(&view_uniform);
 
 
 
@@ -126,9 +116,7 @@ int main() {
 
 		//glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
 		//glm_ortho_default(16.0/9.0, projection.matrix);
-		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection.matrix);
-		projection.set_uniform(&projection);
-		setup_space(&projection, "projection", light_program);
+		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection_matrix);
 
 
 
@@ -136,6 +124,9 @@ int main() {
 
 
 		glUseProgram(test.program);
+
+		projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
+		uniform_send(&projection_uniform);
 
 
 		vec4 rot = {0, 1, 0, 1};
@@ -145,14 +136,18 @@ int main() {
 		//draw_sprite(&test2);
 		test.x+= 0.1;
 		//
-		model.matrix[3][0] = 1;
-		model.matrix[3][1] = -1;
-		model.matrix[3][2] = 10;
-		model.matrix[3][3] = 1;
-		model.set_uniform(&model);
+		model_matrix[3][0] = 1;
+		model_matrix[3][1] = -1;
+		model_matrix[3][2] = 10;
+		model_matrix[3][3] = 1;
 
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
-		projection.set_uniform(&projection);
+		model_uniform = uniform_init(test.program, "model", model_matrix, UNIFORM_MAT4);
+		uniform_send(&model_uniform);
+
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection_matrix);
+		projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
+		uniform_send(&projection_uniform);
+		//projection.set_uniform(&projection);
 		glBindVertexArray(cube.VAO);
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
