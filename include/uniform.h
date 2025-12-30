@@ -29,9 +29,9 @@ typedef union {
 	int i2[2];
 	int i1;
 
-	float m2[4];
-	float m3[9];
-	float m4[16];
+	float m2[2][2];
+	float m3[3][3];
+	float m4[4][4];
 } Uniform_Members;
 
 typedef struct {

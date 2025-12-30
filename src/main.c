@@ -44,20 +44,15 @@ int main() {
 		return 1;
 	}
 
-	State game = setup_state(error, 1920, 1080, "game", "src/shaderList.txt");
+	State game = setup_state(error, 1920, 1080, "game", "src/light_shaderlist.txt");
 	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
-	unsigned int light_program = program_create("src/shaderList.txt");
-	
+
+	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
+	//Sprite test = load_sprite(error, (vec3){10, 1, 1}, 8, "assets/smiley.png");
+
 	Model cube = model_load(error, "assets/cube.obj");
 	create_buffers(&cube);
 	model_send_to_gpu(&cube);
-
-
-
-
-	//Sprite test2 = load_sprite(error, (vec3){200, 200, 5}, 1, "assets/wall.jpg");
-	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
-
 
 	mat4 view_matrix;
 	mat4 projection_matrix;
@@ -109,13 +104,11 @@ int main() {
 
 
 		// clearing up and displaying (Important stuff)
-	        glClearColor(0, 0, 0, 1);
+	        glClearColor(0.1, 0.1, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 
-		//glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection.matrix);
-		//glm_ortho_default(16.0/9.0, projection.matrix);
 		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection_matrix);
 
 
@@ -125,47 +118,45 @@ int main() {
 
 		glUseProgram(test.program);
 
-		projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
+		projection_uniform = uniform_init(game.program, "projection", projection_matrix, UNIFORM_MAT4);
 		uniform_send(&projection_uniform);
 
-
-		vec4 rot = {0, 1, 0, 1};
-
 		draw_sprite(&test);
-		// Add this debug code temporarily
-		//draw_sprite(&test2);
-		test.x+= 0.1;
-		//
+
+
+		//glUseProgram(0);
+
+
+		/*
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection_matrix);
+		projection_uniform = uniform_init(game.program, "projection", projection_matrix, UNIFORM_MAT4);
+		uniform_send(&projection_uniform);
+		//test.x+= 0.1;
+
 		model_matrix[3][0] = 1;
 		model_matrix[3][1] = -1;
 		model_matrix[3][2] = 10;
 		model_matrix[3][3] = 1;
 
-		model_uniform = uniform_init(test.program, "model", model_matrix, UNIFORM_MAT4);
+		model_uniform = uniform_init(game.program, "model", model_matrix, UNIFORM_MAT4);
 		uniform_send(&model_uniform);
 
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection_matrix);
-		projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
-		uniform_send(&projection_uniform);
-		//projection.set_uniform(&projection);
 		glBindVertexArray(cube.VAO);
 		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
+		*/
 
 
 		glfwSwapBuffers(game.window);
 
 	}
-	delete_buffers(&test.plane);
-	delete_buffers(&cube);
 
 	// freeing unused stuff at end
 	glDeleteProgram(game.program);
 
-	free(test.plane.vertices);
-	free(test.plane.vertex_faces);
+	delete_buffers(&cube);
 
 
-	// free model data
+	delete_sprite(&test);
 	free(cam);
 
 	glfwTerminate();
