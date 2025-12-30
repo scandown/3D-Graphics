@@ -6,12 +6,12 @@
 #include <setjmp.h>
 
 #include "model.h"
-#include "spaces.h"
 #include "shader.h"
 #include "texture.h"
+#include "uniform.h"
 
 typedef struct {
-	Space model;
+	Uniform model_uniform;
 	Model plane;
 	unsigned int texture;
 	unsigned int program;
@@ -22,3 +22,4 @@ typedef struct {
 
 Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location);
 void draw_sprite(Sprite *sprite);
+void delete_sprite(Sprite *sprite);

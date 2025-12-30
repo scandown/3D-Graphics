@@ -96,7 +96,7 @@ void camera_movement(Camera *cam) {
 	long mask = 1;
 	int amount = 0;
 
-	float cameraSpeed = 0.05f;
+	float cameraSpeed = 0.5f;
         //set this
         vec3 cameraMove;
         vec3 cameraRight;

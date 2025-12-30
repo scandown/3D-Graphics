@@ -12,12 +12,10 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	unsigned int light_program = program_create("src/shaderList.txt");
 	sprite.program = light_program;
 
+	mat4 model_matrix;
+	glm_mat4_identity(model_matrix);
 
-
-	Space model;
-	glm_mat4_identity(model.matrix);
-	setup_space(&model, "model", sprite.program);
-
+	sprite.model_uniform = uniform_init(sprite.program, "model", model_matrix, UNIFORM_MAT4);
 
 	create_buffers(&plane);
 	model_send_to_gpu(&plane);
@@ -26,9 +24,8 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 
 	sprite.plane = plane;
 	sprite.texture = texture;
-	sprite.model = model;
 
-	glm_mat4_scale(sprite.model.matrix, scale);
+	glm_mat4_scale(sprite.model_uniform.values, scale);
 	//sprite.model.matrix[3][3] = 1;
 
 	sprite.x = pos[0];
@@ -43,12 +40,22 @@ void draw_sprite(Sprite *sprite) {
 
 		glBindTexture(GL_TEXTURE_2D, sprite->texture);
 
-		sprite->model.matrix[3][0] = sprite->x;
-		sprite->model.matrix[3][1] = sprite->y;
-		sprite->model.matrix[3][2] = sprite->z;
-		sprite->model.matrix[3][3] = 1;
-		sprite->model.set_uniform(&sprite->model);
+		sprite->model_uniform.values[3][0] = sprite->x;
+		sprite->model_uniform.values[3][1] = sprite->y;
+		sprite->model_uniform.values[3][2] = sprite->z;
+		sprite->model_uniform.values[3][3] = 1;
+
+		uniform_send(&sprite->model_uniform);
 
 		glBindVertexArray(sprite->plane.VAO);
 		glDrawElements(GL_TRIANGLES, sprite->plane.vertex_face_size, GL_UNSIGNED_INT, 0);
+}
+
+
+void delete_sprite(Sprite *sprite) {
+	delete_buffers(&sprite->plane);
+
+
+	free(sprite->plane.vertices);
+	free(sprite->plane.vertex_faces);
 }
