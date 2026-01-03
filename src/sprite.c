@@ -25,7 +25,7 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	sprite.plane = plane;
 	sprite.texture = texture;
 
-	glm_mat4_scale(sprite.model_uniform.values, scale);
+	glm_mat4_scale(sprite.model_uniform.values.m4, scale);
 	//sprite.model.matrix[3][3] = 1;
 
 	sprite.x = pos[0];
@@ -40,10 +40,10 @@ void draw_sprite(Sprite *sprite) {
 
 		glBindTexture(GL_TEXTURE_2D, sprite->texture);
 
-		sprite->model_uniform.values[3][0] = sprite->x;
-		sprite->model_uniform.values[3][1] = sprite->y;
-		sprite->model_uniform.values[3][2] = sprite->z;
-		sprite->model_uniform.values[3][3] = 1;
+		sprite->model_uniform.values.m4[3][0] = sprite->x;
+		sprite->model_uniform.values.m4[3][1] = sprite->y;
+		sprite->model_uniform.values.m4[3][2] = sprite->z;
+		sprite->model_uniform.values.m4[3][3] = 1;
 
 		uniform_send(&sprite->model_uniform);
 

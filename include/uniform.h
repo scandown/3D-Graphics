@@ -2,6 +2,7 @@
 #include <string.h>
 #include "glad/glad.h"
 #include "state.h"
+#include "cglm/cglm.h"
 
 
 typedef enum {
@@ -29,9 +30,9 @@ typedef union {
 	int i2[2];
 	int i1;
 
-	float m2[2][2];
-	float m3[3][3];
-	float m4[4][4];
+	mat2 m2;
+	mat3 m3;
+	mat4 m4;
 } Uniform_Members;
 
 typedef struct {
