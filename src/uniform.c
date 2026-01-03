@@ -78,13 +78,13 @@ void uniform_send(Uniform *uniform) {
 			glUniform4iv(uniform->location, 1, uniform->values.i4);
 			break;
 		case UNIFORM_MAT2:
-			glUniformMatrix2fv(uniform->location, 1, false, uniform->values.m2);
+			glUniformMatrix2fv(uniform->location, 1, false, (float *)uniform->values.m2);
 			break;
 		case UNIFORM_MAT3:
-			glUniformMatrix3fv(uniform->location, 1, false, uniform->values.m3);
+			glUniformMatrix3fv(uniform->location, 1, false, (float *)uniform->values.m3);
 			break;
 		case UNIFORM_MAT4:
-			glUniformMatrix4fv(uniform->location, 1, false, uniform->values.m4);
+			glUniformMatrix4fv(uniform->location, 1, false, (float *)uniform->values.m4);
 			break;
 		default:
 			break;
