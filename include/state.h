@@ -24,4 +24,4 @@ typedef struct {
 
 
 State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *shader_location);
-void setup_scene(State *game, unsigned int program);
+void setup_scene(State *game, unsigned int program, char *dimension, vec3 initial_position);

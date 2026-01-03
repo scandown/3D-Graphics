@@ -47,9 +47,8 @@ int main() {
 	State game = setup_state(error, 1920, 1080, "game", "src/light_shaderlist.txt");
 	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
 
-	setup_scene(&game, test.program);
-	glm_translate(game.view_uniform.value.m4, (vec3){0, 0, -2});
-
+	glUseProgram(test.program);
+	setup_scene(&game, test.program, "2D", (vec3){0, 0, -2});
 
 	// camera move setup
 	glm_vec3_copy((vec3){0, 0, 20}, cam->pos);
@@ -70,7 +69,6 @@ int main() {
 		cam->prev_xpos = 0;
 		cam->prev_ypos = 0;
 		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, test.program);
-
 		uniform_send(&game.view_uniform);
 
 
@@ -79,18 +77,9 @@ int main() {
 		camera_movement(cam);
 
 
-		glm_ortho(0, 640, 0, 360, 0.1, 1000, game.projection_uniform.value.m4);
 
-
-		glUseProgram(test.program);
-
-		game.projection_uniform = uniform_init(game.program, "projection", game.projection_uniform.value.m4, UNIFORM_MAT4);
-		uniform_send(&game.projection_uniform);
 
 		draw_sprite(&test);
-
-
-
 
 		glfwSwapBuffers(game.window);
 
@@ -98,9 +87,6 @@ int main() {
 
 	// freeing unused stuff at end
 	glDeleteProgram(game.program);
-
-	delete_buffers(&cube);
-
 
 	delete_sprite(&test);
 	free(cam);
