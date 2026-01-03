@@ -1,7 +1,6 @@
 #pragma once
 #include <string.h>
 #include "glad/glad.h"
-#include "state.h"
 #include "cglm/cglm.h"
 
 
@@ -35,10 +34,10 @@ typedef union {
 	mat4 m4;
 } Uniform_Members;
 
-typedef struct {
+typedef struct Uniform{
 	int location;
 	Uniform_Type type;
-	Uniform_Members values;
+	Uniform_Members value;
 } Uniform;
 
 Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type);
