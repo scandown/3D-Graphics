@@ -45,34 +45,10 @@ int main() {
 	}
 
 	State game = setup_state(error, 1920, 1080, "game", "src/light_shaderlist.txt");
-	unsigned int texture = texture_setup(error, GL_RGB, "assets/wall.jpg");
-
 	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
-	//Sprite test = load_sprite(error, (vec3){10, 1, 1}, 8, "assets/smiley.png");
 
-	Model cube = model_load(error, "assets/cube.obj");
-	create_buffers(&cube);
-	model_send_to_gpu(&cube);
-
-	mat4 view_matrix;
-	mat4 projection_matrix;
-	mat4 model_matrix;
-	glm_mat4_identity(view_matrix);
-	glm_mat4_identity(model_matrix);
-	glm_mat4_identity(projection_matrix);
-
-	Uniform projection_uniform;
-	Uniform view_uniform;
-	Uniform model_uniform;
-
-
-	view_uniform = uniform_init(test.program, "view", view_matrix, UNIFORM_MAT4);
-	model_uniform = uniform_init(test.program, "model", model_matrix, UNIFORM_MAT4);
-	projection_uniform = uniform_init(test.program, "projection", projection_matrix, UNIFORM_MAT4);
-	uniform_send(&model_uniform);
-	uniform_send(&view_uniform);
-
-	glm_translate(view_matrix, (vec3){0, 0, -2});
+	setup_scene(&game, test.program);
+	glm_translate(game.view_uniform.value.m4, (vec3){0, 0, -2});
 
 
 	// camera move setup
@@ -82,16 +58,20 @@ int main() {
 	cam->mask1 = 0;
 
 
-	while (!glfwWindowShouldClose(game.window))
-	{
+	while (!glfwWindowShouldClose(game.window)) {
+		// clearing up and displaying (Important stuff)
+	        glClearColor(0.1, 0.1, 0.2, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 		glfwPollEvents();
 		cam->pitch = 0;
 		cam->yaw = -90;
 		cam->prev_xpos = 0;
 		cam->prev_ypos = 0;
-		camera_look(cam, cam->yaw, cam->pitch, view_matrix, &view_uniform, test.program);
+		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, test.program);
 
-		uniform_send(&view_uniform);
+		uniform_send(&game.view_uniform);
 
 
 
@@ -99,51 +79,17 @@ int main() {
 		camera_movement(cam);
 
 
-
-
-
-
-		// clearing up and displaying (Important stuff)
-	        glClearColor(0.1, 0.1, 0.2, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
-		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection_matrix);
-
-
-
-
+		glm_ortho(0, 640, 0, 360, 0.1, 1000, game.projection_uniform.value.m4);
 
 
 		glUseProgram(test.program);
 
-		projection_uniform = uniform_init(game.program, "projection", projection_matrix, UNIFORM_MAT4);
-		uniform_send(&projection_uniform);
+		game.projection_uniform = uniform_init(game.program, "projection", game.projection_uniform.value.m4, UNIFORM_MAT4);
+		uniform_send(&game.projection_uniform);
 
 		draw_sprite(&test);
 
 
-		//glUseProgram(0);
-
-
-		/*
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection_matrix);
-		projection_uniform = uniform_init(game.program, "projection", projection_matrix, UNIFORM_MAT4);
-		uniform_send(&projection_uniform);
-		//test.x+= 0.1;
-
-		model_matrix[3][0] = 1;
-		model_matrix[3][1] = -1;
-		model_matrix[3][2] = 10;
-		model_matrix[3][3] = 1;
-
-		model_uniform = uniform_init(game.program, "model", model_matrix, UNIFORM_MAT4);
-		uniform_send(&model_uniform);
-
-		glBindVertexArray(cube.VAO);
-		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
-		*/
 
 
 		glfwSwapBuffers(game.window);
