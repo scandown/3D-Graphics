@@ -77,7 +77,7 @@ char *read_file(char *file_location) {
 	FILE *fptr = fopen(file_location, "r");	
 	int file_size = 0;
 	if (fptr == NULL) {
-		printf("Couldn't open: %s\n", file_location);
+		fprintf(stderr, "Error: Couldn't open: %s\n", file_location);
 		return NULL;
 	}
 

@@ -11,7 +11,6 @@
 typedef struct Uniform Uniform;
 
 typedef struct {
-	unsigned int program;
 	unsigned int SCR_WIDTH;
 	unsigned int SCR_HEIGHT;
 	char *title;
@@ -23,5 +22,5 @@ typedef struct {
 } State;
 
 
-State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *vertex_shader_location, char *fragment_shader_location);
+State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name);
 void setup_scene(State *game, unsigned int program, char *dimension, vec3 initial_position);

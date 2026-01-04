@@ -17,6 +17,7 @@
 #include "dynamic_array.h"
 #include "sprite.h"
 
+
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -33,43 +34,54 @@ typedef struct {
 Camera *c_ptr = NULL;
 
 int main() {
-	Camera *cam = malloc(sizeof(Camera));
-	c_ptr = cam;
-	//setup for opengl :3
-	
-
 	jmp_buf error;
 	if (setjmp(error)) {
 		printf("Error Detected!\n");
 		return 1;
 	}
 
-	State game = setup_state(error, 1920, 1080, "game", "src/vertex.glsl", "src/textured.glsl");
-	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
 
-	glUseProgram(test.program);
-	setup_scene(&game, test.program, "2D", (vec3){0, 0, -2});
+	Camera *cam = malloc(sizeof(Camera));
+	camera_setup(cam, (vec3){0, 0, -20}, 0, -90);
+	c_ptr = cam;
 
-	// camera move setup
-	glm_vec3_copy((vec3){0, 0, 20}, cam->pos);
-	glm_vec3_copy((vec3){0, 0, -1}, cam->front);
-	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
-	cam->mask1 = 0;
 
+
+
+
+	//setup for opengl :3
+	State game = setup_state(error, 1920, 1080, "game");
+
+
+	unsigned int vertex_shader = create_shader("src/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int fragment_shader = create_shader("src/red.glsl", GL_FRAGMENT_SHADER);
+
+	if (vertex_shader == 0 || fragment_shader == 0) {
+		longjmp(error, 1);
+	}
+
+	unsigned int program = create_program(vertex_shader, fragment_shader);
+
+
+
+
+
+	glUseProgram(program);
+	Sprite test = load_sprite(error, program, (vec3){300, 200, 1}, 8, "assets/smiley.png");
+	setup_scene(&game, program, "2D", (vec3){0, 0, -3});
+
+
+
+
+	uniform_send(&game.view_uniform);
 
 	while (!glfwWindowShouldClose(game.window)) {
-		// clearing up and displaying (Important stuff)
 	        glClearColor(0.1, 0.1, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		glfwPollEvents();
-		cam->pitch = 0;
-		cam->yaw = -90;
-		cam->prev_xpos = 0;
-		cam->prev_ypos = 0;
-		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, test.program);
-		uniform_send(&game.view_uniform);
+		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, program);
 
 
 
@@ -85,9 +97,8 @@ int main() {
 
 	}
 
-	// freeing unused stuff at end
-	glDeleteProgram(game.program);
-	glDeleteProgram(test.program);
+	
+	delete_program(program);
 
 	delete_sprite(&test);
 	free(cam);

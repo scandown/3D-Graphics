@@ -20,7 +20,7 @@ Model model_load(jmp_buf error, char *model_name) {
 
 	FILE *fptr = fopen(model_name, "r");	
 	if (fptr == NULL) {
-		printf("Couldn't open: %s\n", model_name);
+		fprintf(stderr, "Error: Couldn't open: %s\n", model_name);
 		model.location = NULL;
 		longjmp(error, 1);
 	}

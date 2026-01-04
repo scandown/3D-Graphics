@@ -175,3 +175,14 @@ void camera_look(Camera *cam, float yaw, float pitch, mat4 view_matrix, Uniform 
 
 	*view_uniform = uniform_init(program, "view", view_matrix, UNIFORM_MAT4);
 }
+
+void camera_setup(Camera *cam, vec3 pos, float pitch, float yaw) {
+	glm_vec3_copy(pos, cam->pos);
+	glm_vec3_copy((vec3){0, 0, -1}, cam->front);
+	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
+	cam->pitch = pitch;
+	cam->yaw = yaw;
+	cam->prev_xpos = 0;
+	cam->prev_ypos = 0;
+	cam->mask1 = 0;
+}
