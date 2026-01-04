@@ -5,7 +5,7 @@ Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int s
 
 	Sprite sprite;
 
-	Model plane = model_load(error, "assets/plane.obj");
+	Model plane = load_model(error, "assets/plane.obj");
 
 	unsigned int texture = texture_setup(error, GL_RGBA, texture_location);
 
@@ -15,7 +15,7 @@ Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int s
 	sprite.model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);
 
 	create_buffers(&plane);
-	model_send_to_gpu(&plane);
+	send_model_to_gpu(&plane);
 
 
 
