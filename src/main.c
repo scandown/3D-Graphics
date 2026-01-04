@@ -44,7 +44,7 @@ int main() {
 		return 1;
 	}
 
-	State game = setup_state(error, 1920, 1080, "game", "src/light_shaderlist.txt");
+	State game = setup_state(error, 1920, 1080, "game", "src/vertex.glsl", "src/textured.glsl");
 	Sprite test = load_sprite(error, (vec3){320, 180, 1}, 8, "assets/smiley.png");
 
 	glUseProgram(test.program);

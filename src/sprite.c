@@ -7,9 +7,18 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 
 	Model plane = model_load(error, "assets/plane.obj");
 
-
 	unsigned int texture = texture_setup(error, GL_RGBA, texture_location);
-	unsigned int light_program = program_create("src/shaderList.txt");
+
+
+	unsigned int vertex_shader = create_shader("src/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int fragment_shader = create_shader("src/textured.glsl", GL_FRAGMENT_SHADER);
+
+	if (vertex_shader == 0 || fragment_shader == 0) {
+		longjmp(error, 1);
+	}
+
+	unsigned int light_program = create_program(vertex_shader, fragment_shader);
+
 	sprite.program = light_program;
 
 	mat4 model_matrix;
@@ -26,7 +35,6 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	sprite.texture = texture;
 
 	glm_mat4_scale(sprite.model_uniform.value.m4, scale);
-	//sprite.model.matrix[3][3] = 1;
 
 	sprite.x = pos[0];
 	sprite.y = pos[1];
