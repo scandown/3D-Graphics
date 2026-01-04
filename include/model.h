@@ -22,16 +22,11 @@ typedef struct {
 	unsigned int EBO;
 } Model;
 
-void string_search_vertex_point(int *i,float *array, char *line);
-void string_search_texture_point(int *i,float *array, char *line);
-void string_search_vertex_face(int *i, unsigned int *array, char *line);
-void string_search_texture_face(int *i, unsigned int *array, char *line);
-
 int check_int_equality(int *array1, int array1_length, int *array2, int array2_length);
 int check_float_equality(float *array1, int array1_length, float *array2, int array2_length);
 int length_to_token(char *src, char token);
 
-Model load_model(jmp_buf error, char *model_name);
-void create_buffers(Model *model);
-void send_model_to_gpu(Model *model);
-void delete_buffers(Model *model);
+Model model_load(jmp_buf error, char *model_name);
+void model_create_buffers(Model *model);
+void model_send_to_gpu(Model *model);
+void model_delete_buffers(Model *model);

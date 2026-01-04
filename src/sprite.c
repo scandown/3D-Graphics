@@ -1,21 +1,21 @@
 #include "sprite.h"
 
 
-Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location) {
+Sprite sprite_init(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location) {
 
 	Sprite sprite;
 
-	Model plane = load_model(error, "assets/plane.obj");
+	Model plane = model_load(error, "assets/plane.obj");
 
-	unsigned int texture = texture_setup(error, GL_RGBA, texture_location);
+	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
 	mat4 model_matrix;
 	glm_mat4_identity(model_matrix);
 
 	sprite.model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);
 
-	create_buffers(&plane);
-	send_model_to_gpu(&plane);
+	model_create_buffers(&plane);
+	model_send_to_gpu(&plane);
 
 
 
@@ -32,7 +32,7 @@ Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int s
 	return sprite;
 }
 
-void draw_sprite(Sprite *sprite) {
+void sprite_draw(Sprite *sprite) {
 
 		glBindTexture(GL_TEXTURE_2D, sprite->texture);
 
@@ -48,8 +48,8 @@ void draw_sprite(Sprite *sprite) {
 }
 
 
-void delete_sprite(Sprite *sprite) {
-	delete_buffers(&sprite->plane);
+void sprite_delete(Sprite *sprite) {
+	model_delete_buffers(&sprite->plane);
 
 
 	free(sprite->plane.vertices);

@@ -1,12 +1,12 @@
 #include "state.h"
 
-State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name) {
+State state_init(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name) {
 	State state;
 	state.SCR_WIDTH = SCR_WIDTH;
 	state.SCR_HEIGHT = SCR_HEIGHT;
 	state.title = name;
 
-	state.window = setup_window(state.SCR_WIDTH, state.SCR_HEIGHT, state.title);
+	state.window = window_init(state.SCR_WIDTH, state.SCR_HEIGHT, state.title);
 
 	if (state.window == NULL) {
 		longjmp(error, 1);
@@ -16,7 +16,7 @@ State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT
 }
 
 
-void setup_scene(State *game, unsigned int program, char *dimension) {
+void scene_init(State *game, unsigned int program, char *dimension) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
 	mat4 model_matrix;

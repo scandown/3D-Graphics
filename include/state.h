@@ -22,5 +22,5 @@ typedef struct {
 } State;
 
 
-State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name);
-void setup_scene(State *game, unsigned int program, char *dimension);
+State state_init(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name);
+void scene_init(State *game, unsigned int program, char *dimension);

@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 
-void print_quat(vec4 q1);
+void quat_print(vec4 q1);
 void quat_mul(vec4 q1, vec4 q2, vec4 out);
-void get_rotate_quat(float theta, vec3 axis, vec4 out);
+void quat_get_rotate(float theta, vec3 axis, vec4 out);
 
 void quat_conj(vec4 q1, vec4 out);
 float quat_mag(vec4 q1);

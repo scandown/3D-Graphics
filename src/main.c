@@ -42,7 +42,7 @@ int main() {
 
 
 	Camera *cam = malloc(sizeof(Camera));
-	camera_setup(cam, (vec3){0, 0, 1}, 0, -90);
+	camera_init(cam, (vec3){0, 0, 1}, 0, -90);
 	c_ptr = cam;
 
 
@@ -50,28 +50,28 @@ int main() {
 
 
 	//setup for opengl :3
-	State game = setup_state(error, 1920, 1080, "game");
+	State game = state_init(error, 1920, 1080, "game");
 
 
-	unsigned int vertex_shader = create_shader("src/vertex.glsl", GL_VERTEX_SHADER);
-	unsigned int fragment_shader = create_shader("src/textured.glsl", GL_FRAGMENT_SHADER);
+	unsigned int vertex_shader = shader_create("src/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int fragment_shader = shader_create("src/textured.glsl", GL_FRAGMENT_SHADER);
 
 	if (vertex_shader == 0 || fragment_shader == 0) {
 		longjmp(error, 1);
 	}
 
-	unsigned int program = create_program(vertex_shader, fragment_shader);
+	unsigned int program = program_create(vertex_shader, fragment_shader);
 	glUseProgram(program);
 
 
 
 
-	Model cube = load_model(error, "assets/cube.obj");
-	create_buffers(&cube);
-	send_model_to_gpu(&cube);
+	Model cube = model_load(error, "assets/cube.obj");
+	model_create_buffers(&cube);
+	model_send_to_gpu(&cube);
 
-	setup_scene(&game, program, "3D");
-	Sprite test = load_sprite(error, program, (vec3){0, 0, 0}, 8, "assets/smiley.png");
+	scene_init(&game, program, "3D");
+	Sprite test = sprite_init(error, program, (vec3){0, 0, 0}, 8, "assets/smiley.png");
 
 
 
@@ -82,13 +82,13 @@ int main() {
 
 
 		glfwPollEvents();
-		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, program);
+		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, program);
 		uniform_send(&game.view_uniform);
 
 
 
 		glfwSetKeyCallback(game.window, key_callback);
-		camera_movement(cam);
+		key_input(cam);
 		cursor_position_callback(game.window, cam, 0.05);
 
 		GLenum err;
@@ -99,7 +99,7 @@ int main() {
 
 
 
-		draw_sprite(&test);
+		sprite_draw(&test);
 
 		game.model_uniform.value.m4[3][0] = 0;
 		game.model_uniform.value.m4[3][1] = 0;
@@ -116,10 +116,10 @@ int main() {
 	}
 
 	
-	delete_program(program);
-	delete_buffers(&cube);
+	program_delete(program);
+	model_delete_buffers(&cube);
 
-	delete_sprite(&test);
+	sprite_delete(&test);
 	free(cam);
 
 	glfwTerminate();

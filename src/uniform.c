@@ -1,9 +1,6 @@
 #include "uniform.h"
 #include "state.h"
 
-//glGetUniformLocation(program, name);
-//glUniformMatrix4fv(space->location, 1, false, (const float *)space->matrix);
-
 Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type) {
 	Uniform uniform;
 	uniform.location = glGetUniformLocation(program, name);
@@ -92,6 +89,3 @@ void uniform_send(Uniform *uniform) {
 
 	}
 }
-
-//int rotloc = glGetUniformLocation(program, "rot");
-//glUniform4fv(rotloc, 1, result);

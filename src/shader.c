@@ -5,7 +5,7 @@
 #include "shader.h"
 
 
-unsigned int create_shader(char *file_path, GLenum type) {
+unsigned int shader_create(char *file_path, GLenum type) {
 	unsigned int shader = glCreateShader(type);
 	
 	char *string = read_file(file_path);
@@ -18,7 +18,7 @@ unsigned int create_shader(char *file_path, GLenum type) {
 	glShaderSource(shader, 1, (const char* const *)&string, NULL);
 	glCompileShader(shader);
 	
-	if (check_for_shader_errors(shader) == true) {
+	if (shader_error_check(shader) == true) {
 		return 0;
 	}
 
@@ -27,7 +27,7 @@ unsigned int create_shader(char *file_path, GLenum type) {
 	return shader;
 }
 
-int check_for_shader_errors(unsigned int shader) {
+int shader_error_check(unsigned int shader) {
 	int status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 
@@ -46,14 +46,14 @@ int check_for_shader_errors(unsigned int shader) {
 	return 0;
 }
 
-void delete_shader(unsigned int program, unsigned int shader) {
+void shader_delete(unsigned int program, unsigned int shader) {
 	glDetachShader(program, shader);
 	glDeleteShader(shader);
 }
 
 
 
-unsigned int create_program(unsigned int vertex_shader, unsigned int fragment_shader) {
+unsigned int program_create(unsigned int vertex_shader, unsigned int fragment_shader) {
 	unsigned int program = glCreateProgram();
 	glAttachShader(program, vertex_shader);
 	glAttachShader(program, fragment_shader);
@@ -62,13 +62,13 @@ unsigned int create_program(unsigned int vertex_shader, unsigned int fragment_sh
 
 
 	// cleanup
-	delete_shader(program, vertex_shader);
-	delete_shader(program, fragment_shader);
+	shader_delete(program, vertex_shader);
+	shader_delete(program, fragment_shader);
 
 	return program;
 }
 
-void delete_program(unsigned int program) {
+void program_delete(unsigned int program) {
 	glDeleteProgram(program);
 }
 

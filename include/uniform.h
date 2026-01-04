@@ -42,4 +42,3 @@ typedef struct Uniform{
 
 Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type);
 void uniform_send(Uniform *uniform);
-

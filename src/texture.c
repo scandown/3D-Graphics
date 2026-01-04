@@ -3,7 +3,7 @@
 
 #include "texture.h"
 
-unsigned int texture_setup(jmp_buf error, GLenum format, char *name) {
+unsigned int texture_init(jmp_buf error, GLenum format, char *name) {
 	unsigned int texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);

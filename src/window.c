@@ -1,7 +1,7 @@
 #include "window.h"
 
 
-GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name) {
+GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
 	// GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
 	if (!glfwInit()) {
 		return NULL;
@@ -30,9 +30,6 @@ GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name) {
 	return window;
 }
 
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }

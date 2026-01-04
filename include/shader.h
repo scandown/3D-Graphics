@@ -9,12 +9,12 @@
 
 
 
-unsigned int create_shader(char *file_path, GLenum type);
-void delete_shader(unsigned int program, unsigned int shader);
-int check_for_shader_errors(unsigned int shader);
+unsigned int shader_create(char *file_path, GLenum type);
+void shader_delete(unsigned int program, unsigned int shader);
+int shader_error_check(unsigned int shader);
 
-unsigned int create_program(unsigned int vertex_shader, unsigned int fragment_shader);
-void delete_program(unsigned int program);
+unsigned int program_create(unsigned int vertex_shader, unsigned int fragment_shader);
+void program_delete(unsigned int program);
 
 char *read_file(char *file_location);
 
