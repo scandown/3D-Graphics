@@ -1,22 +1,16 @@
 #include "state.h"
 
-State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name, char *vertex_shader_location, char *fragment_shader_location) {
+State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name) {
 	State state;
 	state.SCR_WIDTH = SCR_WIDTH;
 	state.SCR_HEIGHT = SCR_HEIGHT;
 	state.title = name;
 
 	state.window = setup_window(state.SCR_WIDTH, state.SCR_HEIGHT, state.title);
-	
-	unsigned int fragment_shader = create_shader(fragment_shader_location, GL_FRAGMENT_SHADER);
-	unsigned int vertex_shader = create_shader(vertex_shader_location, GL_VERTEX_SHADER);
-	state.program = create_program(vertex_shader, fragment_shader);
 
 	if (state.window == NULL) {
 		longjmp(error, 1);
 	}
-
-	glUseProgram(state.program);
 
 	return state;
 }

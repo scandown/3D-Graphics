@@ -1,7 +1,7 @@
 #include "sprite.h"
 
 
-Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location) {
+Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location) {
 
 	Sprite sprite;
 
@@ -9,22 +9,10 @@ Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 
 	unsigned int texture = texture_setup(error, GL_RGBA, texture_location);
 
-
-	unsigned int vertex_shader = create_shader("src/vertex.glsl", GL_VERTEX_SHADER);
-	unsigned int fragment_shader = create_shader("src/textured.glsl", GL_FRAGMENT_SHADER);
-
-	if (vertex_shader == 0 || fragment_shader == 0) {
-		longjmp(error, 1);
-	}
-
-	unsigned int light_program = create_program(vertex_shader, fragment_shader);
-
-	sprite.program = light_program;
-
 	mat4 model_matrix;
 	glm_mat4_identity(model_matrix);
 
-	sprite.model_uniform = uniform_init(sprite.program, "model", model_matrix, UNIFORM_MAT4);
+	sprite.model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);
 
 	create_buffers(&plane);
 	model_send_to_gpu(&plane);

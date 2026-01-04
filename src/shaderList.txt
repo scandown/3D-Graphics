@@ -1,2 +1,0 @@
-v:src/vertex.glsl
-f:src/textured.glsl

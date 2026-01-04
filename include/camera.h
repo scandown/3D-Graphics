@@ -29,3 +29,4 @@ void set_input_mask(int key, Camera *cam, void (*key_func)(int, long, Camera *))
 void key_check(int *key);
 void key_check_inv(int *inv_key);
 void camera_look(Camera *cam, float yaw, float pitch, mat4 view_matrix, Uniform *view_uniform, unsigned int program);
+void camera_setup(Camera *cam, vec3 pos, float pitch, float yaw);

@@ -15,7 +15,7 @@ unsigned int texture_setup(jmp_buf error, GLenum format, char *name) {
 	unsigned char *data = stbi_load(name, &width, &height, &nrChannels, 0);
 
 	if (!data) {
-		printf("Couldn't load file: %s\n", name);
+		fprintf(stderr, "Error: Couldn't load file: %s\n", name);
 		longjmp(error, 1);
 	}
 	

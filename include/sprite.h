@@ -14,12 +14,11 @@ typedef struct {
 	Uniform model_uniform;
 	Model plane;
 	unsigned int texture;
-	unsigned int program;
 	float x;
 	float y;
 	float z;
 } Sprite;
 
-Sprite load_sprite(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location);
+Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location);
 void draw_sprite(Sprite *sprite);
 void delete_sprite(Sprite *sprite);
