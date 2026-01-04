@@ -6,7 +6,6 @@
 #include <setjmp.h>
 
 #include "shader.h"
-#include "spaces.h"
 #include "model.h"
 #include "quat.h"
 #include "window.h"

@@ -2,7 +2,6 @@
 #include "glad/glad.h"
 #include "cglm/cglm.h"
 #include "GLFW/glfw3.h"
-#include "spaces.h"
 #include "uniform.h"
 
 
