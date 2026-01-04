@@ -14,7 +14,7 @@ typedef struct {
 } Array;
 
 
-Model model_load(jmp_buf error, char *model_name) {
+Model load_model(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
 
@@ -254,7 +254,7 @@ void create_buffers(Model *model) {
 	glGenBuffers(1, &model->EBO);
 }
 
-void model_send_to_gpu(Model *model) {
+void send_model_to_gpu(Model *model) {
 
 	glBindVertexArray(model->VAO);
 

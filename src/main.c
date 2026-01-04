@@ -66,9 +66,12 @@ int main() {
 
 
 
+	Model cube = load_model(error, "assets/cube.obj");
+	create_buffers(&cube);
+	send_model_to_gpu(&cube);
 
-	setup_scene(&game, program, "2D");
-	Sprite test = load_sprite(error, program, (vec3){300, 200, 0}, 8, "assets/smiley.png");
+	setup_scene(&game, program, "3D");
+	Sprite test = load_sprite(error, program, (vec3){0, 0, 0}, 8, "assets/smiley.png");
 
 
 
@@ -86,6 +89,7 @@ int main() {
 
 		glfwSetKeyCallback(game.window, key_callback);
 		camera_movement(cam);
+		cursor_position_callback(game.window, cam, 0.05);
 
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
@@ -97,12 +101,23 @@ int main() {
 
 		draw_sprite(&test);
 
+		game.model_uniform.value.m4[3][0] = 0;
+		game.model_uniform.value.m4[3][1] = 0;
+		game.model_uniform.value.m4[3][2] = 0;
+		game.model_uniform.value.m4[3][3] = 1;
+		game.model_uniform = uniform_init(program, "model", game.model_uniform.value.m4, UNIFORM_MAT4);
+		uniform_send(&game.model_uniform);
+
+		glBindVertexArray(cube.VAO);
+		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
+
 		glfwSwapBuffers(game.window);
 
 	}
 
 	
 	delete_program(program);
+	delete_buffers(&cube);
 
 	delete_sprite(&test);
 	free(cam);
