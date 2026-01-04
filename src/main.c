@@ -87,6 +87,7 @@ int main() {
 
 	// freeing unused stuff at end
 	glDeleteProgram(game.program);
+	glDeleteProgram(test.program);
 
 	delete_sprite(&test);
 	free(cam);

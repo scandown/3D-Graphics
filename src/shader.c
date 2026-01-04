@@ -4,6 +4,11 @@
 
 #include "shader.h"
 
+
+// unsigned fragment_id = create_shader("src/red.glsl", FRAGMENT_SHADER);
+// unsigned vertex_id = create_shader("src/vertex.glsl", VERTEX_SHADER);
+// create_program(vertex_id, fragment_id);
+
 char *loadShader(char *file_name, long *file_size) {
 
 	FILE *fptr = fopen(file_name, "r");	
