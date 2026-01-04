@@ -16,7 +16,7 @@ State setup_state(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT
 }
 
 
-void setup_scene(State *game, unsigned int program, char *dimension, vec3 initial_position) {
+void setup_scene(State *game, unsigned int program, char *dimension) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
 	mat4 model_matrix;
@@ -33,8 +33,6 @@ void setup_scene(State *game, unsigned int program, char *dimension, vec3 initia
 		fprintf(stderr, "Invalid dimension parameter: %s\n", dimension);
 		return;
 	}
-
-	glm_translate(game->view_uniform.value.m4, initial_position);
 
 	game->view_uniform = uniform_init(program, "view", view_matrix, UNIFORM_MAT4);
 	game->model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);

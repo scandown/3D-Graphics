@@ -42,7 +42,7 @@ int main() {
 
 
 	Camera *cam = malloc(sizeof(Camera));
-	camera_setup(cam, (vec3){0, 0, -20}, 0, -90);
+	camera_setup(cam, (vec3){0, 0, 1}, 0, -90);
 	c_ptr = cam;
 
 
@@ -54,26 +54,24 @@ int main() {
 
 
 	unsigned int vertex_shader = create_shader("src/vertex.glsl", GL_VERTEX_SHADER);
-	unsigned int fragment_shader = create_shader("src/red.glsl", GL_FRAGMENT_SHADER);
+	unsigned int fragment_shader = create_shader("src/textured.glsl", GL_FRAGMENT_SHADER);
 
 	if (vertex_shader == 0 || fragment_shader == 0) {
 		longjmp(error, 1);
 	}
 
 	unsigned int program = create_program(vertex_shader, fragment_shader);
-
-
-
-
-
 	glUseProgram(program);
-	Sprite test = load_sprite(error, program, (vec3){300, 200, 1}, 8, "assets/smiley.png");
-	setup_scene(&game, program, "2D", (vec3){0, 0, -3});
 
 
 
 
-	uniform_send(&game.view_uniform);
+
+	setup_scene(&game, program, "2D");
+	Sprite test = load_sprite(error, program, (vec3){300, 200, 0}, 8, "assets/smiley.png");
+
+
+
 
 	while (!glfwWindowShouldClose(game.window)) {
 	        glClearColor(0.1, 0.1, 0.2, 1);
@@ -82,11 +80,17 @@ int main() {
 
 		glfwPollEvents();
 		camera_look(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, program);
+		uniform_send(&game.view_uniform);
 
 
 
 		glfwSetKeyCallback(game.window, key_callback);
 		camera_movement(cam);
+
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			fprintf(stderr, "OpenGL error: %d\n", err);
+		}
 
 
 
