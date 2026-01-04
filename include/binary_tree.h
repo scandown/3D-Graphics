@@ -17,9 +17,9 @@ typedef struct bst{
 	int linked;
 } BST;
 
-BST *createnode(int value, int value2, int value3, int linked_number);
-bool insertnumber(BST **rootptr, int value, int value2, int value3, int linked_number);
-bool getnumber(BST *rootptr, int value, int value2, int value3);
-BST *getvalue(BST *rootptr, int value, int value2, int value3);
-bool free_bst(BST **rootptr);
-void print_tree(BST *rootptr);
+BST *bst_create_node(int value, int value2, int value3, int linked_number);
+bool bst_insert(BST **rootptr, int value, int value2, int value3, int linked_number);
+bool bst_get_number(BST *rootptr, int value, int value2, int value3);
+BST *bst_get_value(BST *rootptr, int value, int value2, int value3);
+bool bst_delete(BST **rootptr);
+void bst_print(BST *rootptr);

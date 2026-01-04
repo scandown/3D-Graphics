@@ -14,7 +14,7 @@ typedef struct {
 } Array;
 
 
-Model load_model(jmp_buf error, char *model_name) {
+Model model_load(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
 
@@ -98,7 +98,7 @@ Model load_model(jmp_buf error, char *model_name) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
 				free(lineHeader);
 				free(verts.items);
-				free_bst(&face_bst);
+				bst_delete(&face_bst);
 				fclose(fptr);
 				longjmp(error, 1);
 			}
@@ -110,9 +110,9 @@ Model load_model(jmp_buf error, char *model_name) {
 			}
 
 			if (face_bst == NULL) {
-				insertnumber(&face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i], indicy);
+				bst_insert(&face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i], indicy);
 
-				BST *pointer = getvalue(face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i]);
+				BST *pointer = bst_get_value(face_bst, vertexIndex[0].items[face_i], uvIndex[0].items[face_i], normalIndex[0].items[face_i]);
 				for (int i = 0; i < 3; i++) {
 					DA_PUSH(verts, temp_vertices[i].items[pointer->value.vertex]);
 				}
@@ -125,9 +125,9 @@ Model load_model(jmp_buf error, char *model_name) {
 				indicy++;
 			}
 			for (int i = 0; i < 3; i++) {
-				if (!getnumber(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i])) {
-					insertnumber(&face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i], indicy);
-					BST *pointer = getvalue(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i]);
+				if (!bst_get_number(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i])) {
+					bst_insert(&face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i], indicy);
+					BST *pointer = bst_get_value(face_bst, vertexIndex[i].items[face_i], uvIndex[i].items[face_i], normalIndex[i].items[face_i]);
 					for (int i = 0; i < 3; i++) {
 						DA_PUSH(verts, temp_vertices[i].items[pointer->value.vertex]);
 					}
@@ -148,7 +148,7 @@ Model load_model(jmp_buf error, char *model_name) {
 	unsigned int index2[face_i * 3];
 	for (int i = 0; i < face_i; i++) {
 		for (int j = 0; j < 3; j++) {
-			BST *pointer = getvalue(face_bst, vertexIndex[j].items[i], uvIndex[j].items[i], normalIndex[j].items[i]);
+			BST *pointer = bst_get_value(face_bst, vertexIndex[j].items[i], uvIndex[j].items[i], normalIndex[j].items[i]);
 			if (pointer != NULL) {
 				index2[i * 3 + j] = pointer->linked;
 			} else {
@@ -184,7 +184,7 @@ Model load_model(jmp_buf error, char *model_name) {
 		free(temp_uvs[i].items);
 	}
 
-	free_bst(&face_bst);
+	bst_delete(&face_bst);
 	
 
 
@@ -248,13 +248,13 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 
 
 
-void create_buffers(Model *model) {
+void model_create_buffers(Model *model) {
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
 	glGenBuffers(1, &model->EBO);
 }
 
-void send_model_to_gpu(Model *model) {
+void model_send_to_gpu(Model *model) {
 
 	glBindVertexArray(model->VAO);
 
@@ -276,7 +276,7 @@ void send_model_to_gpu(Model *model) {
 	glBindVertexArray(0);
 }
 
-void delete_buffers(Model *model) {
+void model_delete_buffers(Model *model) {
 	glDeleteVertexArrays(1, &model->VAO);
 	glDeleteBuffers(1, &model->VBO);
 	glDeleteBuffers(1, &model->EBO);

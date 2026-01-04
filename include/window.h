@@ -6,4 +6,4 @@
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
+GLFWwindow *window_init(unsigned int width, unsigned int height, char *name);

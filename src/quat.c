@@ -13,7 +13,7 @@ void quat_mul(vec4 q1, vec4 q2, vec4 out) {
 }
 
 
-void get_rotate_quat(float theta, vec3 axis, vec4 out) {
+void quat_get_rotate(float theta, vec3 axis, vec4 out) {
 	float ca = cos(theta/2.0);
 	float sa = sin(theta/2.0);
 
@@ -36,7 +36,7 @@ float vec_mag(vec3 v1) {
 	return sqrt((v1[0] * v1[0]) + (v1[1] * v1[1]) + (v1[2] * v1[2]));
 }
 
-void print_quat(vec4 q1) {
+void quat_print(vec4 q1) {
 	printf("q = {%f, %f, %f, %f}\n", q1[0], q1[1], q1[2], q1[3]);
 }
 

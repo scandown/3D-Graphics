@@ -19,6 +19,6 @@ typedef struct {
 	float z;
 } Sprite;
 
-Sprite load_sprite(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location);
-void draw_sprite(Sprite *sprite);
-void delete_sprite(Sprite *sprite);
+Sprite sprite_init(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location);
+void sprite_draw(Sprite *sprite);
+void sprite_delete(Sprite *sprite);
