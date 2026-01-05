@@ -81,7 +81,7 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, red_program, (vec3){0, 30, 0}, 8, "assets/smiley.png");
+	Sprite test = sprite_init(error, red_program, (vec3){100, 300, 0}, 8, "assets/smiley.png");
 
 
 
