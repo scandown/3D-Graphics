@@ -13,8 +13,8 @@ Sprite sprite_init(jmp_buf error, vec3 pos, unsigned int scale, char *texture_lo
 	return sprite;
 }
 
-void sprite_draw(Sprite *sprite, unsigned int program) {
-	model_draw(&sprite->plane, program);
+void sprite_draw(Sprite *sprite, unsigned int program, int instance_amount) {
+	model_draw_instanced(&sprite->plane, program, instance_amount);
 }
 
 
