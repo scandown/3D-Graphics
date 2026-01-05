@@ -280,6 +280,9 @@ void model_delete_buffers(Model *model) {
 	glDeleteVertexArrays(1, &model->VAO);
 	glDeleteBuffers(1, &model->VBO);
 	glDeleteBuffers(1, &model->EBO);
+
+	free(model->vertices);
+	free(model->vertex_faces);
 }
 
 void model_draw(Model *model) {

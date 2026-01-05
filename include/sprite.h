@@ -11,12 +11,7 @@
 #include "uniform.h"
 
 typedef struct {
-	Uniform model_uniform;
 	Model plane;
-	unsigned int texture;
-	float x;
-	float y;
-	float z;
 } Sprite;
 
 Sprite sprite_init(jmp_buf error, unsigned int program, vec3 pos, unsigned int scale, char *texture_location);
