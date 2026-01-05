@@ -77,8 +77,6 @@ int main() {
 	Model cube = model_load(error, "assets/cube.obj");
 	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
 
-	glm_mat4_print(cube.uniform.value.m4, stdout);
-
 
 
 
@@ -104,8 +102,6 @@ int main() {
 		glUseProgram(program);
 		scene_init(&game, program, "3D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-
-		game.view_uniform = uniform_set_data(game.view_uniform.value.m4, UNIFORM_MAT4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
 
@@ -116,18 +112,15 @@ int main() {
 		cursor_position_callback(game.window, cam, 0.05);
 
 
-		//glm_mat4_print(cube.model_uniform.value.m4, stdout);
 
 
 
 
 		model_draw(&cube, program);
 
-		glUseProgram(red_program);
+		glUseProgram(program);
 		scene_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-
-		game.view_uniform = uniform_set_data(game.view_uniform.value.m4, UNIFORM_MAT4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
 		sprite_draw(&test, program);

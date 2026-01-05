@@ -11,6 +11,7 @@ in vec3 FragPos;
 uniform sampler2D tex;
 
 void main() {
+	/*
 	vec3 lightPos = vec3(0, 3, 0);
 
 	vec3 norm = normalize(normal);
@@ -20,4 +21,6 @@ void main() {
 	vec3 diffuse = diff * vec3(1, 1, 1);
 	vec3 result = (0.1 + diffuse);
 	fragColour = vec4(result, 1) * texture(tex, TexCoord);
+	*/
+	fragColour = texture(tex, TexCoord);
 }
