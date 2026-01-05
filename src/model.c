@@ -286,14 +286,13 @@ void model_delete_buffers(Model *model) {
 }
 
 void model_draw(Model *model, unsigned int program) {
-	glBindTexture(GL_TEXTURE_2D, model->texture);
-
 	model->uniform.value.m4[3][0] = model->x;
 	model->uniform.value.m4[3][1] = model->y;
 	model->uniform.value.m4[3][2] = model->z;
 	model->uniform.value.m4[3][3] = 1;
 	uniform_send_to_gpu(&model->uniform, program, "model");
 
+	glBindTexture(GL_TEXTURE_2D, model->texture);
 	glBindVertexArray(model->VAO);
 	glDrawElements(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0);
 }
@@ -314,4 +313,5 @@ void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
 	model->z = pos[2];
 	
 	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
+	model->texture = texture;
 }
