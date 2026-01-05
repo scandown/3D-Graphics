@@ -12,7 +12,7 @@
 
 
 typedef struct {
-	Uniform model_uniform;
+	Uniform uniform;
 	unsigned int texture;
 
 	float *vertices;
@@ -20,8 +20,6 @@ typedef struct {
 	int vertex_size;
 	int vertex_face_size;
 	char *location;
-
-	unsigned int program;
 
 	unsigned int VAO;
 	unsigned int VBO;
@@ -41,5 +39,5 @@ void model_create_buffers(Model *model);
 void model_send_to_gpu(Model *model);
 void model_delete_buffers(Model *model);
 
-void model_draw(Model *model);
-void model_init(jmp_buf error, Model *model, unsigned int program, vec3 pos, char *texture_location);
+void model_draw(Model *model, unsigned int program);
+void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location);

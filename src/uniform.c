@@ -1,9 +1,9 @@
 #include "uniform.h"
 #include "state.h"
 
-Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type type) {
+
+Uniform uniform_set_data(void *value, Uniform_Type type) {
 	Uniform uniform;
-	uniform.location = glGetUniformLocation(program, name);
 	uniform.type = type;
 
 	switch (uniform.type) {
@@ -49,7 +49,9 @@ Uniform uniform_init(unsigned int program, char *name, void *value, Uniform_Type
 }
 
 
-void uniform_send(Uniform *uniform) {
+void uniform_send_to_gpu(Uniform *uniform, unsigned int program, char *name) {
+	uniform->location = glGetUniformLocation(program, name);
+
 	switch (uniform->type) {
 		case UNIFORM_FLOAT1:
 			glUniform1f(uniform->location, uniform->value.f1);

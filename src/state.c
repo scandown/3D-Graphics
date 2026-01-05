@@ -34,11 +34,11 @@ void scene_init(State *game, unsigned int program, char *dimension) {
 		return;
 	}
 
-	game->view_uniform = uniform_init(program, "view", view_matrix, UNIFORM_MAT4);
-	game->model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);
-	game->projection_uniform = uniform_init(program, "projection", projection_matrix, UNIFORM_MAT4);
+	game->view_uniform = uniform_set_data(view_matrix, UNIFORM_MAT4);
+	game->model_uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
+	game->projection_uniform = uniform_set_data(projection_matrix, UNIFORM_MAT4);
 
-	uniform_send(&game->model_uniform);
-	uniform_send(&game->view_uniform);
-	uniform_send(&game->projection_uniform);
+	uniform_send_to_gpu(&game->model_uniform, program, "model");
+	uniform_send_to_gpu(&game->view_uniform, program, "view");
+	uniform_send_to_gpu(&game->projection_uniform, program, "projection");
 }

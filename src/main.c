@@ -75,13 +75,15 @@ int main() {
 
 
 	Model cube = model_load(error, "assets/cube.obj");
-	model_init(error, &cube, program, (vec3){0, 0, -3}, "assets/smiley.png");
+	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
+
+	glm_mat4_print(cube.uniform.value.m4, stdout);
 
 
 
 
 
-	Sprite test = sprite_init(error, red_program, (vec3){100, 300, 0}, 8, "assets/smiley.png");
+	Sprite test = sprite_init(error, (vec3){100, 300, 0}, 8, "assets/smiley.png");
 
 
 
@@ -91,15 +93,21 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+		GLenum err;
+		while ((err = glGetError()) != GL_NO_ERROR) {
+			fprintf(stderr, "OpenGL error: %d\n", err);
+		}
+
+
 		glfwPollEvents();
 
 		glUseProgram(program);
-
 		scene_init(&game, program, "3D");
-		camera_rotate(cam, cam->yaw, cam->pitch, &game.view_uniform);
+		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 
-		game.view_uniform = uniform_init(program, "view", game.view_uniform.value.m4, UNIFORM_MAT4);
-		uniform_send(&game.view_uniform);
+		game.view_uniform = uniform_set_data(game.view_uniform.value.m4, UNIFORM_MAT4);
+		uniform_send_to_gpu(&game.view_uniform, program, "view");
+
 
 
 
@@ -108,24 +116,21 @@ int main() {
 		cursor_position_callback(game.window, cam, 0.05);
 
 
-		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR) {
-			fprintf(stderr, "OpenGL error: %d\n", err);
-		}
+		//glm_mat4_print(cube.model_uniform.value.m4, stdout);
 
 
 
 
-		model_draw(&cube);
+		model_draw(&cube, program);
 
 		glUseProgram(red_program);
-		scene_init(&game, red_program, "3D");
-		camera_rotate(cam, cam->yaw, cam->pitch, &game.view_uniform);
-		game.view_uniform = uniform_init(red_program, "view", game.view_uniform.value.m4, UNIFORM_MAT4);
-		uniform_send(&game.view_uniform);
+		scene_init(&game, program, "2D");
+		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 
-		sprite_draw(&test);
+		game.view_uniform = uniform_set_data(game.view_uniform.value.m4, UNIFORM_MAT4);
+		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
+		sprite_draw(&test, program);
 
 		glfwSwapBuffers(game.window);
 
