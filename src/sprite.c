@@ -34,17 +34,18 @@ Sprite sprite_init(jmp_buf error, unsigned int program, vec3 pos, unsigned int s
 
 void sprite_draw(Sprite *sprite) {
 
-		glBindTexture(GL_TEXTURE_2D, sprite->texture);
+	glBindTexture(GL_TEXTURE_2D, sprite->texture);
 
-		sprite->model_uniform.value.m4[3][0] = sprite->x;
-		sprite->model_uniform.value.m4[3][1] = sprite->y;
-		sprite->model_uniform.value.m4[3][2] = sprite->z;
-		sprite->model_uniform.value.m4[3][3] = 1;
+	sprite->model_uniform.value.m4[3][0] = sprite->x;
+	sprite->model_uniform.value.m4[3][1] = sprite->y;
+	sprite->model_uniform.value.m4[3][2] = sprite->z;
+	sprite->model_uniform.value.m4[3][3] = 1;
 
-		uniform_send(&sprite->model_uniform);
+	uniform_send(&sprite->model_uniform);
 
-		glBindVertexArray(sprite->plane.VAO);
-		glDrawElements(GL_TRIANGLES, sprite->plane.vertex_face_size, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(sprite->plane.VAO);
+	//glUseProgram(sprite->program);
+	glDrawElements(GL_TRIANGLES, sprite->plane.vertex_face_size, GL_UNSIGNED_INT, 0);
 }
 
 

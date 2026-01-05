@@ -281,3 +281,37 @@ void model_delete_buffers(Model *model) {
 	glDeleteBuffers(1, &model->VBO);
 	glDeleteBuffers(1, &model->EBO);
 }
+
+void model_draw(Model *model) {
+	glBindTexture(GL_TEXTURE_2D, model->texture);
+
+
+	model->model_uniform.value.m4[3][0] = model->x;
+	model->model_uniform.value.m4[3][1] = model->y;
+	model->model_uniform.value.m4[3][2] = model->z;
+	model->model_uniform.value.m4[3][3] = 1;
+	uniform_send(&model->model_uniform);
+
+	glUseProgram(model->program);
+	glBindVertexArray(model->VAO);
+	glDrawElements(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0);
+}
+
+
+void model_init(jmp_buf error, Model *model, unsigned int program, vec3 pos, char *texture_location) {
+	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
+
+	mat4 model_matrix;
+	glm_mat4_identity(model_matrix);
+
+	model->model_uniform = uniform_init(program, "model", model_matrix, UNIFORM_MAT4);
+
+	model_create_buffers(model);
+	model_send_to_gpu(model);
+
+	model->x = pos[0];
+	model->y = pos[1];
+	model->z = pos[2];
+
+	model->program = program;
+}

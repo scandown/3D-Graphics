@@ -60,17 +60,28 @@ int main() {
 	}
 
 	unsigned int program = program_create(vertex_shader, fragment_shader);
-	glUseProgram(program);
 
+
+
+	vertex_shader = shader_create("src/vertex.glsl", GL_VERTEX_SHADER);
+	fragment_shader = shader_create("src/red.glsl", GL_FRAGMENT_SHADER);
+
+	if (vertex_shader == 0 || fragment_shader == 0) {
+		longjmp(error, 1);
+	}
+
+	unsigned int red_program = program_create(vertex_shader, fragment_shader);
 
 
 
 	Model cube = model_load(error, "assets/cube.obj");
-	model_create_buffers(&cube);
-	model_send_to_gpu(&cube);
+	model_init(error, &cube, program, (vec3){0, 0, -3}, "assets/smiley.png");
 
-	scene_init(&game, program, "3D");
-	Sprite test = sprite_init(error, program, (vec3){0, 0, 0}, 8, "assets/smiley.png");
+
+
+
+
+	Sprite test = sprite_init(error, red_program, (vec3){0, 30, 0}, 8, "assets/smiley.png");
 
 
 
@@ -81,7 +92,13 @@ int main() {
 
 
 		glfwPollEvents();
-		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4, &game.view_uniform, program);
+
+		glUseProgram(program);
+
+		scene_init(&game, program, "3D");
+		camera_rotate(cam, cam->yaw, cam->pitch, &game.view_uniform);
+
+		game.view_uniform = uniform_init(program, "view", game.view_uniform.value.m4, UNIFORM_MAT4);
 		uniform_send(&game.view_uniform);
 
 
@@ -89,6 +106,7 @@ int main() {
 		glfwSetKeyCallback(game.window, key_callback);
 		key_input(cam);
 		cursor_position_callback(game.window, cam, 0.05);
+
 
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
@@ -98,17 +116,16 @@ int main() {
 
 
 
+		model_draw(&cube);
+
+		glUseProgram(red_program);
+		scene_init(&game, red_program, "3D");
+		camera_rotate(cam, cam->yaw, cam->pitch, &game.view_uniform);
+		game.view_uniform = uniform_init(red_program, "view", game.view_uniform.value.m4, UNIFORM_MAT4);
+		uniform_send(&game.view_uniform);
+
 		sprite_draw(&test);
 
-		game.model_uniform.value.m4[3][0] = 0;
-		game.model_uniform.value.m4[3][1] = 0;
-		game.model_uniform.value.m4[3][2] = 0;
-		game.model_uniform.value.m4[3][3] = 1;
-		game.model_uniform = uniform_init(program, "model", game.model_uniform.value.m4, UNIFORM_MAT4);
-		uniform_send(&game.model_uniform);
-
-		glBindVertexArray(cube.VAO);
-		glDrawElements(GL_TRIANGLES, cube.vertex_face_size, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(game.window);
 
@@ -116,6 +133,7 @@ int main() {
 
 	
 	program_delete(program);
+	program_delete(red_program);
 	model_delete_buffers(&cube);
 
 	sprite_delete(&test);
