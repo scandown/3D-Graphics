@@ -52,7 +52,7 @@ int main() {
 	State game = state_init(error, 1920, 1080, "game");
 
 
-	unsigned int vertex_shader = shader_create("src/vertex.glsl", GL_VERTEX_SHADER);
+	unsigned int vertex_shader = shader_create("src/vertex_in.glsl", GL_VERTEX_SHADER);
 	unsigned int fragment_shader = shader_create("src/textured.glsl", GL_FRAGMENT_SHADER);
 
 	if (vertex_shader == 0 || fragment_shader == 0) {
@@ -81,9 +81,20 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, (vec3){100, 300, 0}, 8, "assets/smiley.png");
+	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 8, "assets/smiley.png");
 
 
+	vec2 instanced_positions[100];
+	int index = 0;
+	float offset = 0.1;
+	for (int y = 0; y < 10; y++) {
+		for (int x = 0; x < 10; x++) {
+			vec2 translation;
+			translation[0] = x * 10;
+			translation[1] = y * 10;
+			glm_vec2_copy(translation, instanced_positions[index++]);
+		}
+	}
 
 
 	while (!glfwWindowShouldClose(game.window)) {
@@ -99,10 +110,10 @@ int main() {
 
 		glfwPollEvents();
 
-		glUseProgram(program);
-		scene_init(&game, program, "3D");
+		glUseProgram(red_program);
+		scene_init(&game, red_program, "3D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-		uniform_send_to_gpu(&game.view_uniform, program, "view");
+		uniform_send_to_gpu(&game.view_uniform, red_program, "view");
 
 
 
@@ -119,11 +130,24 @@ int main() {
 		model_draw(&cube, program);
 
 		glUseProgram(program);
+		
+		for (int i = 0; i < 100; i++) {
+			Uniform trans;
+			trans = uniform_set_data(instanced_positions[i], UNIFORM_FLOAT2);
+			char uniform_number[4];
+			sprintf(uniform_number, "%d", i);
+
+			char uniform_name[20] = "offsets[";
+			strcat(uniform_name, uniform_number);
+			strcat(uniform_name, "]");
+
+			uniform_send_to_gpu(&trans, program, uniform_name);
+		}
 		scene_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program);
+		sprite_draw(&test, program, 100);
 
 		glfwSwapBuffers(game.window);
 

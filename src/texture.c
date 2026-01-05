@@ -11,7 +11,7 @@ unsigned int texture_init(jmp_buf error, GLenum format, char *name) {
 	int width;
 	int height;
 	int nrChannels;
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 	unsigned char *data = stbi_load(name, &width, &height, &nrChannels, 0);
 
 	if (!data) {
