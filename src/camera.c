@@ -157,7 +157,7 @@ void key_input(Camera *cam) {
 		}
 	}
 }
-void camera_rotate(Camera *cam, float yaw, float pitch, Uniform *view_uniform) {
+void camera_rotate(Camera *cam, float yaw, float pitch, mat4 view) {
 	//camera_look(cam, yaw, pitch, &view);
 	vec3 direction;
 	direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
@@ -167,7 +167,7 @@ void camera_rotate(Camera *cam, float yaw, float pitch, Uniform *view_uniform) {
 	vec3 camera_total_front;
 	glm_vec3_copy(cam->front, camera_total_front);
 	glm_vec3_add(cam->pos, cam->front, camera_total_front);
-	glm_lookat(cam->pos, camera_total_front, cam->up, view_uniform->value.m4);
+	glm_lookat(cam->pos, camera_total_front, cam->up, view);
 }
 
 void camera_init(Camera *cam, vec3 pos, float pitch, float yaw) {
