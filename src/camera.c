@@ -151,17 +151,13 @@ void key_input(Camera *cam) {
 				case GLFW_KEY_SPACE:
 					cam->pos[1] += cameraSpeed;
 					break;
-				case GLFW_KEY_LEFT_SHIFT:
-					//cam->pos[1] -= cameraSpeed;
-					cam->pos[1] = 10;
-					break;
 				default:
 					break;
 			}
 		}
 	}
 }
-void camera_rotate(Camera *cam, float yaw, float pitch, mat4 view_matrix, Uniform *view_uniform, unsigned int program) {
+void camera_rotate(Camera *cam, float yaw, float pitch, Uniform *view_uniform) {
 	//camera_look(cam, yaw, pitch, &view);
 	vec3 direction;
 	direction[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
@@ -171,9 +167,7 @@ void camera_rotate(Camera *cam, float yaw, float pitch, mat4 view_matrix, Unifor
 	vec3 camera_total_front;
 	glm_vec3_copy(cam->front, camera_total_front);
 	glm_vec3_add(cam->pos, cam->front, camera_total_front);
-	glm_lookat(cam->pos, camera_total_front, cam->up, view_matrix);
-
-	*view_uniform = uniform_init(program, "view", view_matrix, UNIFORM_MAT4);
+	glm_lookat(cam->pos, camera_total_front, cam->up, view_uniform->value.m4);
 }
 
 void camera_init(Camera *cam, vec3 pos, float pitch, float yaw) {
