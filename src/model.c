@@ -248,13 +248,12 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 
 
 
-void model_create_buffers(Model *model) {
+void model_send_to_gpu(Model *model) {
+
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
 	glGenBuffers(1, &model->EBO);
-}
 
-void model_send_to_gpu(Model *model) {
 
 	glBindVertexArray(model->VAO);
 
@@ -276,10 +275,49 @@ void model_send_to_gpu(Model *model) {
 	glBindVertexArray(0);
 }
 
+void model_send_to_gpu_instanced(Model *model, vec2 *translations) {
+
+	glGenVertexArrays(1, &model->VAO);
+	glGenBuffers(1, &model->VBO);
+	glGenBuffers(1, &model->EBO);
+	glGenBuffers(1, &model->instanceVBO);
+
+
+	glBindVertexArray(model->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
+	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, model->instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * 100, translations, GL_STATIC_DRAW);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, model->instanceVBO);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
+	glVertexAttribDivisor(3, 1);
+	glEnableVertexAttribArray(3);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void model_delete_buffers(Model *model) {
 	glDeleteVertexArrays(1, &model->VAO);
 	glDeleteBuffers(1, &model->VBO);
 	glDeleteBuffers(1, &model->EBO);
+	glDeleteBuffers(1, &model->instanceVBO);
 
 	free(model->vertices);
 	free(model->vertex_faces);
@@ -310,15 +348,18 @@ void model_draw_instanced(Model *model, unsigned int program, unsigned int insta
 }
 
 
-void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
+void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, bool instanced, vec2 *instance_array) {
 	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
 	mat4 model_matrix;
 	glm_mat4_identity(model_matrix);
 
+	if (instanced) {
+		model_send_to_gpu_instanced(model, instance_array);
+	} else {
+		model_send_to_gpu(model);
+	}
 
-	model_create_buffers(model);
-	model_send_to_gpu(model);
 
 	model->x = pos[0];
 	model->y = pos[1];
