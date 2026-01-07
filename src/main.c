@@ -75,13 +75,7 @@ int main() {
 
 
 	Model cube = model_load(error, "assets/cube.obj");
-	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
-
-
-
-
-
-	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 8, "assets/smiley.png");
+	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png", false, NULL);
 
 
 	vec2 instanced_positions[100];
@@ -95,6 +89,12 @@ int main() {
 			glm_vec2_copy(translation, instanced_positions[index++]);
 		}
 	}
+
+
+
+	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 8, "assets/smiley.png", instanced_positions);
+
+
 
 
 	while (!glfwWindowShouldClose(game.window)) {
@@ -131,18 +131,6 @@ int main() {
 
 		glUseProgram(program);
 		
-		for (int i = 0; i < 100; i++) {
-			Uniform trans;
-			trans = uniform_set_data(instanced_positions[i], UNIFORM_FLOAT2);
-			char uniform_number[4];
-			sprintf(uniform_number, "%d", i);
-
-			char uniform_name[20] = "offsets[";
-			strcat(uniform_name, uniform_number);
-			strcat(uniform_name, "]");
-
-			uniform_send_to_gpu(&trans, program, uniform_name);
-		}
 		scene_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");

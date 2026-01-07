@@ -24,6 +24,7 @@ typedef struct {
 	unsigned int VAO;
 	unsigned int VBO;
 	unsigned int EBO;
+	unsigned int instanceVBO;
 
 	float x;
 	float y;
@@ -36,9 +37,9 @@ int length_to_token(char *src, char token);
 
 Model model_load(jmp_buf error, char *model_name);
 void model_create_buffers(Model *model);
-void model_send_to_gpu(Model *model);
 void model_delete_buffers(Model *model);
 
 void model_draw(Model *model, unsigned int program);
 void model_draw_instanced(Model *model, unsigned int program, unsigned int instance_amount);
-void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location);
+void model_send_to_gpu_instanced(Model *model, vec2 *translations);
+void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, bool instanced, vec2 *instance_array);
