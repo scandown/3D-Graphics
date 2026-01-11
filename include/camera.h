@@ -18,6 +18,8 @@ typedef struct {
 	float yaw;
 	double prev_xpos;
 	double prev_ypos;
+
+	mat4 view;
 } Camera;
 
 

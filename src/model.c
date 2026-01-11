@@ -275,7 +275,7 @@ void model_send_to_gpu(Model *model) {
 	glBindVertexArray(0);
 }
 
-void model_send_to_gpu_instanced(Model *model, vec2 *translations) {
+void model_send_to_gpu_instanced(Model *model, vec2 *translations, int translation_size) {
 
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
@@ -292,7 +292,7 @@ void model_send_to_gpu_instanced(Model *model, vec2 *translations) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->instanceVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * 100, translations, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, translations, GL_STATIC_DRAW);
 
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
@@ -347,18 +347,30 @@ void model_draw_instanced(Model *model, unsigned int program, unsigned int insta
 	glDrawElementsInstanced(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0, instance_amount);
 }
 
-
-void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, bool instanced, vec2 *instance_array) {
+void model_init_instanced(jmp_buf error, Model *model, vec3 pos, char *texture_location, vec2 *instance_array, int instance_amount) {
 	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
 	mat4 model_matrix;
 	glm_mat4_identity(model_matrix);
 
-	if (instanced) {
-		model_send_to_gpu_instanced(model, instance_array);
-	} else {
-		model_send_to_gpu(model);
-	}
+	model_send_to_gpu_instanced(model, instance_array, instance_amount);
+
+
+	model->x = pos[0];
+	model->y = pos[1];
+	model->z = pos[2];
+	
+	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
+	model->texture = texture;
+}
+
+void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
+	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
+
+	mat4 model_matrix;
+	glm_mat4_identity(model_matrix);
+
+	model_send_to_gpu(model);
 
 
 	model->x = pos[0];

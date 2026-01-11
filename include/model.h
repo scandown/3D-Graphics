@@ -41,5 +41,6 @@ void model_delete_buffers(Model *model);
 
 void model_draw(Model *model, unsigned int program);
 void model_draw_instanced(Model *model, unsigned int program, unsigned int instance_amount);
-void model_send_to_gpu_instanced(Model *model, vec2 *translations);
-void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, bool instanced, vec2 *instance_array);
+void model_send_to_gpu_instanced(Model *model, vec2 *translations, int translation_size);
+void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location);
+void model_init_instanced(jmp_buf error, Model *model, vec3 pos, char *texture_location, vec2 *instance_array, int instance_amount);

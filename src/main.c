@@ -16,6 +16,11 @@
 #include "dynamic_array.h"
 #include "sprite.h"
 
+#define WIDTH 640
+#define HEIGHT 360
+
+#define CHAR_WIDTH 80
+#define CHAR_HEIGHT 24
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -75,24 +80,24 @@ int main() {
 
 
 	Model cube = model_load(error, "assets/cube.obj");
-	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png", false, NULL);
+	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
 
 
-	vec2 instanced_positions[100];
+	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
 	int index = 0;
-	float offset = 0.1;
-	for (int y = 0; y < 10; y++) {
-		for (int x = 0; x < 10; x++) {
+	for (int y = 0; y < CHAR_HEIGHT; y++) {
+		for (int x = 0; x < CHAR_WIDTH; x++) {
 			vec2 translation;
-			translation[0] = x * 10;
-			translation[1] = y * 10;
+			translation[0] = x * (WIDTH / CHAR_WIDTH);
+			translation[1] = y * (HEIGHT / CHAR_HEIGHT);
+
 			glm_vec2_copy(translation, instanced_positions[index++]);
 		}
 	}
 
 
 
-	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 8, "assets/smiley.png", instanced_positions);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT);
 
 
 
@@ -135,7 +140,7 @@ int main() {
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, 100);
+		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
 
 		glfwSwapBuffers(game.window);
 
