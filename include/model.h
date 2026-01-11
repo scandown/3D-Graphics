@@ -44,3 +44,7 @@ void model_draw_instanced(Model *model, unsigned int program, unsigned int insta
 void model_send_to_gpu_instanced(Model *model, vec2 *translations, int translation_size);
 void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location);
 void model_init_instanced(jmp_buf error, Model *model, vec3 pos, char *texture_location, vec2 *instance_array, int instance_amount);
+
+
+
+void sprite_generate_model(Model *model, int width, int height) {
