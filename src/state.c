@@ -26,9 +26,9 @@ void scene_init(State *game, unsigned int program, char *dimension) {
 
 
 	if (strncmp(dimension, "2D", 2) == 0) {
-		glm_ortho(0, 640, 0, 360, 0.1, 1000, projection_matrix);
+		glm_ortho(0, 640, 0, 360, 0.1, 100000, projection_matrix);
 	} else if (strncmp(dimension, "3D", 2) == 0) {
-		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 1000, projection_matrix);
+		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100000, projection_matrix);
 	} else {
 		fprintf(stderr, "Invalid dimension parameter: %s\n", dimension);
 		return;
