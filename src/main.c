@@ -102,7 +102,7 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT, WIDTH/CHAR_WIDTH, HEIGHT/CHAR_HEIGHT);
 
 
 
@@ -146,7 +146,7 @@ int main() {
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		//sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
+		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
 
 		glfwSwapBuffers(game.window);
 

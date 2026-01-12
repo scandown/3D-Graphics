@@ -14,7 +14,7 @@ typedef struct {
 	Model plane;
 } Sprite;
 
-Sprite sprite_init(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location, vec2 *translation, int instance_amount);
+Sprite sprite_init(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location, vec2 *translation, int instance_amount, int width, int height);
 void sprite_draw(Sprite *sprite, unsigned int program, int instance_amount);
 void sprite_delete(Sprite *sprite);
 
