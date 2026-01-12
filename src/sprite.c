@@ -32,20 +32,22 @@ void sprite_delete(Sprite *sprite) {
 
 void sprite_generate_model(Model *model, int width, int height) {
 	// vertex, uv, normal
-	unsigned int vertices[8 * 4] = {
-		0, 0, 0,	0, 0,	0, 0, 0,
-		1, 0, 0,	0, 0,	0, 0, 0,
-		1, 1, 0,	0, 0,	0, 0, 0,
-		0, 1, 0,	0, 0,	0, 0, 0
-	}
+	float vertices[8 * 4] = {
+		0, 0, 0,		0, 0,	0, 0, 0,
+		width, 0, 0,		0, 0,	0, 0, 0,
+		width, height, 0,	0, 0,	0, 0, 0,
+		0, height, 0,		0, 0,	0, 0, 0
+	};
 
 	unsigned int faces[3 * 2] = {
-		0, 2, 1,
+		0, 1, 2,
 		0, 3, 2
-	}
+	};
 
-	memcpy(model->vertices, vertices, 8 * 4);
-	memcpy(model->vertex_faces, faces, 3 * 2);
+	model->vertices = malloc(sizeof(float) * 8 * 4);
+	model->vertex_faces = malloc(sizeof(unsigned int) * 3 * 2);
+	memcpy(model->vertices, vertices, sizeof(float) * 8 * 4);
+	memcpy(model->vertex_faces, faces, sizeof(unsigned int) * 3 * 2);
 	model->vertex_size = 8 * 4;
 	model->vertex_face_size = 3 * 2;
 

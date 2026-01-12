@@ -1,14 +1,14 @@
 #version 330 core
 
 struct quat{
-       float w;
        float i;
        float j;
        float k;
+       float w;
 };
 
 quat vec_to_quat(vec3 v1) {
-       return quat(0.0, v1.x, v1.y, v1.z);
+       return quat(v1.x, v1.y, v1.z, 0.0);
 }
 
 quat quat_mul(quat q1, quat q2) {
@@ -18,7 +18,7 @@ quat quat_mul(quat q1, quat q2) {
        float scalar = q1.w * q2.w - dot(q1_i, q2_i);
        vec3 imaginary = (q2_i * q1.w) + (q1_i * q2.w) + cross(q1_i, q2_i);
 
-       return quat(scalar, imaginary.x, imaginary.y, imaginary.z);
+       return quat(imaginary.x, imaginary.y, imaginary.z, scalar);
 }
 
 
@@ -54,7 +54,7 @@ void main() {
 
 
 	quat rot_q = quat(rot.x, rot.y, rot.z, rot.w);
-	quat rot_q_conj = quat(rot.x, -rot.y, -rot.z, -rot.w);
+	quat rot_q_conj = quat(-rot.x, -rot.y, -rot.z, rot.w);
 	quat qp = vec_to_quat(aPos);
 	quat rotated_pos = quat_mul(rot_q, qp);
 	rotated_pos = quat_mul(rotated_pos, rot_q_conj);

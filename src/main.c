@@ -78,6 +78,11 @@ int main() {
 	unsigned int red_program = program_create(vertex_shader, fragment_shader);
 
 
+	//Model spr = model_load(error, "assets/plane.obj");
+	Model spr;
+	sprite_generate_model(&spr, 300, 30);
+	model_init(error, &spr, (vec3){-3, 0, -5}, "assets/smiley.png");
+//void sprite_generate_model(Model *model, int width, int height) {
 
 	Model cube = model_load(error, "assets/cube.obj");
 	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
@@ -116,7 +121,7 @@ int main() {
 		glfwPollEvents();
 
 		glUseProgram(red_program);
-		scene_init(&game, red_program, "3D");
+		scene_init(&game, red_program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, red_program, "view");
 
@@ -132,7 +137,8 @@ int main() {
 
 
 
-		model_draw(&cube, program);
+		//model_draw(&cube, red_program);
+		model_draw(&spr, red_program);
 
 		glUseProgram(program);
 		
@@ -140,7 +146,7 @@ int main() {
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
+		//sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
 
 		glfwSwapBuffers(game.window);
 
@@ -150,6 +156,7 @@ int main() {
 	program_delete(program);
 	program_delete(red_program);
 	model_delete_buffers(&cube);
+	model_delete_buffers(&spr);
 
 	sprite_delete(&test);
 	free(cam);
