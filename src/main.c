@@ -67,27 +67,6 @@ int main() {
 	unsigned int program = program_create(vertex_shader, fragment_shader);
 
 
-
-	vertex_shader = shader_create("src/vertex.glsl", GL_VERTEX_SHADER);
-	fragment_shader = shader_create("src/red.glsl", GL_FRAGMENT_SHADER);
-
-	if (vertex_shader == 0 || fragment_shader == 0) {
-		longjmp(error, 1);
-	}
-
-	unsigned int red_program = program_create(vertex_shader, fragment_shader);
-
-
-	//Model spr = model_load(error, "assets/plane.obj");
-	Model spr;
-	sprite_generate_model(&spr, 300, 30);
-	model_init(error, &spr, (vec3){-3, 0, -5}, "assets/smiley.png");
-//void sprite_generate_model(Model *model, int width, int height) {
-
-	Model cube = model_load(error, "assets/cube.obj");
-	model_init(error, &cube, (vec3){0, 0, -3}, "assets/smiley.png");
-
-
 	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
 	int index = 0;
 	for (int y = 0; y < CHAR_HEIGHT; y++) {
@@ -120,11 +99,6 @@ int main() {
 
 		glfwPollEvents();
 
-		glUseProgram(red_program);
-		scene_init(&game, red_program, "2D");
-		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-		uniform_send_to_gpu(&game.view_uniform, red_program, "view");
-
 
 
 
@@ -133,32 +107,27 @@ int main() {
 		cursor_position_callback(game.window, cam, 0.05);
 
 
-
-
-
-
-		//model_draw(&cube, red_program);
-		model_draw(&spr, red_program);
-
 		glUseProgram(program);
 		
-		scene_init(&game, program, "2D");
+		matrix_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
+		sprite_draw(&test, program, 1);
 
 		glfwSwapBuffers(game.window);
 
+
+		static float b = 0.1;
+		Uniform yes = uniform_set_data(&b, UNIFORM_FLOAT1);
+		uniform_send_to_gpu(&yes, program, "yes");
+		b += 0.01;
 	}
 
 	
 	program_delete(program);
-	program_delete(red_program);
-	model_delete_buffers(&cube);
-	model_delete_buffers(&spr);
-
 	sprite_delete(&test);
+
 	free(cam);
 
 	glfwTerminate();

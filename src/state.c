@@ -16,7 +16,7 @@ State state_init(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT,
 }
 
 
-void scene_init(State *game, unsigned int program, char *dimension) {
+void matrix_init(State *game, unsigned int program, char *dimension) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
 	mat4 model_matrix;
