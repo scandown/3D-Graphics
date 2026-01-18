@@ -8,8 +8,6 @@ uniform sampler2D tex;
 
 vec2 atlasSize = vec2(2.0, 1.0);
 
-vec2 spr_num2 = vec2(1.0, 1.0);
-
 void main() {
 
 	vec2 spr_num_offset = spr_num / atlasSize;

@@ -19,8 +19,8 @@
 #define WIDTH 640
 #define HEIGHT 360
 
-#define CHAR_WIDTH 2
-#define CHAR_HEIGHT 2
+#define CHAR_WIDTH 80
+#define CHAR_HEIGHT 24
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -88,12 +88,19 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 8, 15);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, model->instance_spr_VBO);
 
 
 
-
+		float b[2] = {0.0, 0.0};
 	while (!glfwWindowShouldClose(game.window)) {
+		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
+		b[0] += 0.01;
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * 10, sizeof(vec2), b);
+
+
 	        glClearColor(0.1, 0.1, 0.2, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -120,7 +127,7 @@ int main() {
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, 4);
+		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
 
 		glfwSwapBuffers(game.window);
 
