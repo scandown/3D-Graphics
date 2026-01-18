@@ -19,8 +19,8 @@
 #define WIDTH 640
 #define HEIGHT 360
 
-#define CHAR_WIDTH 80
-#define CHAR_HEIGHT 24
+#define CHAR_WIDTH 1
+#define CHAR_HEIGHT 1
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -81,7 +81,7 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT, WIDTH/CHAR_WIDTH, HEIGHT/CHAR_HEIGHT);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
 
 
 
