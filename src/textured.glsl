@@ -2,19 +2,16 @@
 
 out vec4 fragColour;
 in vec2 uv;
+in vec2 spr_num;
 
 uniform sampler2D tex;
-uniform float yes;
 
-int sizeX = 2;
-int sizeY = 1;
+vec2 atlasSize = vec2(2.0, 1.0);
 
-int sprX = 2;
-int sprY = 1;
+vec2 spr_num2 = vec2(1.0, 1.0);
 
 void main() {
-	// get percentage of sprX to sizeX to put it into uv coords
-	float uvX = sprX / sizeX;
-	float uvY = sprY / sizeY; 
-	fragColour = texture(tex, vec2((uv.x / sizeX) + uvX, (uv.y / sizeY)));
+
+	vec2 spr_num_offset = spr_num / atlasSize;
+	fragColour = texture(tex, uv / atlasSize + spr_num_offset);
 }

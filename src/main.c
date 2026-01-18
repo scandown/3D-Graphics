@@ -19,8 +19,8 @@
 #define WIDTH 640
 #define HEIGHT 360
 
-#define CHAR_WIDTH 1
-#define CHAR_HEIGHT 1
+#define CHAR_WIDTH 2
+#define CHAR_HEIGHT 2
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 void processInput(GLFWwindow *window);
@@ -68,6 +68,7 @@ int main() {
 
 
 	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
+	vec2 instanced_spr_num[CHAR_WIDTH * CHAR_HEIGHT];
 	int index = 0;
 	for (int y = 0; y < CHAR_HEIGHT; y++) {
 		for (int x = 0; x < CHAR_WIDTH; x++) {
@@ -75,13 +76,19 @@ int main() {
 			translation[0] = x * (WIDTH / CHAR_WIDTH);
 			translation[1] = y * (HEIGHT / CHAR_HEIGHT);
 
-			glm_vec2_copy(translation, instanced_positions[index++]);
+			vec2 spr_num;
+			spr_num[0] = x;
+			spr_num[1] = y;
+
+			glm_vec2_copy(translation, instanced_positions[index]);
+			glm_vec2_copy(spr_num, instanced_spr_num[index]);
+			index++;
 		}
 	}
 
 
 
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
 
 
 
@@ -113,7 +120,7 @@ int main() {
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, 1);
+		sprite_draw(&test, program, 4);
 
 		glfwSwapBuffers(game.window);
 
