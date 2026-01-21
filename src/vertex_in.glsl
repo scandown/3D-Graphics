@@ -5,6 +5,7 @@ layout (location = 1) in vec2 aUV;
 layout (location = 2) in vec3 aNormal;
 
 
+// 
 layout (location = 3) in vec2 aOffset;
 layout (location = 4) in vec2 aSpr;
 
