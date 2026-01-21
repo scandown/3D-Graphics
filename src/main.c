@@ -73,12 +73,12 @@ int main() {
 	for (int y = 0; y < CHAR_HEIGHT; y++) {
 		for (int x = 0; x < CHAR_WIDTH; x++) {
 			vec2 translation;
-			translation[0] = x * (WIDTH / CHAR_WIDTH);
-			translation[1] = y * (HEIGHT / CHAR_HEIGHT);
+			translation[0] = x * 16;//(WIDTH / CHAR_WIDTH);
+			translation[1] = y * 16;//(HEIGHT / CHAR_HEIGHT);
 
 			vec2 spr_num;
-			spr_num[0] = x;
-			spr_num[1] = y;
+			spr_num[0] = 0;
+			spr_num[1] = 1;
 
 			glm_vec2_copy(translation, instanced_positions[index]);
 			glm_vec2_copy(spr_num, instanced_spr_num[index]);
@@ -88,17 +88,15 @@ int main() {
 
 
 
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 8, 15);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, model->instance_spr_VBO);
-
-
-
-		float b[2] = {0.0, 0.0};
+	float b[2] = {1.0, 1.0};
+	float b2[2] = {1.0, 0.0};
 	while (!glfwWindowShouldClose(game.window)) {
 		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
-		b[0] += 0.01;
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * 10, sizeof(vec2), b);
+
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), b);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 	        glClearColor(0.1, 0.1, 0.2, 1);
@@ -131,11 +129,6 @@ int main() {
 
 		glfwSwapBuffers(game.window);
 
-
-		static float b = 0.1;
-		Uniform yes = uniform_set_data(&b, UNIFORM_FLOAT1);
-		uniform_send_to_gpu(&yes, program, "yes");
-		b += 0.01;
 	}
 
 	
