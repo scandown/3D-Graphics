@@ -45,35 +45,17 @@ int main() {
 	State game = state_init(error, 1920, 1080, "game");
 
 
-
-
-
-
-
-	unsigned int vertex_shader = shader_create("src/vertex_in.glsl", GL_VERTEX_SHADER);
-	unsigned int fragment_shader = shader_create("src/textured.glsl", GL_FRAGMENT_SHADER);
-
-	if (vertex_shader == 0 || fragment_shader == 0) {
-		longjmp(error, 1);
-	}
-
-	unsigned int program = program_create(vertex_shader, fragment_shader);
-
-
-
+	unsigned int program = program_init(error, "src/vertex_in.glsl", "src/fragment.glsl");
 
 
 
 	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
 	vec2 instanced_spr_num[CHAR_WIDTH * CHAR_HEIGHT];
 	sprite_send_instanced_positions(instanced_positions, instanced_spr_num, CHAR_WIDTH, CHAR_HEIGHT);
-
-
-
 	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
 
-	float b[2] = {1.0, 1.0};
-	float b2[2] = {1.0, 0.0};
+
+
 	while (!glfwWindowShouldClose(game.window)) {
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
@@ -88,7 +70,7 @@ int main() {
 
 
 		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), b);
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), (vec2){1.0, 1.0});
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -113,7 +95,6 @@ int main() {
 	
 	program_delete(program);
 	sprite_delete(&test);
-
 	free(cam);
 
 	glfwTerminate();
