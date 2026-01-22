@@ -86,29 +86,27 @@ int main() {
 	float b[2] = {1.0, 1.0};
 	float b2[2] = {1.0, 0.0};
 	while (!glfwWindowShouldClose(game.window)) {
-		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
-
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), b);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-	        glClearColor(0.1, 0.1, 0.2, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
 			fprintf(stderr, "OpenGL error: %d\n", err);
 		}
 
 
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	        glClearColor(0.1, 0.1, 0.2, 1);
 		glfwPollEvents();
 
 
+		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), b);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-		key_input(game.window, cam);
+
+
 		cursor_position_callback(game.window, cam, 0.05);
+		key_input(game.window, cam);
 
 
 		glUseProgram(program);
