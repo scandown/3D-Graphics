@@ -24,14 +24,5 @@ typedef struct {
 
 
 
-
-void key_or(int mask_val, long mask, Camera *cam);
-void key_not(int mask_val, long mask, Camera *cam);
-void key_check(int *key);
-void key_check_inv(int *inv_key);
-
-
-void set_input_mask(int key, Camera *cam, void (*key_func)(int, long, Camera *));
-void key_input(Camera *cam);
 void camera_rotate(Camera *cam, float yaw, float pitch, mat4 view);
 void camera_init(Camera *cam, vec3 pos, float pitch, float yaw);
