@@ -100,25 +100,3 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
-
-
-
-void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity) {
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
-
-	double xpos_diff = xpos - cam->prev_xpos;
-	double ypos_diff = -(ypos - cam->prev_ypos);
-
-	cam->prev_xpos = xpos;
-	cam->prev_ypos = ypos;
-
-	cam->pitch += ypos_diff * sensitivity;
-	if (cam->pitch > 89.9) {
-		cam->pitch = 89.9;
-	} else if (cam->pitch < -89.9) {
-		cam->pitch = -89.9;
-	}
-	cam->yaw += xpos_diff * sensitivity;
-
-}
