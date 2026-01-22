@@ -97,3 +97,16 @@ char *read_file(char *file_location) {
 
 	return file;
 }
+
+
+unsigned int program_init(jmp_buf error, char *vertex_shader, char *fragment_shader) {
+	unsigned int vertex_shader_id = shader_create("src/vertex_in.glsl", GL_VERTEX_SHADER);
+	unsigned int fragment_shader_id = shader_create("src/textured.glsl", GL_FRAGMENT_SHADER);
+
+	if (vertex_shader_id == 0 || fragment_shader_id == 0) {
+		longjmp(error, 1);
+	}
+
+	unsigned int program = program_create(vertex_shader_id, fragment_shader_id);
+	return program;
+}
