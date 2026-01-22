@@ -24,19 +24,12 @@
 #define CHAR_HEIGHT 24
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
-void processInput(GLFWwindow *window);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 typedef struct {
 	float *items;
 	size_t count;
 	size_t capacity;
 } Array;
-
-
-
-// access camera from input callback
-Camera *c_ptr = NULL;
 
 int main() {
 	jmp_buf error;
@@ -48,7 +41,6 @@ int main() {
 
 	Camera *cam = malloc(sizeof(Camera));
 	camera_init(cam, (vec3){0, 0, 1}, 0, -90);
-	c_ptr = cam;
 
 
 
