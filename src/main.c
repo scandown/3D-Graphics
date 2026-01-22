@@ -15,6 +15,7 @@
 #include "texture.h"
 #include "dynamic_array.h"
 #include "sprite.h"
+#include "input.h"
 
 #define WIDTH 640
 #define HEIGHT 360
@@ -114,8 +115,7 @@ int main() {
 
 
 
-		glfwSetKeyCallback(game.window, key_callback);
-		key_input(cam);
+		key_input(game.window, cam);
 		cursor_position_callback(game.window, cam, 0.05);
 
 
@@ -162,16 +162,3 @@ void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity
 	cam->yaw += xpos_diff * sensitivity;
 
 }
-
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-
-	Camera *cam = c_ptr;
-
-	if (action == GLFW_PRESS) {
-		set_input_mask(key, cam, key_or);
-	} else if (action == GLFW_RELEASE) {
-		set_input_mask(key, cam, key_not);
-	}
-}
-
