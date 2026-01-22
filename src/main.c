@@ -41,13 +41,13 @@ int main() {
 
 	Camera *cam = malloc(sizeof(Camera));
 	camera_init(cam, (vec3){0, 0, 1}, 0, -90);
-
-
-
-
-
 	//setup for opengl :3
 	State game = state_init(error, 1920, 1080, "game");
+
+
+
+
+
 
 
 	unsigned int vertex_shader = shader_create("src/vertex_in.glsl", GL_VERTEX_SHADER);
@@ -60,24 +60,13 @@ int main() {
 	unsigned int program = program_create(vertex_shader, fragment_shader);
 
 
+
+
+
+
 	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
 	vec2 instanced_spr_num[CHAR_WIDTH * CHAR_HEIGHT];
-	int index = 0;
-	for (int y = 0; y < CHAR_HEIGHT; y++) {
-		for (int x = 0; x < CHAR_WIDTH; x++) {
-			vec2 translation;
-			translation[0] = x * 16;//(WIDTH / CHAR_WIDTH);
-			translation[1] = y * 16;//(HEIGHT / CHAR_HEIGHT);
-
-			vec2 spr_num;
-			spr_num[0] = 0;
-			spr_num[1] = 1;
-
-			glm_vec2_copy(translation, instanced_positions[index]);
-			glm_vec2_copy(spr_num, instanced_spr_num[index]);
-			index++;
-		}
-	}
+	sprite_send_instanced_positions(instanced_positions, instanced_spr_num, CHAR_WIDTH, CHAR_HEIGHT);
 
 
 
