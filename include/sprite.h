@@ -21,3 +21,4 @@ void sprite_delete(Sprite *sprite);
 
 
 void sprite_generate_model(Model *model, int width, int height);
+void sprite_send_instanced_positions(vec2 *instanced_positions, vec2 *instanced_spr_num, int instance_x, int instance_y);
