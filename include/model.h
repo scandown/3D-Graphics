@@ -36,7 +36,7 @@ int check_int_equality(int *array1, int array1_length, int *array2, int array2_l
 int check_float_equality(float *array1, int array1_length, float *array2, int array2_length);
 int length_to_token(char *src, char token);
 
-Model model_load(jmp_buf error, char *model_name);
+Model obj_load(jmp_buf error, char *model_name);
 void model_create_buffers(Model *model);
 void model_delete_buffers(Model *model);
 

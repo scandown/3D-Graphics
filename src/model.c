@@ -14,7 +14,7 @@ typedef struct {
 } Array;
 
 
-Model model_load(jmp_buf error, char *model_name) {
+Model obj_load(jmp_buf error, char *model_name) {
 	Model model;
 	memset(&model, 0, sizeof(model));
 
