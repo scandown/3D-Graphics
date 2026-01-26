@@ -1,4 +1,4 @@
-#include "input.h"
+#include "user/input.h"
 
 void key_input(GLFWwindow *window, Camera *cam) {
 

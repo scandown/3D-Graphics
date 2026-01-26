@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
 	if (argc > 1) {
 		if (!strncmp(argv[1], "r", 1)) {
-			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main;");
+			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main");
 
 			cmd_run(&cmd);
 			return 0;

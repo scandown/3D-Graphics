@@ -2,7 +2,6 @@
 
 
 GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
-	// GLFWwindow *setup_window(unsigned int width, unsigned int height, char *name);
 	if (!glfwInit()) {
 		return NULL;
 	}

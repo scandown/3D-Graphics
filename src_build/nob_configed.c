@@ -13,7 +13,7 @@ int main(void)
     nob_log(INFO, "BAR feature is enabled");
 #endif // BAR
     const char *output_path = BUILD_FOLDER"main";
-    const char *input_path = SRC_FOLDER"main.c";
+    const char *input_path = SRC_USER_FOLDER"main.c";
     nob_cmd_append(&cmd, "bear");
     nob_cmd_append(&cmd, "--");
     nob_cc(&cmd);
@@ -30,7 +30,12 @@ int main(void)
     nob_cc_output(&cmd, output_path);
     nob_cc_inputs(&cmd, input_path, "external/lib/glad.c", SRC_FOLDER"shader.c", SRC_FOLDER"model.c", SRC_FOLDER"quat.c",
 		    SRC_FOLDER"window.c", SRC_FOLDER"camera.c", SRC_FOLDER"state.c", SRC_FOLDER"uniform.c", SRC_FOLDER"texture.c",
-		    SRC_FOLDER"binary_tree.c", SRC_FOLDER"sprite.c", SRC_FOLDER"input.c");
+		    SRC_FOLDER"binary_tree.c", SRC_FOLDER"sprite.c");
+
+    // files for building user modifiable parts of code
+    nob_cc_inputs(&cmd, SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"buffers.c",
+		    SRC_USER_FOLDER"instanced_positions.c", SRC_USER_FOLDER"matrix.c");
+
     nob_cmd_append(&cmd, "-lglfw3", "-lm", "-ldl", "-lpthread", "-lGL", "-lX11");
     nob_cmd_append(&cmd, "-Wno-unused-variable", "-Wno-unused-parameter");
     nob_cmd_append(&cmd, "-Wno-sign-compare");
