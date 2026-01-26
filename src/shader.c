@@ -100,8 +100,8 @@ char *read_file(char *file_location) {
 
 
 unsigned int program_init(jmp_buf error, char *vertex_shader, char *fragment_shader) {
-	unsigned int vertex_shader_id = shader_create("src/vertex_in.glsl", GL_VERTEX_SHADER);
-	unsigned int fragment_shader_id = shader_create("src/textured.glsl", GL_FRAGMENT_SHADER);
+	unsigned int vertex_shader_id = shader_create(vertex_shader, GL_VERTEX_SHADER);
+	unsigned int fragment_shader_id = shader_create(fragment_shader, GL_FRAGMENT_SHADER);
 
 	if (vertex_shader_id == 0 || fragment_shader_id == 0) {
 		longjmp(error, 1);

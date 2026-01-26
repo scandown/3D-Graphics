@@ -15,7 +15,9 @@
 #include "texture.h"
 #include "dynamic_array.h"
 #include "sprite.h"
-#include "input.h"
+
+#include "user/input.h"
+#include "user/instanced_positions.h"
 
 #define WIDTH 640
 #define HEIGHT 360
@@ -45,7 +47,7 @@ int main() {
 	State game = state_init(error, 1920, 1080, "game");
 
 
-	unsigned int program = program_init(error, "src/vertex_in.glsl", "src/fragment.glsl");
+	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 
 
 

@@ -3,6 +3,7 @@
 
 #define BUILD_FOLDER "build/"
 #define SRC_BUILD_FOLDER "src_build/"
+#define SRC_USER_FOLDER "src/user/"
 #define SRC_FOLDER "src/"
 #define THIRDPARTY_INCLUDE "external/include"
 #define INCLUDE "include/"
