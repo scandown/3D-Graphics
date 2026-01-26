@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
 	if (argc > 1) {
 		if (!strncmp(argv[1], "r", 1)) {
-			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main");
+			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main;");
 
 			cmd_run(&cmd);
 			return 0;
@@ -43,6 +43,8 @@ int main(int argc, char **argv) {
 
 	const char *output_path = BUILD_FOLDER"nob_configed";
 	const char *input_path = SRC_BUILD_FOLDER"nob_configed.c";
+	nob_cmd_append(&cmd, "bear");
+	nob_cmd_append(&cmd, "--");
 	nob_cc(&cmd);
 	nob_cc_flags(&cmd);
 	nob_cmd_append(&cmd, "-I.", "-I"BUILD_FOLDER, "-I"SRC_BUILD_FOLDER); // -I is usually the same across all compilers

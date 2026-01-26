@@ -14,6 +14,8 @@ int main(void)
 #endif // BAR
     const char *output_path = BUILD_FOLDER"main";
     const char *input_path = SRC_FOLDER"main.c";
+    nob_cmd_append(&cmd, "bear");
+    nob_cmd_append(&cmd, "--");
     nob_cc(&cmd);
     nob_cc_flags(&cmd);
 
@@ -25,7 +27,6 @@ int main(void)
 #endif // mem_check
 
     nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
-
     nob_cc_output(&cmd, output_path);
     nob_cc_inputs(&cmd, input_path, "external/lib/glad.c", SRC_FOLDER"shader.c", SRC_FOLDER"model.c", SRC_FOLDER"quat.c",
 		    SRC_FOLDER"window.c", SRC_FOLDER"camera.c", SRC_FOLDER"state.c", SRC_FOLDER"uniform.c", SRC_FOLDER"texture.c",

@@ -52,7 +52,8 @@ int main() {
 	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
 	vec2 instanced_spr_num[CHAR_WIDTH * CHAR_HEIGHT];
 	sprite_send_instanced_positions(instanced_positions, instanced_spr_num, CHAR_WIDTH, CHAR_HEIGHT);
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
+	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1,
+			"assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
 
 
 

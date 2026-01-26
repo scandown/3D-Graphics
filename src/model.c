@@ -277,6 +277,20 @@ void model_send_to_gpu(Model *model) {
 
 void model_send_to_gpu_instanced(int translation_size; Model *model, vec2 translations[translation_size], vec2 spr_num[translation_size], int translation_size) {
 
+	// move these into less generalised functions
+	// you don't want to hide away the opengl logic
+	//
+	// -- especially in this case as this stuff is volatile and
+	// -- changes drastically depending on the project
+	//
+	// possibly make sprite have its own function which deals with buffer
+	// functions directly and also any other rendering task in the future
+	//
+	//
+	// make src_user folder to have code that the user of this engine
+	// can create / modify for this exact use case
+
+
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
 	glGenBuffers(1, &model->EBO);
