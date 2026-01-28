@@ -61,19 +61,7 @@ void model_delete_buffers(Model *model) {
 	free(model->vertex_faces);
 }
 
-void model_draw(Model *model, unsigned int program) {
-	model->uniform.value.m4[3][0] = model->x;
-	model->uniform.value.m4[3][1] = model->y;
-	model->uniform.value.m4[3][2] = model->z;
-	model->uniform.value.m4[3][3] = 1;
-	uniform_send_to_gpu(&model->uniform, program, "model");
-
-	glBindTexture(GL_TEXTURE_2D, model->texture);
-	glBindVertexArray(model->VAO);
-	glDrawElements(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0);
-}
-
-void model_draw_instanced(Model *model, unsigned int program, unsigned int instance_amount) {
+void model_draw(Model *model, unsigned int program, unsigned int instance_amount) {
 	model->uniform.value.m4[3][0] = model->x;
 	model->uniform.value.m4[3][1] = model->y;
 	model->uniform.value.m4[3][2] = model->z;

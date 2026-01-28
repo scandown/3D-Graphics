@@ -19,7 +19,7 @@ Sprite sprite_init(int instance_amount; jmp_buf error, vec3 pos, unsigned int sc
 }
 
 void sprite_draw(Sprite *sprite, unsigned int program, int instance_amount) {
-	model_draw_instanced(&sprite->plane, program, instance_amount);
+	model_draw(&sprite->plane, program, instance_amount);
 }
 
 
