@@ -14,8 +14,8 @@ typedef struct {
 void model_create_buffers(Model *model);
 void model_delete_buffers(Model *model);
 
-void model_draw(Model *model, unsigned int program);
-void model_draw_instanced(Model *model, unsigned int program, unsigned int instance_amount);
+void model_draw(Model *model, unsigned int program, unsigned int instance_amount);
+
 void model_send_to_gpu(int translation_size; Model *model, Instance *instance, int translation_size);
 
 void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, Instance *instance, int instance_amount);
