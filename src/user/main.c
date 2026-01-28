@@ -13,25 +13,13 @@
 #include "camera.h"
 #include "uniform.h"
 #include "texture.h"
-#include "dynamic_array.h"
 #include "sprite.h"
 
 #include "user/input.h"
 #include "user/instanced_positions.h"
 
-#define WIDTH 640
-#define HEIGHT 360
-
-#define CHAR_WIDTH 80
-#define CHAR_HEIGHT 24
-
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 
-typedef struct {
-	float *items;
-	size_t count;
-	size_t capacity;
-} Array;
 
 int main() {
 	jmp_buf error;
@@ -43,7 +31,6 @@ int main() {
 
 	Camera *cam = malloc(sizeof(Camera));
 	camera_init(cam, (vec3){0, 0, 1}, 0, -90);
-	//setup for opengl :3
 	State game = state_init(error, 1920, 1080, "game");
 
 
@@ -51,15 +38,19 @@ int main() {
 
 
 
-	vec2 instanced_positions[CHAR_WIDTH * CHAR_HEIGHT];
-	vec2 instanced_spr_num[CHAR_WIDTH * CHAR_HEIGHT];
-	sprite_send_instanced_positions(instanced_positions, instanced_spr_num, CHAR_WIDTH, CHAR_HEIGHT);
-	Sprite test = sprite_init(error, (vec3){0, 0, 0}, 1,
-			"assets/smiley.png", instanced_positions, instanced_spr_num, CHAR_WIDTH * CHAR_HEIGHT, 16, 16);
+	vec2 instanced_positions[1] = {{0, 0}};
+	vec2 instanced_spr_num[1] = {{0, 0}};
+	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1,
+			"assets/smiley.png", instanced_positions, instanced_spr_num, 1, 16, 16);
 
 
 
 	while (!glfwWindowShouldClose(game.window)) {
+		test.plane.x = cam->pos[0] * 0;
+		test.plane.y = cam->pos[1] * 0;
+		test.plane.z = 0;
+
+
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
 			fprintf(stderr, "OpenGL error: %d\n", err);
@@ -72,11 +63,6 @@ int main() {
 		glfwPollEvents();
 
 
-		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_spr_VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(vec2) * (CHAR_WIDTH * (int)cam->pos[1] + (int)cam->pos[0]), sizeof(vec2), (vec2){1.0, 1.0});
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
 
 
 		cursor_position_callback(game.window, cam, 0.05);
@@ -85,11 +71,11 @@ int main() {
 
 		glUseProgram(program);
 		
-		matrix_init(&game, program, "2D");
+		matrix_init(&game, program, "3D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
-		sprite_draw(&test, program, CHAR_WIDTH * CHAR_HEIGHT);
+		sprite_draw(&test, program, 1);
 
 		glfwSwapBuffers(game.window);
 
