@@ -1,4 +1,4 @@
-#include "user/matrix.h"
+#include "matrix.h"
 
 void matrix_init(State *game, unsigned int program, char *dimension) {
 	mat4 view_matrix;

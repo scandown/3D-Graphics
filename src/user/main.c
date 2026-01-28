@@ -35,7 +35,6 @@ int main() {
 
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
-
 	unsigned int cube_program = program_init(error, "src/user/vertex.glsl", "src/user/textured.glsl");
 
 
