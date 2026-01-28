@@ -17,7 +17,7 @@ uniform mat4 view;
 uniform mat4 projection;
 
 void main() {
-	mat4 coordinates = projection * model;
+	mat4 coordinates = projection * view * model;
 
 	gl_Position = coordinates * vec4(aPos.xy + aOffset, -0.1, 1);
 

@@ -84,9 +84,6 @@ void model_send_to_gpu_instanced(int translation_size; Model *model, vec2 transl
 	glEnableVertexAttribArray(4);
 
 
-	//layout (location = 4) in vec2 aSpr;
-
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -129,6 +126,7 @@ void model_draw_instanced(Model *model, unsigned int program, unsigned int insta
 
 void model_init_instanced(int instance_amount; jmp_buf error, Model *model, vec3 pos, char *texture_location,
 		vec2 instance_array[instance_amount], vec2 spr_num[instance_amount], int instance_amount) {
+
 	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
 	mat4 model_matrix;
@@ -137,11 +135,10 @@ void model_init_instanced(int instance_amount; jmp_buf error, Model *model, vec3
 	model_send_to_gpu_instanced(model, instance_array, spr_num, instance_amount);
 
 
+	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
 	model->x = pos[0];
 	model->y = pos[1];
 	model->z = pos[2];
-	
-	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
 	model->texture = texture;
 }
 
@@ -152,12 +149,10 @@ void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
 	glm_mat4_identity(model_matrix);
 
 	model_send_to_gpu(model);
-
-
+	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
 	model->x = pos[0];
 	model->y = pos[1];
 	model->z = pos[2];
-	
-	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
+
 	model->texture = texture;
 }
