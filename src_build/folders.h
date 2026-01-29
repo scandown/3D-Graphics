@@ -2,6 +2,7 @@
 #define FOLDERS_H_
 
 #define BUILD_FOLDER "build/"
+#define BUILD_OBJ "build_obj/"
 #define SRC_BUILD_FOLDER "src_build/"
 #define SRC_USER_FOLDER "src/user/"
 #define SRC_FOLDER "src/"
