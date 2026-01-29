@@ -9,7 +9,6 @@
 
 #define MAX_FILE_LEN 25
 char files[][MAX_FILE_LEN] = {
-	//"external/lib/glad.c",
 	"shader.c",
 	"model.c",
 	"quat.c",
@@ -92,7 +91,7 @@ int main(void) {
 	Cmd link_obj_cmd = {0};
 	nob_cc(&link_obj_cmd);
 	nob_cmd_append(&link_obj_cmd, "src/user/main.c");
-	nob_cmd_append(&link_obj_cmd, "glad.o");
+	nob_cmd_append(&link_obj_cmd, "external/lib/glad.c");
 	char new_file[sizeof(files) / MAX_FILE_LEN + sizeof(user_files) / MAX_FILE_LEN][MAX_FILE_LEN + sizeof(BUILD_OBJ)] = {0};
 
 	for (int i = 0; i < sizeof(files) / MAX_FILE_LEN; i++) {
