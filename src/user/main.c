@@ -72,7 +72,6 @@ int main() {
 		glUseProgram(cube_program);
 		matrix_init(&game, cube_program, "3D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-
 		uniform_send_to_gpu(&game.view_uniform, cube_program, "view");
 		key_input(game.window, cam);
 

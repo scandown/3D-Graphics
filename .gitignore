@@ -1,4 +1,5 @@
 build/
+build_obj/
 nob
 nob.old
 external/sources/
