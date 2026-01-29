@@ -7,9 +7,6 @@
 #include <string.h>
 //#define mem_check
 
-//#define lib
-#define obj
-
 #define MAX_FILE_LEN 25
 char files[][MAX_FILE_LEN] = {
 	//"external/lib/glad.c",
@@ -32,12 +29,8 @@ char user_files[][MAX_FILE_LEN] = {
 	"instanced_positions.c"
 };
 
-int main(void)
-{
+int main(void) {
 	Cmd cmd = {0};
-#ifdef BAR
-	nob_log(INFO, "BAR feature is enabled");
-#endif // BAR
 	const char *output_path = BUILD_FOLDER"main";
 	const char *input_path = SRC_USER_FOLDER"main.c";
 	/*
@@ -45,19 +38,11 @@ int main(void)
 	nob_cmd_append(&cmd, "--");
 	*/
 
-
-#ifndef lib
 	nob_cc(&cmd);
 	nob_cc_flags(&cmd);
 	nob_cmd_append(&cmd, "-g");
-#else
-	//nob_cmd_append(&cmd, "ar", "rcs", "libengine.a");
-#endif
 
-#ifdef obj
 	nob_cmd_append(&cmd, "-c");
-	//BUILD_FOLDER = "build_obj/"
-#endif
 
 #ifdef mem_check
 	nob_log(INFO, "mem_check feature is enabled");
@@ -67,14 +52,25 @@ int main(void)
 #endif
 
 	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
-	//nob_cc_output(&cmd, output_path);
-	nob_cc_inputs(&cmd, input_path, "external/lib/glad.c", SRC_FOLDER"shader.c", SRC_FOLDER"model.c", SRC_FOLDER"quat.c",
-			SRC_FOLDER"window.c", SRC_FOLDER"camera.c", SRC_FOLDER"state.c", SRC_FOLDER"uniform.c", SRC_FOLDER"texture.c",
-			SRC_FOLDER"binary_tree.c", SRC_FOLDER"sprite.c", SRC_FOLDER"matrix.c");
 
-	// files for building user modifiable parts of code
-	nob_cc_inputs(&cmd, SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"buffers.c",
-			SRC_USER_FOLDER"instanced_positions.c");
+	//date -r (FILE) "+%s"
+	char new_file_c[sizeof(files) / MAX_FILE_LEN + sizeof(user_files) / MAX_FILE_LEN][MAX_FILE_LEN + sizeof(SRC_USER_FOLDER)] = {0};
+	nob_cmd_append(&cmd, input_path);
+	for (int i = 0; i < sizeof(files) / MAX_FILE_LEN; i++) {
+		char *file = files[i];
+		strncpy(new_file_c[i], SRC_FOLDER, sizeof(SRC_FOLDER));
+		strncat(new_file_c[i], file, MAX_FILE_LEN);
+		printf("%s\n", new_file_c[i]);
+		nob_cmd_append(&cmd, new_file_c[i]);
+	}
+
+	for (int i = 0; i < sizeof(user_files) / MAX_FILE_LEN; i++) {
+		char *file = user_files[i];
+		strncpy(new_file_c[i + sizeof(files) / MAX_FILE_LEN], SRC_USER_FOLDER, sizeof(SRC_USER_FOLDER));
+		strncat(new_file_c[i + sizeof(files) / MAX_FILE_LEN], file, MAX_FILE_LEN);
+		printf("%s\n", new_file_c[i]);
+		nob_cmd_append(&cmd, new_file_c[i]);
+	}
 
 	if (!cmd_run(&cmd)) return 1;
 
@@ -83,13 +79,11 @@ int main(void)
 	for (int i = 0; i < sizeof(files) / MAX_FILE_LEN; i++) {
 		char *file = files[i];
 		file[strlen(files[i])-1] = 'o';
-		printf("%s\n", file);
 		nob_cmd_append(&move_obj_cmd, file);
 	}
 	for (int i = 0; i < sizeof(user_files) / MAX_FILE_LEN; i++) {
 		char *file = user_files[i];
 		file[strlen(user_files[i])-1] = 'o';
-		printf("%s\n", file);
 		nob_cmd_append(&move_obj_cmd, file);
 	}
 	nob_cmd_append(&move_obj_cmd, BUILD_OBJ);
@@ -114,13 +108,10 @@ int main(void)
 		strncpy(new_file[i + sizeof(files) / MAX_FILE_LEN], BUILD_OBJ, sizeof(BUILD_OBJ));
 		strncat(new_file[i + sizeof(files) / MAX_FILE_LEN], file, MAX_FILE_LEN);
 		nob_cmd_append(&link_obj_cmd, new_file[i + sizeof(files) / MAX_FILE_LEN]);
-		//memset(new_file, 0, sizeof(new_file));
 	}
 	nob_cmd_append(&link_obj_cmd, "-L"LIBRARY_FOLDER);
 	nob_cmd_append(&link_obj_cmd, "-lglfw3", "-lm", "-ldl", "-lpthread", "-lGL", "-lX11");
 	nob_cmd_append(&link_obj_cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
-	//nob_cmd_append(&cmd, "-Wno-unused-variable", "-Wno-unused-parameter");
-	//nob_cmd_append(&cmd, "-Wno-sign-compare");
 	cmd_run(&link_obj_cmd);
 	return 0;
 }
