@@ -28,9 +28,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 
 
-	// get file_size
 	fseek(fptr, 0L, SEEK_END);
-	long file_size = ftell(fptr);
 	rewind(fptr);
 
 	Array temp_vertices[3] = {0};
