@@ -20,6 +20,8 @@
 
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
 
+#define num_inst 3
+
 
 int main() {
 	jmp_buf error;
@@ -35,18 +37,13 @@ int main() {
 
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
-	unsigned int cube_program = program_init(error, "src/user/vertex.glsl", "src/user/textured.glsl");
 
-
-
-	vec2 instanced_positions[1] = {{0, 0}};
-	vec2 instanced_spr_num[1] = {{0, 0}};
+	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}};
+	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}};
 	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1,
-			"assets/smiley.png", instanced_positions, instanced_spr_num, 1, 16, 16);
+			"assets/smiley.png", instanced_positions, instanced_spr_num, num_inst, 16, 16);
 
 
-	Model cube = obj_load(error, "assets/cube.obj");
-	model_init(error, &cube, (vec3){0, 0, 0}, "assets/smiley.png", &(Instance){.is_instanced = false}, 0);
 
 	while (!glfwWindowShouldClose(game.window)) {
 		test.plane.x = cam->pos[0] * 0;
@@ -66,30 +63,17 @@ int main() {
 		glfwPollEvents();
 
 
-		cursor_position_callback(game.window, cam, 0.05);
-
-
-		glUseProgram(cube_program);
-		matrix_init(&game, cube_program, "3D");
-		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-		uniform_send_to_gpu(&game.view_uniform, cube_program, "view");
-		key_input(game.window, cam);
-
-		model_draw(&cube, cube_program, 1);
-
-
-
-
 
 		glUseProgram(program);
 
+		key_input(game.window, cam);
 		
-		matrix_init(&game, program, "3D");
+		matrix_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
 
-		sprite_draw(&test, program, 1);
+		sprite_draw(&test, program, num_inst);
 
 		glfwSwapBuffers(game.window);
 

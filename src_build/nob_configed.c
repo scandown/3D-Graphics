@@ -67,10 +67,8 @@ int main(void) {
 	const char *output_path = BUILD_FOLDER"main";
 	const char *input_path = SRC_USER_FOLDER"main.c";
 	*/
-	/*
 	nob_cmd_append(&cmd, "bear");
 	nob_cmd_append(&cmd, "--");
-	*/
 
 	nob_cmd_append(&cmd, COMPILER);
 	nob_cc_flags(&cmd);
