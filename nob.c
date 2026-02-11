@@ -45,8 +45,6 @@ int main(int argc, char **argv) {
 
 	const char *output_path = BUILD_FOLDER"nob_configed";
 	const char *input_path = SRC_BUILD_FOLDER"nob_configed.c";
-	nob_cmd_append(&cmd, "bear");
-	nob_cmd_append(&cmd, "--");
 	nob_cmd_append(&cmd, COMPILER);
 	//nob_cmd_append(&cmd, "--no-warnings");
 	nob_cc_flags(&cmd);
@@ -64,6 +62,39 @@ int main(int argc, char **argv) {
 			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main");
 
 			cmd_run(&cmd);
+		}
+		if (!strncmp(argv[1], "ar", 2)) {
+			Nob_File_Paths files = {0};
+
+			nob_read_entire_dir("build_obj", &files);
+
+			/*
+			Nob_File_Paths files_with_dir = {0};
+			for (int i = 0; i < files.count; i++) {
+				nob_da_append(files_with_dir, nob_temp_strdup(ent->d_name));
+			}
+			*/
+			Cmd ar_cmd = {0};
+			char *archive_file_name = "t.a";
+
+			nob_cmd_append(&ar_cmd, "ar", "rcs", archive_file_name);
+			for (int i = 0; i < files.count; i++) {
+				char *file = files.items[i];
+				char file_cat[strlen(file)+sizeof("build_obj/")];
+
+				strncpy(file_cat, "build_obj/", sizeof(file_cat));
+				strncat(file_cat, file, strlen(file));
+
+				if (file[strlen(file)-1] == 'o') {
+					printf("%s\n", file_cat);
+					nob_cmd_append(&ar_cmd, nob_temp_strdup(file_cat));
+				}
+			}
+
+
+
+			cmd_run(&ar_cmd);
+			
 		}
 	}
 
