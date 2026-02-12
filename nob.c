@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 			}
 			*/
 			Cmd ar_cmd = {0};
-			char *archive_file_name = "t.a";
+			char *archive_file_name = "build/t.a";
 
 			nob_cmd_append(&ar_cmd, "ar", "rcs", archive_file_name);
 			for (int i = 0; i < files.count; i++) {
