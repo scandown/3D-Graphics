@@ -32,7 +32,6 @@ char user_files[][MAX_FILE_LEN] = {
 	"input.c",
 	"buffers.c",
 	"instanced_positions.c",
-	"main.c"
 };
 
 
@@ -56,7 +55,7 @@ void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
 
-int main(void) {
+int main(int argc, char **argv) {
 
 	int files_len = sizeof(files) / MAX_FILE_LEN;
 	int user_files_len = sizeof(user_files) / MAX_FILE_LEN;
@@ -83,15 +82,18 @@ int main(void) {
 #endif
 
 
-
 	int num_files = 0;
 
 	add_compilation_target(&cmd, files, &num_files, files_len, 0, SRC_FOLDER);
 	add_compilation_target(&cmd, user_files, &num_files, user_files_len, files_len, SRC_USER_FOLDER);
 
 
-	for (int i = 0; i < num_files; i++) {
-		printf("%s\n", total_files_o[i]);
+	Cmd link_obj_cmd = {0};
+
+	if (argc > 1) {
+		if (strncmp(argv[1], "ar", 2) == 0) {
+			goto LINK_WITH_ARCHIVE;
+		}
 	}
 
 	if (num_files == 0) {
@@ -125,8 +127,8 @@ int main(void) {
 
 LINK:
 
-	Cmd link_obj_cmd = {0};
 	nob_cc(&link_obj_cmd);
+	nob_cmd_append(&link_obj_cmd, "src/user/main.c");
 	nob_cmd_append(&link_obj_cmd, "external/lib/glad.c");
 
 	const int BUILD_DIR_LEN = sizeof(BUILD_OBJ);
@@ -135,7 +137,6 @@ LINK:
 		file[strlen(file)-1] = 'o';
 		strncpy(new_file_o[i], BUILD_OBJ, BUILD_DIR_LEN);
 		strncat(new_file_o[i], file, MAX_FILE_LEN);
-		//printf("%s\n", new_file[i]);
 		nob_cmd_append(&link_obj_cmd, new_file_o[i]);
 	}
 
@@ -147,6 +148,18 @@ LINK:
 		nob_cmd_append(&link_obj_cmd, new_file_o[i + files_len]);
 	}
 	nob_cmd_append(&link_obj_cmd, "-L"LIBRARY_FOLDER);
+	nob_cmd_append(&link_obj_cmd, "-lglfw3", "-lm", "-lpthread", "-lGL", "-lX11");
+	nob_cmd_append(&link_obj_cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
+	cmd_run(&link_obj_cmd);
+	return 0;
+
+
+LINK_WITH_ARCHIVE:
+	nob_cc(&link_obj_cmd);
+	nob_cmd_append(&link_obj_cmd, "src/user/main.c");
+	nob_cmd_append(&link_obj_cmd, "external/lib/glad.c");
+	nob_cmd_append(&link_obj_cmd, "-L"LIBRARY_FOLDER);
+	nob_cmd_append(&link_obj_cmd, "-Lbuild/", "-lt");
 	nob_cmd_append(&link_obj_cmd, "-lglfw3", "-lm", "-lpthread", "-lGL", "-lX11");
 	nob_cmd_append(&link_obj_cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
 	cmd_run(&link_obj_cmd);
