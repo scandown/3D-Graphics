@@ -53,9 +53,8 @@ int main(int argc, char **argv) {
 	nob_cc_inputs(&cmd, input_path);
 	if (!cmd_run(&cmd)) return 1;
 
-	cmd_append(&cmd, output_path);
+	nob_cmd_append(&cmd, output_path);
 	if (!cmd_run(&cmd)) return 1;
-
 
 	if (argc > 1) {
 		if (!strncmp(argv[1], "br", 2)) {
@@ -68,14 +67,8 @@ int main(int argc, char **argv) {
 
 			nob_read_entire_dir("build_obj", &files);
 
-			/*
-			Nob_File_Paths files_with_dir = {0};
-			for (int i = 0; i < files.count; i++) {
-				nob_da_append(files_with_dir, nob_temp_strdup(ent->d_name));
-			}
-			*/
 			Cmd ar_cmd = {0};
-			char *archive_file_name = "build/t.a";
+			char *archive_file_name = "build/libt.a";
 
 			nob_cmd_append(&ar_cmd, "ar", "rcs", archive_file_name);
 			for (int i = 0; i < files.count; i++) {
@@ -95,6 +88,9 @@ int main(int argc, char **argv) {
 
 			cmd_run(&ar_cmd);
 			
+			nob_cmd_append(&cmd, output_path);
+			nob_cmd_append(&cmd, "ar");
+			if (!cmd_run(&cmd)) return 1;
 		}
 	}
 
