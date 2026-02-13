@@ -51,15 +51,10 @@ int main(int argc, char **argv) {
 
 	Cmd cmd = {0};
 
-
-	int files_len = sizeof(files) / MAX_FILE_LEN;
-	int user_files_len = sizeof(user_files) / MAX_FILE_LEN;
-
 	nob_cmd_append(&cmd, "bear");
 	nob_cmd_append(&cmd, "--");
 
 	nob_cmd_append(&cmd, COMPILER);
-	nob_cc_flags(&cmd);
 	nob_cmd_append(&cmd, "-g");
 	nob_cmd_append(&cmd, "-c");
 	nob_cmd_append(&cmd, "-L"LIBRARY_FOLDER);
@@ -78,6 +73,33 @@ int main(int argc, char **argv) {
 
 	get_object_file("src/", "build_obj/");
 	get_object_file("src/user/", "build_obj/");
+
+
+
+
+	char *directories[2] = {"build_obj/", "build_obj/user/"};
+	
+	Cmd link_cmd = {0};
+	nob_cmd_append(&link_cmd, "gcc");
+	nob_cmd_append(&link_cmd, "external/lib/glad.c");
+	for (int i = 0; i < sizeof(directories) / sizeof(char *); i++) {
+		Nob_File_Paths files = {0};
+		nob_read_entire_dir(directories[i], &files);
+		for (size_t j = 0; j < files.count; j++) {
+			char *file = files.items[j];
+			if (strncmp(file+strlen(file)-2, ".o", 2) == 0) {
+				char str[strlen(file) + sizeof(directories[i]) + 1];
+				strncpy(str, directories[i], sizeof(str));
+				strncat(str, file, strlen(file));
+				nob_cmd_append(&link_cmd, nob_temp_strdup(str));
+
+				printf("%s\n", str);
+			}
+		}
+	}
+	nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
+	nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
+	cmd_run(&link_cmd);
 
 }
 
@@ -113,13 +135,11 @@ int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
 
 	for (size_t i = 0; i < files.count; i++) {
 		char *file = files.items[i];
-		if (file[strlen(file)-1] == 'c') {
+		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 			char file_cat[strlen(file) + strlen(directory) + 1];
 			strncpy(file_cat, directory, sizeof(file_cat));
 			strncat(file_cat, file, strlen(file));
 			nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
-
-			printf("%s\n", file_cat);
 
 			char *last_slash = strrchr(file_cat, '/');
 			char *first_slash = strchr(file_cat, '/');
@@ -147,7 +167,7 @@ int get_object_file(char *directory, char *build_dir) {
 		Cmd cmd = {0};
 		char *file = files.items[i];
 
-		if (file[strlen(file)-1] == 'c') {
+		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 			nob_cmd_append(&cmd, "mv");
 			char file_cat[strlen(file) + strlen(directory) + 1];
 			strncpy(file_cat, directory, sizeof(file_cat));
