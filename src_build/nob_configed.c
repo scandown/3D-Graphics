@@ -83,7 +83,13 @@ int main(int argc, char **argv) {
 	char *directories[2] = {"build_obj/", "build_obj/user/"};
 	
 	Cmd link_cmd = {0};
-	nob_cmd_append(&link_cmd, "gcc");
+
+	if (argc > 1 && (strncmp(argv[1], "ar", 2) == 0)) {
+		nob_cmd_append(&link_cmd, "ar");
+		nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
+	} else {
+		nob_cmd_append(&link_cmd, "gcc");
+	}
 	nob_cmd_append(&link_cmd, "external/lib/glad.c");
 	for (int i = 0; i < sizeof(directories) / sizeof(char *); i++) {
 		Nob_File_Paths files = {0};
@@ -98,9 +104,12 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-	nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
-	nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
-	nob_cmd_append(&link_cmd, "-o", "build/main");
+
+	if (argc == 1) {
+		nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
+		nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
+		nob_cmd_append(&link_cmd, "-o", "build/main");
+	}
 	cmd_run(&link_cmd);
 
 }
