@@ -41,7 +41,7 @@ char user_files[][MAX_FILE_LEN] = {
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
 int change_c_files_times(char *dir, char *build_dir);
 bool is_file_times_same(char *file1, char *file2);
-int add_compilation_target(Cmd *cmd, char *dir, char *build_dir);
+int add_compilation_target(Cmd *cmd, char *dir, char *build_dir, char **excluded_files, size_t excluded_files_size);
 int move_object_files(char *dir, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
@@ -68,9 +68,13 @@ int main(int argc, char **argv) {
 #endif
 
 
+	char *excluded_files[] = {"src/user/main.c"};
 
-	add_compilation_target(&cmd, "src/", "build_obj/");
-	add_compilation_target(&cmd, "src/user/", "build_obj/");
+	add_compilation_target(&cmd, "src/", "build_obj/",
+			excluded_files, sizeof(excluded_files) / sizeof(char *));
+
+	add_compilation_target(&cmd, "src/user/", "build_obj/",
+			excluded_files, sizeof(excluded_files) / sizeof(char *));
 	cmd_run(&cmd);
 
 	move_object_files("src/", "build_obj/");
@@ -94,7 +98,7 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < sizeof(directories) / sizeof(char *); i++) {
 		Nob_File_Paths files = {0};
 		nob_read_entire_dir(directories[i], &files);
-		for (size_t j = 0; j < files.count; j++) {
+		for (int j = 0; j < files.count; j++) {
 			char *file = files.items[j];
 			if (strncmp(file+strlen(file)-2, ".o", 2) == 0) {
 				char str[strlen(file) + sizeof(directories[i]) + 1];
@@ -145,7 +149,7 @@ int change_c_files_times(char *dir, char *build_dir){
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
-	for (size_t i = 0; i < files.count; i++) {
+	for (int i = 0; i < files.count; i++) {
 		char *file = files.items[i];
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 
@@ -179,12 +183,27 @@ int change_c_files_times(char *dir, char *build_dir){
 }
 
 
-int add_compilation_target(Cmd *cmd, char *dir, char *build_dir) {
+int add_compilation_target(Cmd *cmd, char *dir, char *build_dir,
+		char **excluded_files, size_t excluded_files_size) {
+
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
-	for (size_t i = 0; i < files.count; i++) {
+	for (int i = 0; i < files.count; i++) {
 		char *file = files.items[i];
+		bool excecute = true;
+		for (int j = 0; j < excluded_files_size; j++) {
+			char full_file_path[strlen(dir) + strlen(file) + 1];
+			strncpy(full_file_path, dir, sizeof(full_file_path)); 
+			strncat(full_file_path, file, strlen(file)); 
+			int cmp = strncmp(full_file_path, excluded_files[j], strlen(excluded_files[j]));
+			if (cmp == 0) {
+				excecute = false;
+			}
+		}
+		if (!excecute) {
+			continue;
+		}
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 			char file_cat[strlen(file) + strlen(dir) + 1];
 			strncpy(file_cat, dir, sizeof(file_cat));
@@ -233,7 +252,7 @@ int move_object_files(char *dir, char *build_dir) {
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
-	for (size_t i = 0; i < files.count; i++) {
+	for (int i = 0; i < files.count; i++) {
 		Cmd cmd = {0};
 		char *file = files.items[i];
 
