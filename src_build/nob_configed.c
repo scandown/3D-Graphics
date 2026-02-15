@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 		for (int j = 0; j < files.count; j++) {
 			char *file = files.items[j];
 			if (strncmp(file+strlen(file)-2, ".o", 2) == 0) {
-				char str[strlen(file) + sizeof(directories[i]) + 1];
+				char str[strlen(file) + strlen(directories[i]) + 1];
 				strncpy(str, directories[i], sizeof(str));
 				strncat(str, file, strlen(file));
 				nob_cmd_append(&link_cmd, nob_temp_strdup(str));
@@ -114,8 +114,22 @@ int main(int argc, char **argv) {
 		nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
 		nob_cmd_append(&link_cmd, "-o", "build/main");
 	}
+	
 	cmd_run(&link_cmd);
 
+	Cmd link_cmd2 = {0};
+
+	if (argc > 1) {
+		if (strncmp(argv[1], "ar", 2) == 0) {
+			nob_cmd_append(&link_cmd2, "gcc");
+			nob_cmd_append(&link_cmd2, "src/external/main.c");
+			nob_cmd_append(&link_cmd2, "-Lbuild/", "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
+			nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
+			nob_cmd_append(&link_cmd2, "-o", "build/main");
+
+			cmd_run(&link_cmd2);
+		}
+	}
 }
 
 
@@ -189,6 +203,10 @@ int add_compilation_target(Cmd *cmd, char *dir, char *build_dir,
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
+	// instead of not compiling a file into .o files
+	// you can instead not link to those files in the 
+	// archive creation stage
+	
 	for (int i = 0; i < files.count; i++) {
 		char *file = files.items[i];
 		bool excecute = true;
