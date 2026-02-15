@@ -40,7 +40,7 @@ char user_files[][MAX_FILE_LEN] = {
 
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
 int change_c_files_times(char *directory, char *build_dir);
-int add_compilation_target(Cmd *cmd, char *directory, char *build_dir);
+int add_compilation_target(Cmd *cmd, char *directory);
 int move_object_files(char *directory, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
 
 
 
-	add_compilation_target(&cmd, "src/", "build/");
-	add_compilation_target(&cmd, "src/user/", "build/");
+	add_compilation_target(&cmd, "src/");
+	add_compilation_target(&cmd, "src/user/");
 	cmd_run(&cmd);
 
 	move_object_files("src/", "build_obj/");
@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
 	}
 	nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
 	nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
+	nob_cmd_append(&link_cmd, "-o", "build/main");
 	cmd_run(&link_cmd);
 
 }
@@ -170,7 +171,7 @@ int change_c_files_times(char *directory, char *build_dir){
 }
 
 
-int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
+int add_compilation_target(Cmd *cmd, char *directory) {
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(directory, &files);
 
