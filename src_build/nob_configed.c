@@ -39,9 +39,10 @@ char user_files[][MAX_FILE_LEN] = {
 
 
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
-int change_c_files_times(char *directory, char *build_dir);
-int add_compilation_target(Cmd *cmd, char *directory);
-int move_object_files(char *directory, char *build_dir);
+int change_c_files_times(char *dir, char *build_dir);
+bool is_file_times_same(char *file1, char *file2);
+int add_compilation_target(Cmd *cmd, char *dir, char *build_dir);
+int move_object_files(char *dir, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
@@ -68,8 +69,8 @@ int main(int argc, char **argv) {
 
 
 
-	add_compilation_target(&cmd, "src/");
-	add_compilation_target(&cmd, "src/user/");
+	add_compilation_target(&cmd, "src/", "build_obj/");
+	add_compilation_target(&cmd, "src/user/", "build_obj/");
 	cmd_run(&cmd);
 
 	move_object_files("src/", "build_obj/");
@@ -94,8 +95,6 @@ int main(int argc, char **argv) {
 				strncpy(str, directories[i], sizeof(str));
 				strncat(str, file, strlen(file));
 				nob_cmd_append(&link_cmd, nob_temp_strdup(str));
-
-				printf("%s\n", str);
 			}
 		}
 	}
@@ -133,16 +132,16 @@ int change_time(char *filename, time_t mtime) {
   return 0;
 }
 
-int change_c_files_times(char *directory, char *build_dir){
+int change_c_files_times(char *dir, char *build_dir){
 	Nob_File_Paths files = {0};
-	nob_read_entire_dir(directory, &files);
+	nob_read_entire_dir(dir, &files);
 
 	for (size_t i = 0; i < files.count; i++) {
 		char *file = files.items[i];
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 
-			char file_cat[strlen(file) + strlen(directory) + 1];
-			strncpy(file_cat, directory, sizeof(file_cat));
+			char file_cat[strlen(file) + strlen(dir) + 1];
+			strncpy(file_cat, dir, sizeof(file_cat));
 			strncat(file_cat, file, strlen(file));
 
 
@@ -155,7 +154,7 @@ int change_c_files_times(char *directory, char *build_dir){
 				return -1;
 			}
 			
-			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size];
+			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
 			strncpy(new_file_cat, build_dir, sizeof(new_file_cat));
 			strncat(new_file_cat, first_slash+1, extra_dir_size);
 			strncat(new_file_cat, file, strlen(file));
@@ -171,25 +170,59 @@ int change_c_files_times(char *directory, char *build_dir){
 }
 
 
-int add_compilation_target(Cmd *cmd, char *directory) {
+int add_compilation_target(Cmd *cmd, char *dir, char *build_dir) {
 	Nob_File_Paths files = {0};
-	nob_read_entire_dir(directory, &files);
+	nob_read_entire_dir(dir, &files);
 
 	for (size_t i = 0; i < files.count; i++) {
 		char *file = files.items[i];
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
-			char file_cat[strlen(file) + strlen(directory) + 1];
-			strncpy(file_cat, directory, sizeof(file_cat));
+			char file_cat[strlen(file) + strlen(dir) + 1];
+			strncpy(file_cat, dir, sizeof(file_cat));
 			strncat(file_cat, file, strlen(file));
-			nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
+
+			char *last_slash = strrchr(file_cat, '/');
+			char *first_slash = strchr(file_cat, '/');
+			
+			int extra_dir_size = last_slash - first_slash;
+			if (first_slash == NULL) {
+				fprintf(stderr, "ERROR: Couldn't find '/' in %s\n", file_cat);
+				return -1;
+			}
+			
+			char file_object[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
+			strncpy(file_object, build_dir, sizeof(file_object));
+			strncat(file_object, first_slash+1, extra_dir_size);
+			strncat(file_object, file, strlen(file));
+			file_object[strlen(file_object) - 1] = 'o';
+
+
+
+
+			if (access(file_object, F_OK) != 0) {
+				nob_cmd_append(cmd, nob_temp_strdup(file_cat));
+			} else if (is_file_times_same(file_cat, file_object) == false) {
+				nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
+			}
 		}
 	}
 	return 0;
 }
 
-int move_object_files(char *directory, char *build_dir) {
+
+bool is_file_times_same(char *file1, char *file2) {
+	struct stat file1_stat;
+	stat(file1,&file1_stat);
+
+	struct stat file2_stat;
+	stat(file2,&file2_stat);
+
+	return (file2_stat.st_mtim.tv_sec == file1_stat.st_mtim.tv_sec);
+}
+
+int move_object_files(char *dir, char *build_dir) {
 	Nob_File_Paths files = {0};
-	nob_read_entire_dir(directory, &files);
+	nob_read_entire_dir(dir, &files);
 
 	for (size_t i = 0; i < files.count; i++) {
 		Cmd cmd = {0};
@@ -197,8 +230,8 @@ int move_object_files(char *directory, char *build_dir) {
 
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 			nob_cmd_append(&cmd, "mv");
-			char file_cat[strlen(file) + strlen(directory) + 1];
-			strncpy(file_cat, directory, sizeof(file_cat));
+			char file_cat[strlen(file) + strlen(dir) + 1];
+			strncpy(file_cat, dir, sizeof(file_cat));
 			strncat(file_cat, file, strlen(file));
 
 
@@ -211,7 +244,7 @@ int move_object_files(char *directory, char *build_dir) {
 				return -1;
 			}
 			
-			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size];
+			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
 			strncpy(new_file_cat, build_dir, sizeof(new_file_cat));
 			strncat(new_file_cat, first_slash+1, extra_dir_size);
 			strncat(new_file_cat, file, strlen(file));
@@ -220,6 +253,10 @@ int move_object_files(char *directory, char *build_dir) {
 			char *current_file = file;
 			current_file[strlen(current_file) - 1] = 'o';
 			new_file_cat[strlen(new_file_cat) - 1] = 'o';
+
+			if (access(current_file, F_OK) != 0) {
+				continue;
+			}
 
 			nob_cmd_append(&cmd, current_file);
 			nob_cmd_append(&cmd, nob_temp_strdup(new_file_cat));	
