@@ -46,48 +46,22 @@ int main(int argc, char **argv) {
 	const char *output_path = BUILD_FOLDER"nob_configed";
 	const char *input_path = SRC_BUILD_FOLDER"nob_configed.c";
 	nob_cmd_append(&cmd, COMPILER);
-	//nob_cmd_append(&cmd, "--no-warnings");
 	nob_cc_flags(&cmd);
 	nob_cmd_append(&cmd, "-I.", "-I"BUILD_FOLDER, "-I"SRC_BUILD_FOLDER); // -I is usually the same across all compilers
 	nob_cc_output(&cmd, output_path);
 	nob_cc_inputs(&cmd, input_path);
 	if (!cmd_run(&cmd)) return 1;
 
-	nob_cmd_append(&cmd, output_path);
-	if (!cmd_run(&cmd)) return 1;
-
-	if (argc > 1) {
+	if (argc == 1) {
+		nob_cmd_append(&cmd, output_path);
+		if (!cmd_run(&cmd)) return 1;
+	} else if (argc > 1) {
 		if (!strncmp(argv[1], "br", 2)) {
 			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main");
 
 			cmd_run(&cmd);
 		}
 		if (!strncmp(argv[1], "ar", 2)) {
-			Nob_File_Paths files = {0};
-
-			nob_read_entire_dir("build_obj", &files);
-
-			Cmd ar_cmd = {0};
-			char *archive_file_name = "build/libt.a";
-
-			nob_cmd_append(&ar_cmd, "ar", "rcs", archive_file_name);
-			for (int i = 0; i < files.count; i++) {
-				char *file = files.items[i];
-				char file_cat[strlen(file)+sizeof("build_obj/")];
-
-				strncpy(file_cat, "build_obj/", sizeof(file_cat));
-				strncat(file_cat, file, strlen(file));
-
-				if (file[strlen(file)-1] == 'o') {
-					printf("%s\n", file_cat);
-					nob_cmd_append(&ar_cmd, nob_temp_strdup(file_cat));
-				}
-			}
-
-
-
-			cmd_run(&ar_cmd);
-			
 			nob_cmd_append(&cmd, output_path);
 			nob_cmd_append(&cmd, "ar");
 			if (!cmd_run(&cmd)) return 1;
