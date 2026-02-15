@@ -39,6 +39,7 @@ char user_files[][MAX_FILE_LEN] = {
 
 
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
+int change_c_files_times(Cmd *cmd, char *directory, char *build_dir);
 int add_compilation_target(Cmd *cmd, char *directory, char *build_dir);
 int get_object_file(char *directory, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
@@ -75,6 +76,8 @@ int main(int argc, char **argv) {
 	get_object_file("src/user/", "build_obj/");
 
 
+	change_c_files_times(&cmd, "src/", "build_obj/");
+	change_c_files_times(&cmd, "src/user/", "build_obj/");
 
 
 	char *directories[2] = {"build_obj/", "build_obj/user/"};
@@ -127,19 +130,18 @@ int change_time(char *filename, time_t mtime) {
   return 0;
 }
 
-
-
-int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
+int change_c_files_times(Cmd *cmd, char *directory, char *build_dir){
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(directory, &files);
 
 	for (size_t i = 0; i < files.count; i++) {
 		char *file = files.items[i];
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
+
 			char file_cat[strlen(file) + strlen(directory) + 1];
 			strncpy(file_cat, directory, sizeof(file_cat));
 			strncat(file_cat, file, strlen(file));
-			nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
+
 
 			char *last_slash = strrchr(file_cat, '/');
 			char *first_slash = strchr(file_cat, '/');
@@ -154,6 +156,29 @@ int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
 			strncpy(new_file_cat, build_dir, sizeof(new_file_cat));
 			strncat(new_file_cat, first_slash+1, extra_dir_size);
 			strncat(new_file_cat, file, strlen(file));
+			new_file_cat[strlen(new_file_cat)-1] = 'o';
+
+
+			struct stat filestat;
+			stat(file_cat,&filestat);
+			change_time(new_file_cat, filestat.st_mtim.tv_sec);
+		}
+	}
+	return 0;
+}
+
+
+int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
+	Nob_File_Paths files = {0};
+	nob_read_entire_dir(directory, &files);
+
+	for (size_t i = 0; i < files.count; i++) {
+		char *file = files.items[i];
+		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
+			char file_cat[strlen(file) + strlen(directory) + 1];
+			strncpy(file_cat, directory, sizeof(file_cat));
+			strncat(file_cat, file, strlen(file));
+			nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
 		}
 	}
 	return 0;
@@ -191,7 +216,6 @@ int get_object_file(char *directory, char *build_dir) {
 
 			char *current_file = file;
 			current_file[strlen(current_file) - 1] = 'o';
-
 			new_file_cat[strlen(new_file_cat) - 1] = 'o';
 
 			nob_cmd_append(&cmd, current_file);
