@@ -39,7 +39,7 @@ char user_files[][MAX_FILE_LEN] = {
 
 
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
-int change_c_files_times(Cmd *cmd, char *directory, char *build_dir);
+int change_c_files_times(char *directory, char *build_dir);
 int add_compilation_target(Cmd *cmd, char *directory, char *build_dir);
 int move_object_files(char *directory, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
 	move_object_files("src/", "build_obj/");
 	move_object_files("src/user/", "build_obj/");
 
-	change_c_files_times(&cmd, "src/", "build_obj/");
-	change_c_files_times(&cmd, "src/user/", "build_obj/");
+	change_c_files_times("src/", "build_obj/");
+	change_c_files_times("src/user/", "build_obj/");
 
 
 	char *directories[2] = {"build_obj/", "build_obj/user/"};
@@ -109,6 +109,9 @@ int main(int argc, char **argv) {
 
 
 
+
+
+
 int change_time(char *filename, time_t mtime) {
   struct stat foo;
   //time_t mtime;
@@ -129,7 +132,7 @@ int change_time(char *filename, time_t mtime) {
   return 0;
 }
 
-int change_c_files_times(Cmd *cmd, char *directory, char *build_dir){
+int change_c_files_times(char *directory, char *build_dir){
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(directory, &files);
 
