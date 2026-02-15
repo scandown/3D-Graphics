@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
 	if (argc > 1) {
 		if (strncmp(argv[1], "ar", 2) == 0) {
 			nob_cmd_append(&link_cmd2, "gcc");
-			nob_cmd_append(&link_cmd2, "src/external/main.c");
+			nob_cmd_append(&link_cmd2, "src/user/main.c", "external/lib/glad.c");
 			nob_cmd_append(&link_cmd2, "-Lbuild/", "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
 			nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
 			nob_cmd_append(&link_cmd2, "-o", "build/main");
