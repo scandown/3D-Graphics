@@ -1,6 +1,5 @@
 #include "model.h"
 
-
 typedef struct {
 	unsigned int *items;
 	size_t count;
