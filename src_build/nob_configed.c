@@ -41,7 +41,7 @@ char user_files[][MAX_FILE_LEN] = {
 //void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
 int change_c_files_times(Cmd *cmd, char *directory, char *build_dir);
 int add_compilation_target(Cmd *cmd, char *directory, char *build_dir);
-int get_object_file(char *directory, char *build_dir);
+int move_object_files(char *directory, char *build_dir);
 void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
@@ -72,9 +72,8 @@ int main(int argc, char **argv) {
 	add_compilation_target(&cmd, "src/user/", "build/");
 	cmd_run(&cmd);
 
-	get_object_file("src/", "build_obj/");
-	get_object_file("src/user/", "build_obj/");
-
+	move_object_files("src/", "build_obj/");
+	move_object_files("src/user/", "build_obj/");
 
 	change_c_files_times(&cmd, "src/", "build_obj/");
 	change_c_files_times(&cmd, "src/user/", "build_obj/");
@@ -184,7 +183,7 @@ int add_compilation_target(Cmd *cmd, char *directory, char *build_dir) {
 	return 0;
 }
 
-int get_object_file(char *directory, char *build_dir) {
+int move_object_files(char *directory, char *build_dir) {
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(directory, &files);
 
