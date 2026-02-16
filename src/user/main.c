@@ -1,24 +1,7 @@
 #include <stdio.h>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-#include "cglm/cglm.h"
 #include <stdlib.h>
-#include <setjmp.h>
 
-#include "shader.h"
-#include "model.h"
-#include "quat.h"
-#include "window.h"
-#include "state.h"
-#include "camera.h"
-#include "uniform.h"
-#include "texture.h"
-#include "sprite.h"
-
-#include "user/input.h"
-#include "user/instanced_positions.h"
-
-void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);
+#include "engine.h"
 
 #define num_inst 3
 
@@ -38,13 +21,14 @@ int main() {
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 
-	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}};
-	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}};
+	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}, {32, 0}};
+	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1,
 			"assets/smiley.png", instanced_positions, instanced_spr_num, num_inst, 16, 16);
 
 
 
+	float yes[2] = {10, 100};
 	while (!glfwWindowShouldClose(game.window)) {
 		test.plane.x = cam->pos[0] * 0;
 		test.plane.y = cam->pos[1] * 0;
@@ -63,6 +47,10 @@ int main() {
 		glfwPollEvents();
 
 
+		glBindBuffer(GL_ARRAY_BUFFER, test.plane.instance_UV_VBO);
+		yes[0] += 0.1;
+		glBufferSubData(GL_ARRAY_BUFFER, 2 * sizeof(float) * 2, sizeof(float) * 2, yes);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glUseProgram(program);
 
