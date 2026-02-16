@@ -68,11 +68,6 @@ unsigned int program_create(unsigned int vertex_shader, unsigned int fragment_sh
 	return program;
 }
 
-void program_delete(unsigned int program) {
-	glDeleteProgram(program);
-}
-
-
 char *read_file(char *file_location) {
 	FILE *fptr = fopen(file_location, "r");	
 	int file_size = 0;
