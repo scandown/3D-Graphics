@@ -17,7 +17,6 @@ int shader_error_check(unsigned int shader);
 
 unsigned int program_create(unsigned int vertex_shader, unsigned int fragment_shader);
 unsigned int program_init(jmp_buf error, char *vertex_shader, char *fragment_shader);
-void program_delete(unsigned int program);
 
 char *read_file(char *file_location);
 

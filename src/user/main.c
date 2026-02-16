@@ -21,6 +21,8 @@ int main() {
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 
+
+
 	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}, {32, 0}};
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1,
@@ -68,7 +70,7 @@ int main() {
 	}
 
 	
-	program_delete(program);
+	glDeleteProgram(program);
 	sprite_delete(&test);
 	free(cam);
 
