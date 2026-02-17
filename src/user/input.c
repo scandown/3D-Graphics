@@ -2,7 +2,7 @@
 
 void key_input(GLFWwindow *window, Camera *cam) {
 
-	float cameraSpeed = 0.05;
+	float cameraSpeed = 0.5;
 	vec3 cameraUp;
 	vec3 cameraRight;
 	vec3 up_temp;

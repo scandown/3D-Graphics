@@ -15,8 +15,8 @@ int main() {
 
 
 	Camera *cam = malloc(sizeof(Camera));
-	camera_init(cam, (vec3){0, 0, 1}, 0, -90);
-	State game = state_init(error, 1920, 1080, "game");
+	camera_init(cam, (vec3){0, 0, 1}, 0, 270);
+	State game = state_init(error, 640, 480, "game");
 
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");

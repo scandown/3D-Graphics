@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 
 	Cmd cmd = {0};
 
-	nob_cmd_append(&cmd, "bear");
+	nob_cmd_append(&cmd, "bear", "-a");
 	nob_cmd_append(&cmd, "--");
 
 	nob_cmd_append(&cmd, COMPILER);
