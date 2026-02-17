@@ -12,6 +12,7 @@
 #include "uniform.h"
 #include "texture.h"
 #include "sprite.h"
+#include "matrix.h"
 
 #include "user/input.h"
 #include "user/instanced_positions.h"
