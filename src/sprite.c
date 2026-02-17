@@ -11,6 +11,7 @@ Sprite sprite_init(int instance_amount; jmp_buf error, vec3 pos, unsigned int sc
 	Instance instance = {.is_instanced = true,
 			     .instance_array = translation,
 			     .spr_num = spr_num};
+
 	model_init(error, &plane, pos, texture_location, &instance, instance_amount);
 	glm_mat4_scale(plane.uniform.value.m4, scale);
 	sprite.plane = plane;

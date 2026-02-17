@@ -23,4 +23,3 @@ typedef struct {
 
 
 State state_init(jmp_buf error, unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, char *name);
-void matrix_init(State *game, unsigned int program, char *dimension);

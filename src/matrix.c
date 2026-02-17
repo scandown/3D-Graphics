@@ -3,9 +3,7 @@
 void matrix_init(State *game, unsigned int program, char *dimension) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
-	mat4 model_matrix;
 	glm_mat4_identity(view_matrix);
-	glm_mat4_identity(model_matrix);
 	glm_mat4_identity(projection_matrix);
 
 
@@ -19,10 +17,8 @@ void matrix_init(State *game, unsigned int program, char *dimension) {
 	}
 
 	game->view_uniform = uniform_set_data(view_matrix, UNIFORM_MAT4);
-	game->model_uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
 	game->projection_uniform = uniform_set_data(projection_matrix, UNIFORM_MAT4);
 
-	uniform_send_to_gpu(&game->model_uniform, program, "model");
 	uniform_send_to_gpu(&game->view_uniform, program, "view");
 	uniform_send_to_gpu(&game->projection_uniform, program, "projection");
 }
