@@ -43,9 +43,9 @@ int main(int argc, char **argv) {
 	}
 
 
-#ifdef __linux__
+#ifdef PLATFORM_LINUX
 	const char *output_path = BUILD_FOLDER"nob_configed";
-#elifdef __MINGW32__
+#elifdef PLATFORM_WINDOWS
 	const char *output_path = BUILD_FOLDER"nob_configed.exe";
 #endif
 
@@ -59,15 +59,23 @@ int main(int argc, char **argv) {
 	if (!cmd_run(&cmd)) return 1;
 
 	if (argc == 1) {
+		#ifdef PLATFORM_WINDOWS
+		nob_cmd_append(&cmd, "wine");
+		#endif
 		nob_cmd_append(&cmd, output_path);
 		if (!cmd_run(&cmd)) return 1;
 	} else if (argc > 1) {
 		if (!strncmp(argv[1], "br", 2)) {
-			nob_cmd_append(&cmd, "./"BUILD_FOLDER"main");
-
+			#ifdef PLATFORM_WINDOWS
+			nob_cmd_append(&cmd, "wine");
+			#endif
+			nob_cmd_append(&cmd, BUILD_FOLDER"main");
 			cmd_run(&cmd);
 		}
 		if (!strncmp(argv[1], "ar", 2)) {
+			#ifdef PLATFORM_WINDOWS
+			nob_cmd_append(&cmd, "wine");
+			#endif
 			nob_cmd_append(&cmd, output_path);
 			nob_cmd_append(&cmd, "ar");
 			if (!cmd_run(&cmd)) return 1;
