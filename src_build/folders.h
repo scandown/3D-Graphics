@@ -9,10 +9,13 @@
 #define THIRDPARTY_INCLUDE "external/include"
 #define INCLUDE "include/"
 
-#ifdef __linux__
+//#define PLATFORM_LINUX
+#define PLATFORM_WINDOWS
+
+#ifdef PLATFORM_LINUX
 	//external/lib/LINUX/libglfw3linux.a
 	#define LIBRARY_FOLDER "external/lib/LINUX/"
-#elifdef __MINGW32__
+#elifdef PLATFORM_WINDOWS
 	#define LIBRARY_FOLDER "external/lib/WIN/"
 #endif
 

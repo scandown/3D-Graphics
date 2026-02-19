@@ -1,11 +1,22 @@
 #define NOB_IMPLEMENTATION
 #define NOB_STRIP_PREFIX
 #define NOB_WARN_DEPRECATED
-#define COMPILER "gcc"
+
+
+
 #include "nob.h"
 #include "config.h"
 #include "folders.h"
 #include <string.h>
+
+
+#ifdef PLATFORM_LINUX
+#define COMPILER "gcc"
+#define ARCHIVE "ar"
+#elifdef PLATFORM_WINDOWS
+#define COMPILER "x86_64-w64-mingw32-gcc"
+#define ARCHIVE "x86_64-w64-mingw32-ar"
+#endif
 
 #include <sys/stat.h>
 #include <time.h>
@@ -89,12 +100,13 @@ int main(int argc, char **argv) {
 	Cmd link_cmd = {0};
 
 	if (argc > 1 && (strncmp(argv[1], "ar", 2) == 0)) {
-		nob_cmd_append(&link_cmd, "ar");
+
+		nob_cmd_append(&link_cmd, ARCHIVE);
 		nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
 	} else {
-		nob_cmd_append(&link_cmd, "gcc");
+		nob_cmd_append(&link_cmd, COMPILER);
 	}
-	nob_cmd_append(&link_cmd, "external/lib/glad.c");
+	//nob_cmd_append(&link_cmd, "external/lib/glad.c");
 	for (int i = 0; i < sizeof(directories) / sizeof(char *); i++) {
 		Nob_File_Paths files = {0};
 		nob_read_entire_dir(directories[i], &files);
@@ -121,10 +133,17 @@ int main(int argc, char **argv) {
 
 	if (argc > 1) {
 		if (strncmp(argv[1], "ar", 2) == 0) {
-			nob_cmd_append(&link_cmd2, "gcc");
+			nob_cmd_append(&link_cmd2, COMPILER);
 			nob_cmd_append(&link_cmd2, "src/user/main.c", "external/lib/glad.c");
-			nob_cmd_append(&link_cmd2, "-Lbuild/", "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
-			nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
+			nob_cmd_append(&link_cmd2, "-Lbuild/", "-L"LIBRARY_FOLDER, "-Iinclude", "-Iexternal/include");
+
+			#ifdef PLATFORM_LINUX
+				nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
+			#endif
+			#ifdef PLATFORM_WINDOWS
+				nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");
+			#endif
+
 			nob_cmd_append(&link_cmd2, "-o", "build/main");
 
 			cmd_run(&link_cmd2);
@@ -190,7 +209,7 @@ int change_c_files_times(char *dir, char *build_dir){
 
 			struct stat filestat;
 			stat(file_cat,&filestat);
-			change_time(new_file_cat, filestat.st_mtim.tv_sec);
+			change_time(new_file_cat, filestat.st_mtime);
 		}
 	}
 	return 0;
@@ -263,7 +282,7 @@ bool is_file_times_same(char *file1, char *file2) {
 	struct stat file2_stat;
 	stat(file2,&file2_stat);
 
-	return (file2_stat.st_mtim.tv_sec == file1_stat.st_mtim.tv_sec);
+	return (file2_stat.st_mtime == file1_stat.st_mtime);
 }
 
 int move_object_files(char *dir, char *build_dir) {
