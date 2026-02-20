@@ -18,7 +18,6 @@ int main() {
 	camera_init(cam, (vec3){0, 0, 1}, 0, 270);
 	State game = state_init(error, 640, 480, "game");
 
-
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 
 
@@ -56,7 +55,7 @@ int main() {
 
 		glUseProgram(program);
 
-		key_input(game.window, cam);
+		key_input(game.window, cam, 0.5);
 		
 		matrix_init(&game, program, "2D");
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);

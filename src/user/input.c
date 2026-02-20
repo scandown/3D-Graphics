@@ -1,8 +1,8 @@
 #include "user/input.h"
 
-void key_input(GLFWwindow *window, Camera *cam) {
+void key_input(GLFWwindow *window, Camera *cam, float speed) {
 
-	float cameraSpeed = 0.5;
+	float cameraSpeed = speed;
 	vec3 cameraUp;
 	vec3 cameraRight;
 	vec3 up_temp;
