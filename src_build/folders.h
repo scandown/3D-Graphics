@@ -9,8 +9,8 @@
 #define THIRDPARTY_INCLUDE "external/include"
 #define INCLUDE "include/"
 
-#define PLATFORM_LINUX
-//#define PLATFORM_WINDOWS
+//#define PLATFORM_LINUX
+#define PLATFORM_WINDOWS
 
 #ifdef PLATFORM_LINUX
 	//external/lib/LINUX/libglfw3linux.a

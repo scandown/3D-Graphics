@@ -5,4 +5,4 @@
 
 #include "camera.h"
 
-void key_input(GLFWwindow *window, Camera *cam);
+void key_input(GLFWwindow *window, Camera *cam, float speed);

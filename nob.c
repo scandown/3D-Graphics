@@ -1,9 +1,11 @@
 #define NOB_IMPLEMENTATION
 #define NOB_STRIP_PREFIX
 #define NOB_WARN_DEPRECATED
-#define COMPILER "gcc"
 #include "nob.h"
 #include "src_build/folders.h"
+//#define COMPILER "x86_64-w64-mingw32-gcc"
+#define COMPILER "gcc"
+#define ARCHIVE "x86_64-w64-mingw32-ar"
 #include <string.h>
 
 
@@ -66,9 +68,11 @@ int main(int argc, char **argv) {
 		if (!cmd_run(&cmd)) return 1;
 	} else if (argc > 1) {
 		if (!strncmp(argv[1], "br", 2)) {
+			/*
 			#ifdef PLATFORM_WINDOWS
 			nob_cmd_append(&cmd, "wine");
 			#endif
+			*/
 			nob_cmd_append(&cmd, BUILD_FOLDER"main");
 			cmd_run(&cmd);
 		}
