@@ -1,5 +1,6 @@
 build/
 build_obj/
+build_obj_win/
 nob
 nob.old
 external/sources/

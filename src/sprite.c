@@ -1,7 +1,7 @@
 #include "sprite.h"
 
-Sprite sprite_init(int instance_amount; jmp_buf error, vec3 pos, unsigned int scale, char *texture_location,
-		vec2 translation[instance_amount], vec2 spr_num[instance_amount], int instance_amount, int width, int height) {
+Sprite sprite_init(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location,
+		vec2 translation[], vec2 spr_num[], int instance_amount, int width, int height) {
 
 	Sprite sprite;
 

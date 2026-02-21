@@ -59,6 +59,13 @@ void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
 
+#define USER "src/user/"
+
+#ifdef PLATFORM_LINUX
+#define BUILD_OBJ_DIR "build_obj/"
+#elifdef PLATFORM_WINDOWS
+#define BUILD_OBJ_DIR "build_obj_win/"
+#endif
 
 int main(int argc, char **argv) {
 
@@ -79,23 +86,23 @@ int main(int argc, char **argv) {
 #endif
 
 
-	char *excluded_files[] = {"src/user/main.c"};
+	char *excluded_files[] = {USER"main.c", USER"buffers.c", USER"input.c", USER"instanced_positions.c"};
 
-	add_compilation_target(&cmd, "src/", "build_obj/",
+	add_compilation_target(&cmd, "src/", BUILD_OBJ_DIR,
 			excluded_files, sizeof(excluded_files) / sizeof(char *));
 
-	add_compilation_target(&cmd, "src/user/", "build_obj/",
+	add_compilation_target(&cmd, "src/user/", BUILD_OBJ_DIR,
 			excluded_files, sizeof(excluded_files) / sizeof(char *));
 	cmd_run(&cmd);
 
-	move_object_files("src/", "build_obj/");
-	move_object_files("src/user/", "build_obj/");
+	move_object_files("src/", BUILD_OBJ_DIR);
+	move_object_files("src/user/", BUILD_OBJ_DIR);
 
-	change_c_files_times("src/", "build_obj/");
-	change_c_files_times("src/user/", "build_obj/");
+	change_c_files_times("src/", BUILD_OBJ_DIR);
+	change_c_files_times("src/user/", BUILD_OBJ_DIR);
 
 
-	char *directories[2] = {"build_obj/", "build_obj/user/"};
+	char *directories[2] = {BUILD_OBJ_DIR, "build_obj/user/"};
 	
 	Cmd link_cmd = {0};
 
@@ -134,7 +141,11 @@ int main(int argc, char **argv) {
 	if (argc > 1) {
 		if (strncmp(argv[1], "ar", 2) == 0) {
 			nob_cmd_append(&link_cmd2, COMPILER);
-			nob_cmd_append(&link_cmd2, "src/user/main.c", "external/lib/glad.c");
+			for (int i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
+				nob_cmd_append(&link_cmd2, excluded_files[i]);
+			}
+			nob_cmd_append(&link_cmd2, "external/lib/glad.c");
+
 			nob_cmd_append(&link_cmd2, "-Lbuild/", "-L"LIBRARY_FOLDER, "-Iinclude", "-Iexternal/include");
 
 			#ifdef PLATFORM_LINUX
