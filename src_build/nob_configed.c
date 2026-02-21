@@ -90,19 +90,13 @@ int main(int argc, char **argv) {
 
 	add_compilation_target(&cmd, "src/", BUILD_OBJ_DIR,
 			excluded_files, sizeof(excluded_files) / sizeof(char *));
-
-	add_compilation_target(&cmd, "src/user/", BUILD_OBJ_DIR,
-			excluded_files, sizeof(excluded_files) / sizeof(char *));
 	cmd_run(&cmd);
 
 	move_object_files("src/", BUILD_OBJ_DIR);
-	move_object_files("src/user/", BUILD_OBJ_DIR);
-
 	change_c_files_times("src/", BUILD_OBJ_DIR);
-	change_c_files_times("src/user/", BUILD_OBJ_DIR);
 
 
-	char *directories[2] = {BUILD_OBJ_DIR, "build_obj/user/"};
+	char *directories[1] = {BUILD_OBJ_DIR};
 	
 	Cmd link_cmd = {0};
 
