@@ -1,6 +1,6 @@
 #include "user/buffers.h"
 
-void set_up_buffers(int translation_size; Model *model, Instance *instance, int translation_size) {
+void buffers_init(Model *model, Instance *instance, int translation_size) {
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
 	glGenBuffers(1, &model->EBO);
@@ -81,9 +81,9 @@ void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location, I
 	glm_mat4_identity(model_matrix);
 
 	if (instance->is_instanced) {
-		set_up_buffers(model, instance, instance_amount);
+		buffers_init(model, instance, instance_amount);
 	} else {
-		set_up_buffers(model, instance, 0);
+		buffers_init(model, instance, 0);
 	}
 
 	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
