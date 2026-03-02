@@ -237,3 +237,4 @@ int check_float_equality(float *array1, int array1_length, float *array2, int ar
 
 	return wrong;
 }
+
