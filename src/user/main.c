@@ -24,9 +24,10 @@ int main() {
 
 	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}, {32, 0}};
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
-	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1,
-			"assets/smiley.png", instanced_positions, instanced_spr_num, num_inst, 16, 16);
+	Instance test_instance = {.is_instanced = true, .instance_array = instanced_positions, .spr_num = instanced_spr_num};
 
+	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1, "assets/smiley.png", 16, 16);
+	gen_buffers(&test.plane, &test_instance, num_inst);
 
 
 	float yes[2] = {10, 100};

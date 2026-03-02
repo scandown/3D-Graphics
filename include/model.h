@@ -32,6 +32,13 @@ typedef struct {
 	float z;
 } Model;
 
+typedef struct {
+	bool is_instanced;
+
+	vec2 *instance_array;
+	vec2 *spr_num;
+} Instance;
+
 int check_int_equality(int *array1, int array1_length, int *array2, int array2_length);
 int check_float_equality(float *array1, int array1_length, float *array2, int array2_length);
 int length_to_token(char *src, char token);
