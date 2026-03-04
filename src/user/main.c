@@ -16,6 +16,11 @@ int main() {
 
 	Camera *cam = malloc(sizeof(Camera));
 	camera_init(cam, (vec3){0, 0, 1}, 0, 270);
+
+	glEnable(GL_DEPTH_TEST);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
 	State game = state_init(error, 640, 480, "game");
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
