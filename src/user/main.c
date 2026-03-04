@@ -19,7 +19,7 @@ int main() {
 
 
 
-	State game = state_init(error, 640, 480, "game");
+	State game = state_init(error, 640, 360, "game");
 
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(game.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -64,7 +64,7 @@ int main() {
 
 		key_input(game.window, cam, 0.5);
 		
-		matrix_init(&game, program, "2D");
+		matrix_init(&game, program, "2D", 640, 360);
 		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
 		uniform_send_to_gpu(&game.view_uniform, program, "view");
 
