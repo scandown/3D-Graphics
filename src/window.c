@@ -24,8 +24,6 @@ GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
 		return NULL;
 	}
 
-	glEnable(GL_DEPTH_TEST);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	return window;
 }
 
