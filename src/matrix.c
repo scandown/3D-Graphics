@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-void matrix_init(State *game, unsigned int program, char *dimension) {
+void matrix_init(State *game, unsigned int program, char *dimension, float width, float height) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
 	glm_mat4_identity(view_matrix);
@@ -8,7 +8,7 @@ void matrix_init(State *game, unsigned int program, char *dimension) {
 
 
 	if (strncmp(dimension, "2D", 2) == 0) {
-		glm_ortho(0, 640, 0, 360, 0.1, 100000, projection_matrix);
+		glm_ortho(0, width, 0, height, 0.1, 100000, projection_matrix);
 	} else if (strncmp(dimension, "3D", 2) == 0) {
 		glm_perspective(glm_rad(70), 16.0/9.0, 0.1, 100000, projection_matrix);
 	} else {
