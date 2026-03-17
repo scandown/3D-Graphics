@@ -88,7 +88,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 			if (matches != 9) {
 				fprintf(stderr, "%s isn't in format vertex/texture/normal\n", model_name);
-				free(lineHeader);
 				free(verts.items);
 				bst_delete(&face_bst);
 				fclose(fptr);
@@ -136,7 +135,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 		}
 
 	}
-	free(lineHeader);
 	unsigned int index2[face_i * 3];
 	for (int i = 0; i < face_i; i++) {
 		for (int j = 0; j < 3; j++) {
