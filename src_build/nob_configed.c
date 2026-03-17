@@ -89,13 +89,10 @@ int main(int argc, char **argv) {
 	
 	Cmd link_cmd = {0};
 
-	if (argc > 1 && (strncmp(argv[1], "ar", 2) == 0)) {
+	nob_cmd_append(&link_cmd, ARCHIVE);
+	nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
 
-		nob_cmd_append(&link_cmd, ARCHIVE);
-		nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
-	} else {
-		nob_cmd_append(&link_cmd, COMPILER);
-	}
+
 	//nob_cmd_append(&link_cmd, "external/lib/glad.c");
 	for (size_t i = 0; i < sizeof(directories) / sizeof(char *); i++) {
 		Nob_File_Paths files = {0};
@@ -111,38 +108,46 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	/*
 	if (argc == 1) {
 		nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
 		nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
 		nob_cmd_append(&link_cmd, "-o", "build/main");
 	}
+	*/
 	
 	cmd_run(&link_cmd);
 
 	Cmd link_cmd2 = {0};
 
 	if (argc > 1) {
-		if (strncmp(argv[1], "ar", 2) == 0) {
-			nob_cmd_append(&link_cmd2, COMPILER);
-			for (size_t i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
-				nob_cmd_append(&link_cmd2, excluded_files[i]);
-			}
-			nob_cmd_append(&link_cmd2, "external/lib/glad.c");
-
-			nob_cmd_append(&link_cmd2, "-Lbuild/", "-L"LIBRARY_FOLDER, "-Iinclude", "-Iexternal/include");
-
-			#ifdef PLATFORM_LINUX
-				nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
-			#endif
-			#ifdef PLATFORM_WINDOWS
-				nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");
-			#endif
-
-			nob_cmd_append(&link_cmd2, "-o", "build/main");
-
-			cmd_run(&link_cmd2);
+		if (strcmp(argv[1], "ar") == 0) {
+			return 0;
 		}
 	}
+	// runs command to link to archive, should be done when ar isn't an argument
+	if (argc == 1) {
+		nob_cmd_append(&link_cmd2, COMPILER);
+		for (size_t i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
+			nob_cmd_append(&link_cmd2, excluded_files[i]);
+		}
+		nob_cmd_append(&link_cmd2, "external/lib/glad.c");
+
+		nob_cmd_append(&link_cmd2, "-Lbuild/", "-L"LIBRARY_FOLDER, "-Iinclude", "-Iexternal/include");
+
+#ifdef PLATFORM_LINUX
+	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
+#endif
+#ifdef PLATFORM_WINDOWS
+	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");
+#endif
+
+		nob_cmd_append(&link_cmd2, "-o", "build/main");
+
+		cmd_run(&link_cmd2);
+	}
+	
+	return 0;
 }
 
 
