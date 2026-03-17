@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
 	NOB_GO_REBUILD_URSELF_PLUS(argc, argv, "nob.h", "src_build/folders.h");
 
 	if (!nob_mkdir_if_not_exists(BUILD_FOLDER)) return 1;
+	if (!nob_mkdir_if_not_exists(BUILD_OBJ_LINUX)) return 1;
+	if (!nob_mkdir_if_not_exists(BUILD_OBJ_WIN)) return 1;
 
 
 	const char *conf_path = BUILD_FOLDER"config.h";

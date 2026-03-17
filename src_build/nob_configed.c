@@ -2,8 +2,6 @@
 #define NOB_STRIP_PREFIX
 #define NOB_WARN_DEPRECATED
 
-
-
 #include "nob.h"
 #include "config.h"
 #include "folders.h"
@@ -48,8 +46,6 @@ char user_files[][MAX_FILE_LEN] = {
 
 #define total_file_sizes sizeof(files) / MAX_FILE_LEN + sizeof(user_files) / MAX_FILE_LEN
 
-
-//void add_compilation_target(Cmd *cmd, char files[][MAX_FILE_LEN], int *num_files, unsigned int for_loop_size, unsigned int index_offset, char *src_folder);
 int change_c_files_times(char *dir, char *build_dir);
 bool is_file_times_same(char *file1, char *file2);
 int add_compilation_target(Cmd *cmd, char *dir, char *build_dir, char **excluded_files, size_t excluded_files_size);
@@ -59,13 +55,6 @@ void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
 
-#define USER "src/user/"
-
-#ifdef PLATFORM_LINUX
-#define BUILD_OBJ_DIR "build_obj/"
-#elifdef PLATFORM_WINDOWS
-#define BUILD_OBJ_DIR "build_obj_win/"
-#endif
 
 int main(int argc, char **argv) {
 
@@ -86,7 +75,7 @@ int main(int argc, char **argv) {
 #endif
 
 
-	char *excluded_files[] = {USER"main.c", USER"buffers.c", USER"input.c", USER"instanced_positions.c"};
+	char *excluded_files[] = {SRC_USER_FOLDER"main.c", SRC_USER_FOLDER"buffers.c", SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"instanced_positions.c"};
 
 	add_compilation_target(&cmd, "src/", BUILD_OBJ_DIR,
 			excluded_files, sizeof(excluded_files) / sizeof(char *));
@@ -108,11 +97,11 @@ int main(int argc, char **argv) {
 		nob_cmd_append(&link_cmd, COMPILER);
 	}
 	//nob_cmd_append(&link_cmd, "external/lib/glad.c");
-	for (int i = 0; i < sizeof(directories) / sizeof(char *); i++) {
+	for (size_t i = 0; i < sizeof(directories) / sizeof(char *); i++) {
 		Nob_File_Paths files = {0};
 		nob_read_entire_dir(directories[i], &files);
-		for (int j = 0; j < files.count; j++) {
-			char *file = files.items[j];
+		for (size_t j = 0; j < files.count; j++) {
+			const char *file = files.items[j];
 			if (strncmp(file+strlen(file)-2, ".o", 2) == 0) {
 				char str[strlen(file) + strlen(directories[i]) + 1];
 				strncpy(str, directories[i], sizeof(str));
@@ -135,7 +124,7 @@ int main(int argc, char **argv) {
 	if (argc > 1) {
 		if (strncmp(argv[1], "ar", 2) == 0) {
 			nob_cmd_append(&link_cmd2, COMPILER);
-			for (int i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
+			for (size_t i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
 				nob_cmd_append(&link_cmd2, excluded_files[i]);
 			}
 			nob_cmd_append(&link_cmd2, "external/lib/glad.c");
@@ -187,8 +176,8 @@ int change_c_files_times(char *dir, char *build_dir){
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
-	for (int i = 0; i < files.count; i++) {
-		char *file = files.items[i];
+	for (size_t i = 0; i < files.count; i++) {
+		const char *file = files.items[i];
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 
 			char file_cat[strlen(file) + strlen(dir) + 1];
@@ -231,10 +220,10 @@ int add_compilation_target(Cmd *cmd, char *dir, char *build_dir,
 	// you can instead not link to those files in the 
 	// archive creation stage
 	
-	for (int i = 0; i < files.count; i++) {
-		char *file = files.items[i];
+	for (size_t i = 0; i < files.count; i++) {
+		const char *file = files.items[i];
 		bool excecute = true;
-		for (int j = 0; j < excluded_files_size; j++) {
+		for (size_t j = 0; j < excluded_files_size; j++) {
 			char full_file_path[strlen(dir) + strlen(file) + 1];
 			strncpy(full_file_path, dir, sizeof(full_file_path)); 
 			strncat(full_file_path, file, strlen(file)); 
@@ -294,9 +283,9 @@ int move_object_files(char *dir, char *build_dir) {
 	Nob_File_Paths files = {0};
 	nob_read_entire_dir(dir, &files);
 
-	for (int i = 0; i < files.count; i++) {
+	for (size_t i = 0; i < files.count; i++) {
 		Cmd cmd = {0};
-		char *file = files.items[i];
+		const char *file = files.items[i];
 
 		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
 			nob_cmd_append(&cmd, "mv");
@@ -320,7 +309,8 @@ int move_object_files(char *dir, char *build_dir) {
 			strncat(new_file_cat, file, strlen(file));
 
 
-			char *current_file = file;
+			char current_file[strlen(file) + 1];
+			strcpy(current_file, file);
 			current_file[strlen(current_file) - 1] = 'o';
 			new_file_cat[strlen(new_file_cat) - 1] = 'o';
 

@@ -4,6 +4,8 @@ void buffers_init(Model *model) {
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->VBO);
 	glGenBuffers(1, &model->EBO);
+
+
 	glGenBuffers(1, &model->instance_UV_VBO);
 	glGenBuffers(1, &model->instance_spr_VBO);
 
