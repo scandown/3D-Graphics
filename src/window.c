@@ -7,8 +7,9 @@ GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
 	}
 
 	GLFWwindow *window = glfwCreateWindow(width, height, name, NULL, NULL);
-	if (!window)
-	{
+
+
+	if (!window) {
 		glfwTerminate();
 		return NULL;
 	}

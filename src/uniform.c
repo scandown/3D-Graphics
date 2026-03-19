@@ -1,5 +1,4 @@
 #include "uniform.h"
-#include "state.h"
 
 
 Uniform uniform_set_data(void *value, Uniform_Type type) {

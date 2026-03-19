@@ -3,6 +3,9 @@
 
 #include "engine.h"
 
+#include "user/input.h"
+#include "user/instanced_positions.h"
+
 #define num_inst 3
 
 
@@ -18,11 +21,10 @@ int main() {
 	camera_init(cam, (vec3){0, 0, 1}, 0, 270);
 
 
-
-	State game = state_init(error, 640, 360, "game");
+	GLFWwindow *window = window_init(640, 360, "game");
 
 	glEnable(GL_DEPTH_TEST);
-	glfwSetInputMode(game.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 
@@ -37,7 +39,7 @@ int main() {
 
 
 	float yes[2] = {10, 100};
-	while (!glfwWindowShouldClose(game.window)) {
+	while (!glfwWindowShouldClose(window)) {
 		test.plane.x = cam->pos[0] * 0;
 		test.plane.y = cam->pos[1] * 0;
 		test.plane.z = 0;
@@ -62,7 +64,7 @@ int main() {
 
 		glUseProgram(program);
 
-		key_input(game.window, cam, 0.5);
+		key_input(window, cam, 0.5);
 		
 		matrix_init(cam, program, "2D", 640, 360);
 		camera_rotate(cam, cam->yaw, cam->pitch);
@@ -71,7 +73,7 @@ int main() {
 
 		sprite_draw(&test, program, num_inst);
 
-		glfwSwapBuffers(game.window);
+		glfwSwapBuffers(window);
 
 	}
 

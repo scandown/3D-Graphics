@@ -7,7 +7,6 @@
 #include "model.h"
 #include "quat.h"
 #include "window.h"
-#include "state.h"
 #include "camera.h"
 #include "uniform.h"
 #include "texture.h"
