@@ -64,9 +64,9 @@ int main() {
 
 		key_input(game.window, cam, 0.5);
 		
-		matrix_init(&game, program, "2D", 640, 360);
-		camera_rotate(cam, cam->yaw, cam->pitch, game.view_uniform.value.m4);
-		uniform_send_to_gpu(&game.view_uniform, program, "view");
+		matrix_init(cam, program, "2D", 640, 360);
+		camera_rotate(cam, cam->yaw, cam->pitch);
+		uniform_send_to_gpu(&cam->view_uniform, program, "view");
 
 
 		sprite_draw(&test, program, num_inst);

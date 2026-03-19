@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-void matrix_init(State *game, unsigned int program, char *dimension, float width, float height) {
+void matrix_init(Camera *cam, unsigned int program, char *dimension, float width, float height) {
 	mat4 view_matrix;
 	mat4 projection_matrix;
 	glm_mat4_identity(view_matrix);
@@ -16,9 +16,9 @@ void matrix_init(State *game, unsigned int program, char *dimension, float width
 		return;
 	}
 
-	game->view_uniform = uniform_set_data(view_matrix, UNIFORM_MAT4);
-	game->projection_uniform = uniform_set_data(projection_matrix, UNIFORM_MAT4);
+	cam->view_uniform = uniform_set_data(view_matrix, UNIFORM_MAT4);
+	cam->projection_uniform = uniform_set_data(projection_matrix, UNIFORM_MAT4);
 
-	uniform_send_to_gpu(&game->view_uniform, program, "view");
-	uniform_send_to_gpu(&game->projection_uniform, program, "projection");
+	uniform_send_to_gpu(&cam->view_uniform, program, "view");
+	uniform_send_to_gpu(&cam->projection_uniform, program, "projection");
 }

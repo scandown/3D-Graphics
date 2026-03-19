@@ -19,11 +19,12 @@ typedef struct {
 	double prev_xpos;
 	double prev_ypos;
 
-	mat4 view;
+	Uniform projection_uniform;
+	Uniform view_uniform;
 } Camera;
 
 
 
-void camera_rotate(Camera *cam, float yaw, float pitch, mat4 view);
+void camera_rotate(Camera *cam, float yaw, float pitch);
 void camera_init(Camera *cam, vec3 pos, float pitch, float yaw);
 void cursor_position_callback(GLFWwindow* window, Camera *cam, float sensitivity);

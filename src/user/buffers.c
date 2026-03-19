@@ -78,10 +78,9 @@ void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
 
 	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
-	mat4 model_matrix;
-	glm_mat4_identity(model_matrix);
+	glm_mat4_identity(model->uniform.value.m4);
+	model->uniform.type = UNIFORM_MAT4;
 
-	model->uniform = uniform_set_data(model_matrix, UNIFORM_MAT4);
 	model->x = pos[0];
 	model->y = pos[1];
 	model->z = pos[2];

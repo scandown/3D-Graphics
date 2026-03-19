@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "window.h"
 #include "uniform.h"
+#include "camera.h"
 
 typedef struct Uniform Uniform;
 
@@ -15,10 +16,6 @@ typedef struct {
 	unsigned int SCR_HEIGHT;
 	char *title;
 	GLFWwindow *window;
-
-	Uniform projection_uniform;
-	Uniform view_uniform;
-	Uniform model_uniform;
 } State;
 
 

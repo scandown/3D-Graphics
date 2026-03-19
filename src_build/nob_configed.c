@@ -128,6 +128,7 @@ int main(int argc, char **argv) {
 	// runs command to link to archive, should be done when ar isn't an argument
 	if (argc == 1) {
 		nob_cmd_append(&link_cmd2, COMPILER);
+		nob_cmd_append(&link_cmd2, "-g");
 		for (size_t i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
 			nob_cmd_append(&link_cmd2, excluded_files[i]);
 		}
