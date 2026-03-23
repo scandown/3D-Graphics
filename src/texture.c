@@ -32,6 +32,7 @@ unsigned int texture_init(jmp_buf error, GLenum format, char *name) {
 
 
 	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	
 	return texture;
 }
