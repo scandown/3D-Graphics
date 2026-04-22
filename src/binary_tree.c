@@ -1,45 +1,46 @@
 #include "binary_tree.h"
 
 
-BST *bst_create_node(int value, int value2, int value3, int linked_number) {
-	BST *result = malloc(sizeof(BST));
-	result->left = NULL;
-	result->right = NULL;
-	result->value.vertex = value;
-	result->value.texture = value2;
-	result->value.normal = value3;
-	result->linked = linked_number;
-
-	return result;
+void bst_create_node(BST_dynamic_arr bst_array, int value, int value2, int value3, int linked_number) {
+	DA_PUSH(bst_array, 0);
+	bst_array.items[bst_array.index].left = NULL;
+	bst_array.items[bst_array.index].right = NULL;
+	bst_array.items[bst_array.index].value.vertex = value;
+	bst_array.items[bst_array.index].value.texture = value2;
+	bst_array.items[bst_array.index].value.normal = value3;
+	bst_array.items[bst_array.index].linked = linked_number;
 }
 
-bool bst_insert(BST **rootptr, int value, int value2, int value3, int linked_number) {
-	BST *root = *rootptr;
-	if (root == NULL) {
-		*rootptr = bst_create_node(value, value2, value3, linked_number);
-		return true;
-	}
-	if (value == root->value.vertex && value2 == root->value.texture && value3 == root->value.normal) {
-		return false;
-	}
+bool bst_insert(BST_dynamic_arr rootptr, int value, int value2, int value3, int linked_number) {
+	BST *root = rootptr.items[0];
 
-	if (value > root->value.vertex) {
-		return bst_insert(&(root->right), value, value2, value3, linked_number);
+	while (root != NULL) {
+		if (value == root->value.vertex && value2 == root->value.texture && value3 == root->value.normal) {
+			return false;
+		}
+
+		if (value > root->value.vertex) {
+			root = root->right;
+		}
+		else if (value < root->value.vertex) {
+			root = root->left;
+		}
+		else if (value2 > root->value.texture) {
+			root = root->right;
+		}
+		else if (value2 < root->value.texture) {
+			root = root->left;
+		}
+		else if (value3 > root->value.normal) {
+			root = root->right;
+		}
+		else if (value3 < root->value.normal) {
+			root = root->left;
+		}
 	}
-	else if (value < root->value.vertex) {
-		return bst_insert(&(root->left), value, value2, value3, linked_number);
-	}
-	else if (value2 > root->value.texture) {
-		return bst_insert(&(root->right), value, value2, value3, linked_number);
-	}
-	else if (value2 < root->value.texture) {
-		return bst_insert(&(root->left), value, value2, value3, linked_number);
-	}
-	else if (value3 > root->value.normal) {
-		return bst_insert(&(root->right), value, value2, value3, linked_number);
-	}
-	else if (value3 < root->value.normal) {
-		return bst_insert(&(root->left), value, value2, value3, linked_number);
+	if (root == NULL) {
+		bst_create_node(rootptr, value, value2, value3, linked_number);
+		return true;
 	}
 
 	return false;

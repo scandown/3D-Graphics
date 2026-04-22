@@ -26,7 +26,8 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
+	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/red.glsl");
+	unsigned int program3D = program_init(error, "src/user/vertex.glsl", "src/user/red.glsl");
 
 
 
@@ -36,6 +37,11 @@ int main() {
 	Sprite test = sprite_init(error, (vec3){100, 0, 0}, 1, "assets/smiley.png", 16, 16);
 	buffers_init(&test.plane);
 	instanced_buffers_init(&test.plane, instanced_positions, instanced_spr_num, num_inst, true);
+
+	Model rocky = obj_load(error, "assets/cube.obj");
+	//Model rocky = obj_load(error, "../projects/models/rocky.obj");
+	model_init(error, &rocky, (vec3){-1, 0, 0}, "assets/smiley.png");
+	buffers_init(&rocky);
 
 
 	float yes[2] = {10, 100};
@@ -62,23 +68,39 @@ int main() {
 		glBufferSubData(GL_ARRAY_BUFFER, 2 * sizeof(float) * 2, sizeof(float) * 2, yes);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+
 		glUseProgram(program);
 
-		key_input(window, cam, 0.5);
+		key_input(window, cam, 0.05);
+		cursor_position_callback(window, cam, 0.05);
 		
-		matrix_init(cam, program, "2D", 640, 360);
+		matrix_init(cam, program, "3D", 640, 360);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		uniform_send_to_gpu(&cam->view_uniform, program, "view");
 
 
 		sprite_draw(&test, program, num_inst);
 
+		glUseProgram(program3D);
+		key_input(window, cam, 0.05);
+		matrix_init(cam, program3D, "3D", 640, 360);
+		cursor_position_callback(window, cam, 0.05);
+		camera_rotate(cam, cam->yaw, cam->pitch);
+		
+		uniform_send_to_gpu(&cam->view_uniform, program3D, "view");
+
+
+
+		model_draw(&rocky, program3D, 1);
+
 		glfwSwapBuffers(window);
 
 	}
 
 	
+	model_delete_buffers(&rocky);
 	glDeleteProgram(program);
+	glDeleteProgram(program3D);
 	sprite_delete(&test);
 	free(cam);
 

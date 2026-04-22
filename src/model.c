@@ -53,6 +53,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 	// reasonable size for obj file
 	char lineHeader[BUFSIZ];
 	while (fgets(lineHeader, sizeof(lineHeader), fptr)) {
+		printf("%d\n", indicy);
 
 		if (strncmp(lineHeader, "v ", 2) == 0) {
 			float vertex[3];

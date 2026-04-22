@@ -61,9 +61,9 @@ void main() {
 	vec3 rots = vec3(rotated_pos.i, rotated_pos.j, rotated_pos.k);
 
 
-	yoPos = coordinates * vec4(rots, 1.0);
-	//gl_Position = coordinates * vec4(aPos, 1.0);
-	gl_Position = yoPos;
+	//yoPos = coordinates * vec4(rots, 1.0);
+	gl_Position = coordinates * vec4(aPos, 1.0);
+	//gl_Position = yoPos;
 
 	FragPos = vec3(model * vec4(aPos, 1.0));
 	pos = aPos;
