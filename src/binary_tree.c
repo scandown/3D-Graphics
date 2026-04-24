@@ -1,6 +1,7 @@
 #include "binary_tree.h"
 
 
+/*
 void bst_create_node(BST_dynamic_arr bst_array, int value, int value2, int value3, int linked_number) {
 	DA_PUSH(bst_array, 0);
 	bst_array.items[bst_array.index].left = NULL;
@@ -137,3 +138,4 @@ void bst_print(BST *rootptr) {
     printf("Vertex: %d, Texture: %d, Normal: %d / Linked: %d\n", rootptr->value.vertex, rootptr->value.texture, rootptr->value.normal, rootptr->linked);
     bst_print(rootptr->right);
 }
+*/

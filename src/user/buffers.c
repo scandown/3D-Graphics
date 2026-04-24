@@ -2,7 +2,9 @@
 
 void buffers_init(Model *model) {
 	glGenVertexArrays(1, &model->VAO);
-	glGenBuffers(1, &model->VBO);
+	glGenBuffers(1, &model->vertexVBO);
+	glGenBuffers(1, &model->uvVBO);
+	glGenBuffers(1, &model->normalVBO);
 	glGenBuffers(1, &model->EBO);
 
 
@@ -10,20 +12,30 @@ void buffers_init(Model *model) {
 	glGenBuffers(1, &model->instance_spr_VBO);
 
 
-	glBindVertexArray(model->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
-	glBufferData(GL_ARRAY_BUFFER, model->vertex_size * sizeof(float), model->vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
+	glBufferData(GL_ARRAY_BUFFER, model->vertex_arr.count * sizeof(vec3), model->vertex_arr.items, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ARRAY_BUFFER, model->uvVBO);
+	glBufferData(GL_ARRAY_BUFFER, model->uv_arr.count * sizeof(vec2), model->uv_arr.items, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, model->normalVBO);
+	glBufferData(GL_ARRAY_BUFFER, model->normal_arr.count * sizeof(vec3), model->normal_arr.items, GL_STATIC_DRAW);
+
+	/*
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
+	*/
+	glBindVertexArray(model->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, model->uvVBO);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)(0));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(5 * sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, model->normalVBO);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
 	glEnableVertexAttribArray(2);
 
 }
@@ -53,13 +65,16 @@ void instanced_buffers_init(Model *model, vec2 *instance_array, vec2 *spr_num, i
 
 void model_delete_buffers(Model *model) {
 	glDeleteVertexArrays(1, &model->VAO);
-	glDeleteBuffers(1, &model->VBO);
+	glDeleteBuffers(1, &model->vertexVBO);
+	glDeleteBuffers(1, &model->uvVBO);
+	glDeleteBuffers(1, &model->normalVBO);
 	glDeleteBuffers(1, &model->EBO);
 	glDeleteBuffers(1, &model->instance_UV_VBO);
 	glDeleteBuffers(1, &model->instance_spr_VBO);
 
-	free(model->vertices);
-	free(model->vertex_faces);
+	free(model->vertex_arr.items);
+	free(model->normal_arr.items);
+	free(model->uv_arr.items);
 }
 
 void model_draw(Model *model, unsigned int program, unsigned int instance_amount) {
@@ -71,7 +86,8 @@ void model_draw(Model *model, unsigned int program, unsigned int instance_amount
 
 	glBindTexture(GL_TEXTURE_2D, model->texture);
 	glBindVertexArray(model->VAO);
-	glDrawElementsInstanced(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0, instance_amount);
+	//glDrawElementsInstanced(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0, instance_amount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, model->vertex_arr.count, instance_amount);
 }
 
 void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {

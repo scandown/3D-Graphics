@@ -10,19 +10,44 @@
 #include "dynamic_array.h"
 #include "texture.h"
 
+typedef struct {
+	unsigned int *items;
+	size_t count;
+	size_t capacity;
+} Indices_Array;
+
+typedef struct {
+	float *items;
+	size_t count;
+	size_t capacity;
+} Array;
+
+typedef struct {
+	vec3 *items;
+	size_t count;
+	size_t capacity;
+} v3Array;
+
+typedef struct {
+	vec2 *items;
+	size_t count;
+	size_t capacity;
+} v2Array;
+
 
 typedef struct {
 	Uniform uniform;
 	unsigned int texture;
 
-	float *vertices;
-	unsigned int *vertex_faces;
-	int vertex_size;
-	int vertex_face_size;
+	v3Array vertex_arr;
+	v2Array uv_arr;
+	v3Array normal_arr;
 	char *location;
 
 	unsigned int VAO;
-	unsigned int VBO;
+	unsigned int vertexVBO;
+	unsigned int uvVBO;
+	unsigned int normalVBO;
 	unsigned int EBO;
 	unsigned int instance_UV_VBO;
 	unsigned int instance_spr_VBO;
