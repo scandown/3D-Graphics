@@ -25,30 +25,32 @@ quat quat_mul(quat q1, quat q2) {
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aUV;
 layout (location = 2) in vec3 aNormal;
-out vec3 pos;
 out vec2 uv;
 out vec3 normal;
 out vec3 FragPos;
-out vec4 yoPos;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
+uniform float angle;
 
 
 
 void main() {
 
 	vec4 rot;
+	rot.x = sin(0/2);
+	rot.y = sin(angle/2);
+	rot.z = sin(0/2);
+	rot.w = cos(angle/2);
+
+	/*
 	rot.x = 0;
-	rot.y = 0;
+	rot.y = 1;
 	rot.z = 0;
 	rot.w = 1;
-
-	// Rotate the position using quaternion rotation
-	//vec3 rotated_pos = quat_rotate_vector(angle, axis, aPos);
-
-	//rots *= aPos;
+	*/
 
 	mat4 coordinates = projection * view * model;
 
@@ -61,13 +63,15 @@ void main() {
 	vec3 rots = vec3(rotated_pos.i, rotated_pos.j, rotated_pos.k);
 
 
-	//yoPos = coordinates * vec4(rots, 1.0);
-	gl_Position = coordinates * vec4(aPos, 1.0);
-	//gl_Position = yoPos;
+	quat qn = vec_to_quat(aNormal);
+	quat rotated_normal = quat_mul(rot_q, qn);
+	rotated_normal = quat_mul(rotated_normal, rot_q_conj);
+	vec3 rotn = vec3(rotated_normal.i, rotated_normal.j, rotated_normal.k);
 
-	FragPos = vec3(model * vec4(aPos, 1.0));
-	pos = aPos;
-	//normal = aNormal;
-	normal = mat3(transpose(inverse(model))) * aNormal;
+
+	gl_Position = coordinates * vec4(rots, 1.0);
+
+	FragPos = vec3(model * vec4(rots, 1.0));
+	normal = rotn;
 	uv = aUV;
 }

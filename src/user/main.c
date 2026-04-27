@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "engine.h"
 
@@ -35,7 +36,13 @@ int main() {
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 
 	//Model rocky = obj_load(error, "assets/cube.obj");
+	clock_t t;
+	t = clock();
 	Model rocky = obj_load(error, "../projects/models/rocky.obj");
+	t = clock() - t;
+	double time_taken = ((double)t) / CLOCKS_PER_SEC;
+	printf("Time elapsed: %f\n", time_taken);
+	//return 1;
 	model_init(error, &rocky, (vec3){0, 0, 0}, "assets/smiley.png");
 	buffers_init(&rocky);
 
@@ -64,6 +71,11 @@ int main() {
 		
 		uniform_send_to_gpu(&cam->view_uniform, program3D, "view");
 
+		static float angle = 0;
+		angle += 0.01;
+		Uniform angle_uniform = uniform_set_data(&angle, UNIFORM_FLOAT1);
+		uniform_send_to_gpu(&angle_uniform, program3D, "angle");
+
 
 
 		model_draw(&rocky, program3D, 1);
@@ -76,7 +88,6 @@ int main() {
 	model_delete_buffers(&rocky);
 	glDeleteProgram(program);
 	glDeleteProgram(program3D);
-	//sprite_delete(&test);
 	free(cam);
 
 	glfwTerminate();

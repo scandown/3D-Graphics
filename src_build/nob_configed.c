@@ -65,6 +65,8 @@ int main(int argc, char **argv) {
 
 	nob_cmd_append(&cmd, COMPILER);
 	nob_cmd_append(&cmd, "-g");
+	//nob_cmd_append(&cmd, "-O3");
+
 	nob_cmd_append(&cmd, "-c");
 	nob_cmd_append(&cmd, "-L"LIBRARY_FOLDER);
 	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
