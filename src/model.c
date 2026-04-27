@@ -214,15 +214,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 	// use faces
 
-	//printf("%s\n", buffer);
-	printf("Total file size: %d\n", sz);
-	printf("New lines: %d\n", count);
-	printf("Vertices: %d\n", vcount);
-	printf("Vertex Normals: %d\n", vncount);
-	printf("Uvs: %d\n", vtcount);
-	printf("face_byte_offset: %c\n",buffer[first_face_byte_offset]);
 	free(buffer);
-
 	model.vertex_arr = vertex_ordered;
 	model.uv_arr = uv_ordered;
 	model.normal_arr = normal_ordered;
