@@ -27,7 +27,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/red.glsl");
+	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 	unsigned int program3D = program_init(error, "src/user/vertex.glsl", "src/user/red.glsl");
 
 
@@ -43,6 +43,12 @@ int main() {
 	double time_taken = ((double)t) / CLOCKS_PER_SEC;
 	printf("Time elapsed: %f\n", time_taken);
 	//return 1;
+
+	Sprite spr = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", 16, 16);
+	buffers_init(&spr.plane);
+	instanced_buffers_init(&spr.plane, instanced_positions, instanced_spr_num, num_inst, true);
+
+
 	model_init(error, &rocky, (vec3){0, 0, 0}, "assets/smiley.png");
 	buffers_init(&rocky);
 
@@ -79,6 +85,13 @@ int main() {
 
 
 		model_draw(&rocky, program3D, 1);
+
+		glUseProgram(program);
+		matrix_init(cam, program, "3D", 640, 360);
+		cursor_position_callback(window, cam, 0.05);
+		camera_rotate(cam, cam->yaw, cam->pitch);
+		uniform_send_to_gpu(&cam->view_uniform, program, "view");
+		sprite_draw(&spr, program, 3);
 
 		glfwSwapBuffers(window);
 

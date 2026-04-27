@@ -26,16 +26,12 @@ void sprite_delete(Sprite *sprite) {
 
 void sprite_generate_model(Model *model, float width, float height) {
 	// vertex, uv, normal
-	float vertices[8 * 4] = {
-		0, 0, 0,		0, 0,	0, 0, 0,
-		width, 0, 0,		1, 0,	0, 0, 0,
-		width, height, 0,	1, 1,	0, 0, 0,
-		0, height, 0,		0, 1,	0, 0, 0
-	};
-
 	vec3 vertex[] = {
 		{0, 0, 0},
 		{width, 0, 0},
+		{width, height, 0},
+
+		{0, 0, 0},
 		{width, height, 0},
 		{0, height, 0}
 	};
@@ -43,11 +39,17 @@ void sprite_generate_model(Model *model, float width, float height) {
 		{0, 0},
 		{1, 0},
 		{1, 1},
+
+		{0, 0},
+		{1, 1},
 		{0, 1}
 	};
 
 	vec3 normal[] = {
 		{0, 0, 0},
+		{0, 0, 0},
+		{0, 0, 0},
+
 		{0, 0, 0},
 		{0, 0, 0},
 		{0, 0, 0}
@@ -60,24 +62,7 @@ void sprite_generate_model(Model *model, float width, float height) {
 
 	
 
-	for (int i = 0; i < 4; ++i) {
-		v3Array arr = model->vertex_arr;
-		int amount = 3;
-		do { \
-			if (arr.count >= arr.capacity) { \
-				if (arr.capacity == 0) { \
-					arr.capacity = 256; \
-				} \
-				else { \
-					arr.capacity *= 2; \
-				} \
-				arr.items = realloc(arr.items, arr.capacity * sizeof(*arr.items)); \
-			} \
-			arr.count++; \
-				for (int __DA_ITER__ = 0; __DA_ITER__ < amount; ++__DA_ITER__) { \
-					arr.items[arr.count][__DA_ITER__] = vertex[i][__DA_ITER__]; \
-				} \
-		} while (0);
+	for (int i = 0; i < 6; ++i) {
 		DA_PUSH_VEC(model->vertex_arr, vertex[i], 3);
 		DA_PUSH_VEC(model->normal_arr, normal[i], 3);
 		DA_PUSH_VEC(model->uv_arr, uv[i], 2);
