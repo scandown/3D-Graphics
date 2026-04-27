@@ -77,7 +77,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 	int vtcount = 0;
 	int first_face_byte_offset = 0;
 	int total_face = 0;
-	int face_newline_byte_offset = 0;
 	char line_buffer[BUFSIZ] = {0};
 	int index = 0;
 	for (int i = 0; i < sz; ++i) {
@@ -145,12 +144,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 				total_face++;
 				if (first_face_byte_offset == 0) {
 					first_face_byte_offset = i;
-					int j = i;
-					while(buffer[j] != '\n') {
-						j++;
-					}
-
-					face_newline_byte_offset = j;
 				}
 				break;
 			default:
@@ -160,23 +153,15 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 
 	int vertex_index = 0;
-	int *vertex_face = malloc(total_face * 3 * sizeof(int));
-	int *uv_face = malloc(total_face * 3 * sizeof(int));
-	int *normal_face = malloc(total_face * 3 * sizeof(int));
-
 	v3Array vertex_ordered = {0};
 	v3Array normal_ordered = {0};
 	v2Array uv_ordered = {0};
 
-	int vertex_i = 0;
-	int normal_i = 0;
-	int uv_i = 0;
-
-	int initial_point = first_face_byte_offset;
 	index = 0;
 	int init_index = 0;
 	int prev_index = index;
 
+	// move into case 'f'
 	int face_version = 0;
 	const int FACE_STRING_OFFSET = 2;
 	for (int i = first_face_byte_offset; i < sz; ++i) {
@@ -185,26 +170,29 @@ Model obj_load(jmp_buf error, char *model_name) {
 			index++;
 			if (buffer[i] == '/' || buffer[i] == ' ' || buffer[i] == '\n') {
 				line_buffer[index - 1] = 0;
-				if (face_version == 0) {
-					// VERTEX
-					vertex_face[vertex_i] = atoi(line_buffer + prev_index);
-					DA_PUSH_VEC(vertex_ordered, vertex.items[vertex_face[vertex_i] - 1], 3);
-					vertex_i++;
-					face_version++;
-				} else if (face_version == 1) {
-					// UV
-					uv_face[uv_i] = atoi(line_buffer + prev_index);
-					DA_PUSH_VEC(uv_ordered, uv.items[uv_face[uv_i] - 1], 2);
-					uv_i++;
-					face_version++;
-				} else if (face_version == 2) {
-					// NORMAL
-					normal_face[normal_i] = atoi(line_buffer + prev_index);
-					DA_PUSH_VEC(normal_ordered, normal.items[normal_face[normal_i] - 1], 3);
-					normal_i++;
-					face_version++;
+				switch (face_version) {
+					case 0:
+						// VERTEX
+						int vertex_index = atoi(line_buffer + prev_index);
+						DA_PUSH_VEC(vertex_ordered, vertex.items[vertex_index - 1], 3);
+						face_version++;
+						break;
+					case 1:
+						// UV
+						int uv_index = atoi(line_buffer + prev_index);
+						DA_PUSH_VEC(uv_ordered, uv.items[uv_index - 1], 2);
+						face_version++;
+						break;
+					case 2:
+						// NORMAL
+						int normal_index = atoi(line_buffer + prev_index);
+						DA_PUSH_VEC(normal_ordered, normal.items[normal_index - 1], 3);
+						face_version++;
+						break;
+					default:
+						face_version = 0;
+						break;
 				}
-				//printf("%d\n", atoi(line_buffer + prev_index));
 				prev_index = index;
 			}
 
@@ -217,7 +205,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 		if (buffer[i] == '\n') {
 			line_buffer[index] = 0;
-			//printf("%s\n", line_buffer);
 			index = 0;
 			prev_index = index;
 			init_index = 0;
@@ -240,9 +227,6 @@ Model obj_load(jmp_buf error, char *model_name) {
 	model.uv_arr = uv_ordered;
 	model.normal_arr = normal_ordered;
 
-	free(vertex_face);
-	free(uv_face);
-	free(normal_face);
 
 	free(vertex.items);
 	free(uv.items);

@@ -35,10 +35,10 @@ int main() {
 	vec2 instanced_positions[num_inst] = {{0, 0}, {16, 0}, {32, 0}};
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 
-	//Model rocky = obj_load(error, "assets/cube.obj");
+	Model rocky = obj_load(error, "assets/cube.obj");
 	clock_t t;
 	t = clock();
-	Model rocky = obj_load(error, "../projects/models/rocky.obj");
+	//Model rocky = obj_load(error, "../projects/models/rocky.obj");
 	t = clock() - t;
 	double time_taken = ((double)t) / CLOCKS_PER_SEC;
 	printf("Time elapsed: %f\n", time_taken);
