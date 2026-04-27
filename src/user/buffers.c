@@ -40,9 +40,9 @@ void buffers_init(Model *model) {
 
 }
 
-void instanced_buffers_init(Model *model, vec2 *instance_array, vec2 *spr_num, int translation_size, bool setup) {
+void instanced_buffers_init(Model *model, vec3 *instance_array, vec2 *spr_num, int translation_size, bool setup) {
 	glBindBuffer(GL_ARRAY_BUFFER, model->instance_UV_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, instance_array, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * translation_size, instance_array, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->instance_spr_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, spr_num, GL_STATIC_DRAW);
