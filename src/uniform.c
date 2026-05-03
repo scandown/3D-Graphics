@@ -37,7 +37,7 @@ Uniform uniform_set_data(void *value, Uniform_Type type) {
 			memcpy(&uniform.value.m3, value, sizeof(float) * 9);
 			break;
 		case UNIFORM_MAT4:
-			memcpy(&uniform.value.m3, value, sizeof(float) * 16);
+			memcpy(&uniform.value.m4, value, sizeof(float) * 16);
 			break;
 		default:
 			break;
