@@ -77,10 +77,9 @@ void model_delete_buffers(Model *model) {
 	free(model->uv_arr.items);
 }
 
-void model_draw(Model *model, unsigned int program, unsigned int instance_amount) {
-	model->uniform.value.m4[3][0] = model->x;
-	model->uniform.value.m4[3][1] = model->y;
-	model->uniform.value.m4[3][2] = model->z;
+void model_draw(Model *model, vec3 pos, unsigned int program, unsigned int instance_amount) {
+	glm_vec3_copy(pos, model->pos);
+	glm_vec3_copy(model->pos, model->uniform.value.m4[3]);
 	model->uniform.value.m4[3][3] = 1;
 	uniform_send_to_gpu(&model->uniform, program, "model");
 
@@ -90,15 +89,11 @@ void model_draw(Model *model, unsigned int program, unsigned int instance_amount
 	glDrawArraysInstanced(GL_TRIANGLES, 0, model->vertex_arr.count, instance_amount);
 }
 
-void model_init(jmp_buf error, Model *model, vec3 pos, char *texture_location) {
+void model_init(jmp_buf error, Model *model, char *texture_location) {
 
 	unsigned int texture = texture_init(error, GL_RGBA, texture_location);
 
 	glm_mat4_identity(model->uniform.value.m4);
 	model->uniform.type = UNIFORM_MAT4;
-
-	model->x = pos[0];
-	model->y = pos[1];
-	model->z = pos[2];
 	model->texture = texture;
 }

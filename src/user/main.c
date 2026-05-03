@@ -44,12 +44,12 @@ int main() {
 	printf("Time elapsed: %f\n", time_taken);
 	//return 1;
 
-	Sprite spr = sprite_init(error, (vec3){0, 0, 0}, 1, "assets/smiley.png", 16, 16);
+	Sprite spr = sprite_init(error, 1, "assets/smiley.png", 16, 16);
 	buffers_init(&spr.plane);
 	instanced_buffers_init(&spr.plane, instanced_positions, instanced_spr_num, num_inst, true);
 
 
-	model_init(error, &rocky, (vec3){0, 0, 0}, "assets/smiley.png");
+	model_init(error, &rocky, "assets/smiley.png");
 	buffers_init(&rocky);
 
 
@@ -84,14 +84,14 @@ int main() {
 
 
 
-		model_draw(&rocky, program3D, 1);
+		model_draw(&rocky, (vec3){0, 0, 0}, program3D, 1);
 
 		glUseProgram(program);
 		matrix_init(cam, program, "3D", 640, 360);
 		cursor_position_callback(window, cam, 0.05);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		uniform_send_to_gpu(&cam->view_uniform, program, "view");
-		sprite_draw(&spr, program, 3);
+		sprite_draw(&spr, (vec3){10, 0, 0}, program, 3);
 
 		glfwSwapBuffers(window);
 

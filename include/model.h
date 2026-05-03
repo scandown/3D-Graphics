@@ -52,9 +52,7 @@ typedef struct {
 	unsigned int instance_UV_VBO;
 	unsigned int instance_spr_VBO;
 
-	float x;
-	float y;
-	float z;
+	vec3 pos;
 } Model;
 
 int check_int_equality(int *array1, int array1_length, int *array2, int array2_length);

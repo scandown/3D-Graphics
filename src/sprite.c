@@ -1,21 +1,21 @@
 #include "sprite.h"
 
-Sprite sprite_init(jmp_buf error, vec3 pos, unsigned int scale, char *texture_location, float width, float height) {
+Sprite sprite_init(jmp_buf error, unsigned int scale, char *texture_location, float width, float height) {
 
 	Sprite sprite;
 
 	Model plane = {0};
 	sprite_generate_model(&plane, width, height);
 
-	model_init(error, &plane, pos, texture_location);
+	model_init(error, &plane, texture_location);
 	glm_mat4_scale(plane.uniform.value.m4, scale);
 	sprite.plane = plane;
 
 	return sprite;
 }
 
-void sprite_draw(Sprite *sprite, unsigned int program, int instance_amount) {
-	model_draw(&sprite->plane, program, instance_amount);
+void sprite_draw(Sprite *sprite, vec3 pos, unsigned int program, int instance_amount) {
+	model_draw(&sprite->plane, pos, program, instance_amount);
 }
 
 
