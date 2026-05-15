@@ -46,13 +46,13 @@ void sprite_generate_model(Model *model, float width, float height) {
 	};
 
 	vec3 normal[] = {
-		{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0},
+		{0, 0, 1},
+		{0, 0, 1},
+		{0, 0, 1},
 
-		{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}
+		{0, 0, 1},
+		{0, 0, 1},
+		{0, 0, 1}
 	};
 
 	unsigned int faces[3 * 2] = {
