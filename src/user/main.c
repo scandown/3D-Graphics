@@ -79,8 +79,11 @@ int main() {
 
 		static float angle = 0;
 		angle += 0.01;
+		/*
 		Uniform angle_uniform = uniform_set_data(&angle, UNIFORM_FLOAT1);
 		uniform_send_to_gpu(&angle_uniform, program3D, "angle");
+		*/
+		uniform_apply(&angle, UNIFORM_FLOAT1, program3D, "angle");
 
 
 

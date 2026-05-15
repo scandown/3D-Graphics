@@ -90,3 +90,8 @@ void uniform_send_to_gpu(Uniform *uniform, unsigned int program, char *name) {
 
 	}
 }
+
+void uniform_apply(void *data, Uniform_Type type, unsigned int program, char *name) {
+	Uniform uniform = uniform_set_data(data, type);
+	uniform_send_to_gpu(&uniform, program, name);
+}

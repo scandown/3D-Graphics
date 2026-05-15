@@ -42,3 +42,4 @@ typedef struct Uniform{
 
 Uniform uniform_set_data(void *value, Uniform_Type type);
 void uniform_send_to_gpu(Uniform *uniform, unsigned int program, char *name);
+void uniform_apply(void *data, Uniform_Type type, unsigned int program, char *name);
