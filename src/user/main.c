@@ -102,10 +102,12 @@ int main() {
 
 	
 	model_delete_buffers(&rocky);
+	sprite_delete(&spr);
 	glDeleteProgram(program);
 	glDeleteProgram(program3D);
 	free(cam);
 
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }

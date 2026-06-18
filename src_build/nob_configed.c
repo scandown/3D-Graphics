@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
 
 	nob_cmd_append(&cmd, COMPILER);
 	nob_cmd_append(&cmd, "-g");
+	nob_cmd_append(&cmd, "-fsanitize=address");
 	//nob_cmd_append(&cmd, "-O3");
 
 	nob_cmd_append(&cmd, "-c");
@@ -140,6 +141,7 @@ int main(int argc, char **argv) {
 
 #ifdef PLATFORM_LINUX
 	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
+	nob_cmd_append(&link_cmd2, "-fsanitize=address");
 #endif
 #ifdef PLATFORM_WINDOWS
 	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");

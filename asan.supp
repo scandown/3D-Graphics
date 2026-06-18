@@ -1,0 +1,3 @@
+leak:libfontconfig.so.1
+leak:libdecor-gtk
+leak:_glfwInitEGL
