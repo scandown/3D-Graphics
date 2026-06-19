@@ -33,7 +33,6 @@ char files[][MAX_FILE_LEN] = {
 	"uniform.c",
 	"texture.c",
 	"binary_tree.c",
-	"sprite.c",
 	"matrix.c"
 };
 
@@ -41,6 +40,7 @@ char user_files[][MAX_FILE_LEN] = {
 	"input.c",
 	"buffers.c",
 	"instanced_positions.c",
+	"sprite.c"
 };
 
 
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
 	nob_cmd_append(&cmd, COMPILER);
 	nob_cmd_append(&cmd, "-g");
-	nob_cmd_append(&cmd, "-fsanitize=address");
+	//nob_cmd_append(&cmd, "-fsanitize=address");
 	//nob_cmd_append(&cmd, "-O3");
 
 	nob_cmd_append(&cmd, "-c");
@@ -78,7 +78,8 @@ int main(int argc, char **argv) {
 #endif
 
 
-	char *excluded_files[] = {SRC_USER_FOLDER"main.c", SRC_USER_FOLDER"buffers.c", SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"instanced_positions.c"};
+	char *excluded_files[] = {SRC_USER_FOLDER"main.c", SRC_USER_FOLDER"buffers.c", SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"instanced_positions.c",
+				  SRC_USER_FOLDER"sprite.c"};
 
 	add_compilation_target(&cmd, "src/", BUILD_OBJ_DIR,
 			excluded_files, sizeof(excluded_files) / sizeof(char *));
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
 
 #ifdef PLATFORM_LINUX
 	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
-	nob_cmd_append(&link_cmd2, "-fsanitize=address");
+	//nob_cmd_append(&link_cmd2, "-fsanitize=address");
 #endif
 #ifdef PLATFORM_WINDOWS
 	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");
