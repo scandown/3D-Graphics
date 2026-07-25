@@ -1,26 +1,14 @@
 #version 330 core
 
-struct quat{
-       float i;
-       float j;
-       float k;
-       float w;
-};
-
-quat vec_to_quat(vec3 v1) {
-       return quat(v1.x, v1.y, v1.z, 0.0);
+vec4 quat_mult(vec4 q1, vec4 q2)
+{ 
+  vec4 qr;
+  qr.x = (q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y);
+  qr.y = (q1.w * q2.y) - (q1.x * q2.z) + (q1.y * q2.w) + (q1.z * q2.x);
+  qr.z = (q1.w * q2.z) + (q1.x * q2.y) - (q1.y * q2.x) + (q1.z * q2.w);
+  qr.w = (q1.w * q2.w) - (q1.x * q2.x) - (q1.y * q2.y) - (q1.z * q2.z);
+  return qr;
 }
-
-quat quat_mul(quat q1, quat q2) {
-       vec3 q1_i = vec3(q1.i, q1.j, q1.k);
-       vec3 q2_i = vec3(q2.i, q2.j, q2.k);
-
-       float scalar = q1.w * q2.w - dot(q1_i, q2_i);
-       vec3 imaginary = (q2_i * q1.w) + (q1_i * q2.w) + cross(q1_i, q2_i);
-
-       return quat(imaginary.x, imaginary.y, imaginary.z, scalar);
-}
-
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aUV;
@@ -40,33 +28,31 @@ uniform float angle;
 void main() {
 
 	vec4 rot;
-	rot.x = sin(0/2);
-	rot.y = sin(angle/2);
-	rot.z = sin(0/2);
-	rot.w = cos(angle/2);
 
-	/*
-	rot.x = 0;
+	rot.x = 1;
 	rot.y = 1;
-	rot.z = 0;
-	rot.w = 1;
-	*/
+	rot.z = 1;
+	rot = normalize(rot);
+
+
+	rot.w = cos(angle/2);
+	rot.x *= sin(angle/2);
+	rot.y *= sin(angle/2);
+	rot.z *= sin(angle/2);
 
 	mat4 coordinates = projection * view * model;
 
 
-	quat rot_q = quat(rot.x, rot.y, rot.z, rot.w);
-	quat rot_q_conj = quat(-rot.x, -rot.y, -rot.z, rot.w);
-	quat qp = vec_to_quat(aPos);
-	quat rotated_pos = quat_mul(rot_q, qp);
-	rotated_pos = quat_mul(rotated_pos, rot_q_conj);
-	vec3 rots = vec3(rotated_pos.i, rotated_pos.j, rotated_pos.k);
+	vec4 rot_q = rot;
+	vec4 rot_q_conj = vec4(-rot.x, -rot.y, -rot.z, rot.w);
+	normalize(rot_q_conj);
+	vec4 rotated_pos = quat_mult(quat_mult(rot_q, vec4(aPos, 0)), rot_q_conj);
+	vec3 rots = vec3(rotated_pos.x, rotated_pos.y, rotated_pos.z);
 
 
-	quat qn = vec_to_quat(aNormal);
-	quat rotated_normal = quat_mul(rot_q, qn);
-	rotated_normal = quat_mul(rotated_normal, rot_q_conj);
-	vec3 rotn = vec3(rotated_normal.i, rotated_normal.j, rotated_normal.k);
+	vec4 rotated_normal = quat_mult(rot_q, vec4(aNormal, 0));
+	rotated_normal = quat_mult(rotated_normal, rot_q_conj);
+	vec3 rotn = vec3(rotated_normal.x, rotated_normal.y, rotated_normal.z);
 
 
 	gl_Position = coordinates * vec4(rots, 1.0);
