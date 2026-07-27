@@ -45,12 +45,12 @@ int main() {
 	//return 1;
 
 	Sprite spr = sprite_init(error, 1, "assets/smiley.png", 16, 16);
-	buffers_init(&spr.plane);
+	buffers_gen_and_init(&spr.plane);
 	instanced_buffers_init(&spr.plane, instanced_positions, instanced_spr_num, num_inst, true);
 
 
 	model_init(error, &rocky, "assets/smiley.png");
-	buffers_init(&rocky);
+	buffers_gen_and_init(&rocky);
 
 
 	float yes[2] = {10, 100};

@@ -29,7 +29,7 @@ void main() {
 
 	vec4 rot;
 
-	rot.x = 1;
+	rot.x = 0;
 	rot.y = 1;
 	rot.z = 1;
 	rot = normalize(rot);
@@ -45,8 +45,9 @@ void main() {
 
 	vec4 rot_q = rot;
 	vec4 rot_q_conj = vec4(-rot.x, -rot.y, -rot.z, rot.w);
-	normalize(rot_q_conj);
+	
 	vec4 rotated_pos = quat_mult(quat_mult(rot_q, vec4(aPos, 0)), rot_q_conj);
+	//vec4 rotated_pos = quat_mult(rot_q, vec4(aPos, 0));
 	vec3 rots = vec3(rotated_pos.x, rotated_pos.y, rotated_pos.z);
 
 

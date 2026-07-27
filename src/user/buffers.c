@@ -1,6 +1,6 @@
 #include "user/buffers.h"
 
-void buffers_init(Model *model) {
+void buffers_gen(Model *model) {
 	glGenVertexArrays(1, &model->VAO);
 	glGenBuffers(1, &model->vertexVBO);
 	glGenBuffers(1, &model->uvVBO);
@@ -10,8 +10,9 @@ void buffers_init(Model *model) {
 
 	glGenBuffers(1, &model->instance_UV_VBO);
 	glGenBuffers(1, &model->instance_spr_VBO);
+}
 
-
+void buffers_init(Model *model) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
 	glBufferData(GL_ARRAY_BUFFER, model->vertex_arr.count * sizeof(vec3), model->vertex_arr.items, GL_STATIC_DRAW);
@@ -38,6 +39,11 @@ void buffers_init(Model *model) {
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
 	glEnableVertexAttribArray(2);
 
+}
+
+void buffers_gen_and_init(Model *model) {
+	buffers_gen(model);
+	buffers_init(model);
 }
 
 void instanced_buffers_init(Model *model, vec3 *instance_array, vec2 *spr_num, int translation_size, bool setup) {
