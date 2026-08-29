@@ -1,25 +1,26 @@
+#define RGFW_OPENGL
+#define RGFW_EXPORT
+#define RGFW_IMPLEMENTATION
 #include "window.h"
 
 
-GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
-	if (!glfwInit()) {
-		return NULL;
-	}
+RGFW_window *window_init(unsigned int width, unsigned int height, char *name) {
+	RGFW_init("example", RGFW_initOpenGL);
 
-	GLFWwindow *window = glfwCreateWindow(width, height, name, NULL, NULL);
+	RGFW_glHints* hints = RGFW_getGlobalHints_OpenGL();
+	hints->major = 4;
+	hints->minor = 6;
+	RGFW_setGlobalHints_OpenGL(hints);
 
+	RGFW_window *window = RGFW_createWindow(name, width, height, width, height, RGFW_windowCenter | RGFW_windowOpenGL | RGFW_windowAllowDND);
 
 	if (!window) {
-		glfwTerminate();
 		return NULL;
 	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	RGFW_window_makeCurrentContext_OpenGL(window);
 
 
-
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)RGFW_getProcAddress_OpenGL))
 	{
 		printf("Failed to initialize GLAD\n");
 		return NULL;
@@ -28,6 +29,6 @@ GLFWwindow *window_init(unsigned int width, unsigned int height, char *name) {
 	return window;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(RGFW_window *window, int width, int height) {
     glViewport(0, 0, width, height);
 }

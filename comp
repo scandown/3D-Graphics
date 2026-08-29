@@ -1,0 +1,4 @@
+if [[ "$1" == "b" ]] then
+	./nob
+fi
+gcc -g -lt -Wfatal-errors src/user/main.c src/user/sprite.c external/lib/glad.c src/user/input.c  src/user/buffers.c src/user/instanced_positions.c -Iinclude -Iexternal/include -Lbuild -ldl -lpthread -lt -lX11 -lm -lXrandr -lGL -lGLX

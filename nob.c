@@ -56,10 +56,12 @@ int main(int argc, char **argv) {
 	const char *input_path = SRC_BUILD_FOLDER"nob_configed.c";
 	nob_cmd_append(&cmd, COMPILER);
 	nob_cmd_append(&cmd, "-g");
-	nob_cc_flags(&cmd);
+	nob_cmd_append(&cmd, "-w");
+	//nob_cc_flags(&cmd);
 	nob_cmd_append(&cmd, "-I.", "-I"BUILD_FOLDER, "-I"SRC_BUILD_FOLDER); // -I is usually the same across all compilers
 	nob_cc_output(&cmd, output_path);
 	nob_cc_inputs(&cmd, input_path);
+	printf("Hi\n");
 	if (!cmd_run(&cmd)) return 1;
 
 	if (argc == 1) {

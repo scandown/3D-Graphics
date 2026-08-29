@@ -2,6 +2,10 @@
 #define NOB_STRIP_PREFIX
 #define NOB_WARN_DEPRECATED
 
+
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
+
 #include "nob.h"
 #include "config.h"
 #include "folders.h"
@@ -24,12 +28,11 @@
 
 #define MAX_FILE_LEN 25
 char files[][MAX_FILE_LEN] = {
+	"window.c",
 	"shader.c",
 	"model.c",
 	"quat.c",
-	"window.c",
 	"camera.c",
-	"state.c",
 	"uniform.c",
 	"texture.c",
 	"binary_tree.c",
@@ -56,284 +59,90 @@ void change_obj_time(unsigned int for_loop_size, unsigned int index_offset);
 
 
 
-int main(int argc, char **argv) {
+int main() {
 
 	Cmd cmd = {0};
 
-	nob_cmd_append(&cmd, "bear", "-a");
-	nob_cmd_append(&cmd, "--");
 
-	nob_cmd_append(&cmd, COMPILER);
-	nob_cmd_append(&cmd, "-g");
-	//nob_cmd_append(&cmd, "-fsanitize=address");
-	//nob_cmd_append(&cmd, "-O3");
+	unsigned int object_single_file_size = 0;
+	unsigned int c_single_file_size = 0;
 
-	nob_cmd_append(&cmd, "-c");
-	nob_cmd_append(&cmd, "-L"LIBRARY_FOLDER);
-	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I.", "-I"THIRDPARTY_INCLUDE, "-I"INCLUDE);
-
-#ifdef mem_check
-	nob_log(INFO, "mem_check feature is enabled");
-	nob_cmd_append(&cmd, "-L"LIBRARY_FOLDER, "-fsanitize=address", "-fno-omit-frame-pointer");
-#endif
+	unsigned int total_files = sizeof(files) / MAX_FILE_LEN;
 
 
-	char *excluded_files[] = {SRC_USER_FOLDER"main.c", SRC_USER_FOLDER"buffers.c", SRC_USER_FOLDER"input.c", SRC_USER_FOLDER"instanced_positions.c",
-				  SRC_USER_FOLDER"sprite.c"};
+	nob_cmd_append(&cmd, "cc");
+	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I"INCLUDE, "-I"THIRDPARTY_INCLUDE);
+	nob_cmd_append(&cmd, "-Wfatal-errors");
+	nob_cmd_append(&cmd, "-g", "-c");
+	unsigned int total_object_sizes = 0;
+	for (int i = 0; i < total_files; ++i) {
+		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(files[i]) + 1;
+		total_object_sizes += object_single_file_size;
+	}
 
-	add_compilation_target(&cmd, "src/", BUILD_OBJ_DIR,
-			excluded_files, sizeof(excluded_files) / sizeof(char *));
-	cmd_run(&cmd);
-
-	move_object_files("src/", BUILD_OBJ_DIR);
-	change_c_files_times("src/", BUILD_OBJ_DIR);
+	char file_name_array[total_object_sizes];
+	char *file_name_array_copy = file_name_array;
 
 
-	char *directories[1] = {BUILD_OBJ_DIR};
-	
+	stbds_string_arena my_arena={0};
+	for (int i = 0; i < total_files; ++i) {
+
+		c_single_file_size = strlen(SRC_FOLDER) + strlen(files[i]) + 1;
+		char c_new_file_string[c_single_file_size];
+		strcpy(c_new_file_string, SRC_FOLDER);
+		strcat(c_new_file_string, files[i]);
+
+
+		char *filename = stbds_stralloc(&my_arena, c_new_file_string);
+		nob_cmd_append(&cmd, filename);
+	}
+	if (!nob_cmd_run(&cmd)) return 1;
+
+
+	Cmd move_cmd = {0};
+	nob_cmd_append(&move_cmd, "mv");
+
+	stbds_strreset(&my_arena);
+	for (int i = 0; i < total_files; ++i) {
+		char file_dir[strlen(files[i]) + 1];
+		strcpy(file_dir, files[i]);
+		file_dir[strlen(files[i]) - 1] = 'o';
+
+		char *filename = stbds_stralloc(&my_arena, file_dir);
+
+		nob_cmd_append(&move_cmd, filename);
+	}
+	stbds_strreset(&my_arena);
+
+	nob_cmd_append(&move_cmd, BUILD_OBJ_DIR);
+	nob_cmd_run(&move_cmd);
+
+
 	Cmd link_cmd = {0};
 
 	nob_cmd_append(&link_cmd, ARCHIVE);
 	nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
 
+	for (int i = 0; i < total_files; ++i) {
+		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(files[i]) + 1;
+		char object_new_file_string[object_single_file_size];
+		strcpy(object_new_file_string, BUILD_OBJ_DIR);
+		strcat(object_new_file_string, files[i]);
+		object_new_file_string[object_single_file_size-2] = 'o';
 
-	//nob_cmd_append(&link_cmd, "external/lib/glad.c");
-	for (size_t i = 0; i < sizeof(directories) / sizeof(char *); i++) {
-		Nob_File_Paths files = {0};
-		nob_read_entire_dir(directories[i], &files);
-		for (size_t j = 0; j < files.count; j++) {
-			const char *file = files.items[j];
-			if (strncmp(file+strlen(file)-2, ".o", 2) == 0) {
-				char str[strlen(file) + strlen(directories[i]) + 1];
-				strncpy(str, directories[i], sizeof(str));
-				strncat(str, file, strlen(file));
-				nob_cmd_append(&link_cmd, nob_temp_strdup(str));
-			}
-		}
+
+		char *file_name = stbds_stralloc(&my_arena, object_new_file_string);
+
+		nob_cmd_append(&link_cmd, file_name);
+
+
 	}
 
-	/*
-	if (argc == 1) {
-		nob_cmd_append(&link_cmd, "-Lexternal/lib/LINUX", "-Iinclude", "-Iexternal/include");
-		nob_cmd_append(&link_cmd, "-lglfw3", "-lm", "-lGL");
-		nob_cmd_append(&link_cmd, "-o", "build/main");
-	}
-	*/
-	
-	cmd_run(&link_cmd);
+	nob_cmd_run(&link_cmd);
 
-	Cmd link_cmd2 = {0};
-
-	if (argc > 1) {
-		if (strcmp(argv[1], "ar") == 0) {
-			return 0;
-		}
-	}
-	// runs command to link to archive, should be done when ar isn't an argument
-	if (argc == 1) {
-		nob_cmd_append(&link_cmd2, COMPILER);
-		nob_cmd_append(&link_cmd2, "-g");
-		for (size_t i = 0; i < sizeof(excluded_files) / sizeof(char *); i++) {
-			nob_cmd_append(&link_cmd2, excluded_files[i]);
-		}
-		nob_cmd_append(&link_cmd2, "external/lib/glad.c");
-
-		nob_cmd_append(&link_cmd2, "-Lbuild/", "-L"LIBRARY_FOLDER, "-Iinclude", "-Iexternal/include");
-
-#ifdef PLATFORM_LINUX
-	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lGL");
-	//nob_cmd_append(&link_cmd2, "-fsanitize=address");
-#endif
-#ifdef PLATFORM_WINDOWS
-	nob_cmd_append(&link_cmd2, "-lt", "-lglfw3", "-lm", "-lopengl32", "-lgdi32", "-lpthread");
-#endif
-
-		nob_cmd_append(&link_cmd2, "-o", "build/main");
-
-		cmd_run(&link_cmd2);
-	}
 	
 	return 0;
 }
 
 
 
-
-
-
-
-
-int change_time(char *filename, time_t mtime) {
-  struct stat foo;
-  //time_t mtime;
-  struct utimbuf new_times;
-
-  if (stat(filename, &foo) < 0) {
-    perror(filename);
-    return 1;
-  }
-  //mtime = foo.st_mtime; /* seconds since the epoch */
-
-  new_times.actime = time(NULL);
-  new_times.modtime = mtime;    /* set mtime to current time */
-  if (utime(filename, &new_times) < 0) {
-    perror(filename);
-    return 1;
-  }
-  return 0;
-}
-
-int change_c_files_times(char *dir, char *build_dir){
-	Nob_File_Paths files = {0};
-	nob_read_entire_dir(dir, &files);
-
-	for (size_t i = 0; i < files.count; i++) {
-		const char *file = files.items[i];
-		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
-
-			char file_cat[strlen(file) + strlen(dir) + 1];
-			strncpy(file_cat, dir, sizeof(file_cat));
-			strncat(file_cat, file, strlen(file));
-
-
-			char *last_slash = strrchr(file_cat, '/');
-			char *first_slash = strchr(file_cat, '/');
-			
-			int extra_dir_size = last_slash - first_slash;
-			if (first_slash == NULL) {
-				fprintf(stderr, "ERROR: Couldn't find '/' in %s\n", file_cat);
-				return -1;
-			}
-			
-			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
-			strncpy(new_file_cat, build_dir, sizeof(new_file_cat));
-			strncat(new_file_cat, first_slash+1, extra_dir_size);
-			strncat(new_file_cat, file, strlen(file));
-			new_file_cat[strlen(new_file_cat)-1] = 'o';
-
-
-			struct stat filestat;
-			stat(file_cat,&filestat);
-			change_time(new_file_cat, filestat.st_mtime);
-		}
-	}
-	return 0;
-}
-
-
-int add_compilation_target(Cmd *cmd, char *dir, char *build_dir,
-		char **excluded_files, size_t excluded_files_size) {
-
-	Nob_File_Paths files = {0};
-	nob_read_entire_dir(dir, &files);
-
-	// instead of not compiling a file into .o files
-	// you can instead not link to those files in the 
-	// archive creation stage
-	
-	for (size_t i = 0; i < files.count; i++) {
-		const char *file = files.items[i];
-		bool excecute = true;
-		for (size_t j = 0; j < excluded_files_size; j++) {
-			char full_file_path[strlen(dir) + strlen(file) + 1];
-			strncpy(full_file_path, dir, sizeof(full_file_path)); 
-			strncat(full_file_path, file, strlen(file)); 
-			int cmp = strncmp(full_file_path, excluded_files[j], strlen(excluded_files[j]));
-			if (cmp == 0) {
-				excecute = false;
-			}
-		}
-		if (!excecute) {
-			continue;
-		}
-		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
-			char file_cat[strlen(file) + strlen(dir) + 1];
-			strncpy(file_cat, dir, sizeof(file_cat));
-			strncat(file_cat, file, strlen(file));
-
-			char *last_slash = strrchr(file_cat, '/');
-			char *first_slash = strchr(file_cat, '/');
-			
-			int extra_dir_size = last_slash - first_slash;
-			if (first_slash == NULL) {
-				fprintf(stderr, "ERROR: Couldn't find '/' in %s\n", file_cat);
-				return -1;
-			}
-			
-			char file_object[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
-			strncpy(file_object, build_dir, sizeof(file_object));
-			strncat(file_object, first_slash+1, extra_dir_size);
-			strncat(file_object, file, strlen(file));
-			file_object[strlen(file_object) - 1] = 'o';
-
-
-
-
-			if (access(file_object, F_OK) != 0) {
-				nob_cmd_append(cmd, nob_temp_strdup(file_cat));
-			} else if (is_file_times_same(file_cat, file_object) == false) {
-				nob_cmd_append(cmd, nob_temp_strdup(file_cat));	
-			}
-		}
-	}
-	return 0;
-}
-
-
-bool is_file_times_same(char *file1, char *file2) {
-	struct stat file1_stat;
-	stat(file1,&file1_stat);
-
-	struct stat file2_stat;
-	stat(file2,&file2_stat);
-
-	return (file2_stat.st_mtime == file1_stat.st_mtime);
-}
-
-int move_object_files(char *dir, char *build_dir) {
-	Nob_File_Paths files = {0};
-	nob_read_entire_dir(dir, &files);
-
-	for (size_t i = 0; i < files.count; i++) {
-		Cmd cmd = {0};
-		const char *file = files.items[i];
-
-		if (strncmp(file+strlen(file)-2, ".c", 2) == 0) {
-			nob_cmd_append(&cmd, "mv");
-			char file_cat[strlen(file) + strlen(dir) + 1];
-			strncpy(file_cat, dir, sizeof(file_cat));
-			strncat(file_cat, file, strlen(file));
-
-
-			char *last_slash = strrchr(file_cat, '/');
-			char *first_slash = strchr(file_cat, '/');
-			
-			int extra_dir_size = last_slash - first_slash;
-			if (first_slash == NULL) {
-				fprintf(stderr, "ERROR: Couldn't find '/' in %s\n", file_cat);
-				return -1;
-			}
-			
-			char new_file_cat[strlen(file) + strlen(build_dir) + extra_dir_size + 1];
-			strncpy(new_file_cat, build_dir, sizeof(new_file_cat));
-			strncat(new_file_cat, first_slash+1, extra_dir_size);
-			strncat(new_file_cat, file, strlen(file));
-
-
-			char current_file[strlen(file) + 1];
-			strcpy(current_file, file);
-			current_file[strlen(current_file) - 1] = 'o';
-			new_file_cat[strlen(new_file_cat) - 1] = 'o';
-
-			if (access(current_file, F_OK) != 0) {
-				continue;
-			}
-
-			nob_cmd_append(&cmd, current_file);
-			nob_cmd_append(&cmd, nob_temp_strdup(new_file_cat));	
-			nob_cmd_run(&cmd);
-		}
-	}
-	return 0;
-
-}

@@ -10,6 +10,17 @@ vec4 quat_mult(vec4 q1, vec4 q2)
   return qr;
 }
 
+vec4 quat_mult2(vec4 q1, vec4 q2) {
+	vec3 q1_i = vec3(q1.x, q1.y, q1.z);
+	vec3 q2_i = vec3(q2.x, q2.y, q2.z);
+
+	float scalar = q1.w * q2.w - dot(q1_i, q2_i);
+
+	vec3 imaginary = (q2_i * q1.w) + (q1_i * q2.w) + cross(q1_i, q2_i);
+
+	return vec4(imaginary.x, imaginary.y, imaginary.z, scalar);
+}
+
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aUV;
 layout (location = 2) in vec3 aNormal;
@@ -30,15 +41,17 @@ void main() {
 	vec4 rot;
 
 	rot.x = 0;
-	rot.y = 1;
+	rot.y = 0;
 	rot.z = 1;
+	rot.w = 1;
 	rot = normalize(rot);
 
+	float fang = angle;
 
-	rot.w = cos(angle/2);
-	rot.x *= sin(angle/2);
-	rot.y *= sin(angle/2);
-	rot.z *= sin(angle/2);
+	rot.w *= cos(fang/2);
+	rot.x *= sin(fang/2);
+	rot.y *= sin(fang/2);
+	rot.z *= sin(fang/2);
 
 	mat4 coordinates = projection * view * model;
 
@@ -46,19 +59,18 @@ void main() {
 	vec4 rot_q = rot;
 	vec4 rot_q_conj = vec4(-rot.x, -rot.y, -rot.z, rot.w);
 	
-	vec4 rotated_pos = quat_mult(quat_mult(rot_q, vec4(aPos, 0)), rot_q_conj);
-	//vec4 rotated_pos = quat_mult(rot_q, vec4(aPos, 0));
+	vec4 rotated_pos = quat_mult2(quat_mult2(rot_q, vec4(aPos, 0)), rot_q_conj);
 	vec3 rots = vec3(rotated_pos.x, rotated_pos.y, rotated_pos.z);
 
 
-	vec4 rotated_normal = quat_mult(rot_q, vec4(aNormal, 0));
-	rotated_normal = quat_mult(rotated_normal, rot_q_conj);
+	vec4 rotated_normal = quat_mult2(rot_q, vec4(aNormal, 0));
+	rotated_normal = quat_mult2(rotated_normal, rot_q_conj);
 	vec3 rotn = vec3(rotated_normal.x, rotated_normal.y, rotated_normal.z);
 
 
 	gl_Position = coordinates * vec4(rots, 1.0);
 
-	FragPos = vec3(model * vec4(rots, 1.0));
+	FragPos = vec3(model * vec4(rotn, 1.0));
 	normal = rotn;
 	uv = aUV;
 }

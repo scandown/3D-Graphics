@@ -1,8 +1,9 @@
 #pragma once
 #include "cglm/cglm.h"
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#define RGFW_IMPORT
+#include "RGFW.h"
 
 #include "camera.h"
 
-void key_input(GLFWwindow *window, Camera *cam, float speed);
+void key_input(RGFW_window *window, Camera *cam, float speed);

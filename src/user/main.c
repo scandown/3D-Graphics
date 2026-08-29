@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define RGFW_OPENGL
+#define RGFW_IMPORT
 #include "engine.h"
+#include "RGFW.h"
 
 #include "user/input.h"
 #include "user/instanced_positions.h"
@@ -18,14 +21,21 @@ int main() {
 	}
 
 
+
+
 	Camera *cam = malloc(sizeof(Camera));
 	camera_init(cam, (vec3){0, 0, 1}, 0, 270);
 
 
-	GLFWwindow *window = window_init(640, 360, "game");
+	RGFW_window *window = window_init(1366, 768, "game");
+	if (window == NULL) {
+		fprintf(stderr, "Error: Couldn't create window\n");
+		return 1;
+	}
 
 	glEnable(GL_DEPTH_TEST);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	RGFW_window_showMouse(window, false);
+	RGFW_window_captureRawMouse(window, RGFW_TRUE);
 
 	unsigned int program = program_init(error, "src/user/vertex_in.glsl", "src/user/textured.glsl");
 	unsigned int program3D = program_init(error, "src/user/vertex.glsl", "src/user/red.glsl");
@@ -54,7 +64,25 @@ int main() {
 
 
 	float yes[2] = {10, 100};
-	while (!glfwWindowShouldClose(window)) {
+	RGFW_event event;
+	while (!RGFW_window_shouldClose(window)) {
+		//RGFW_window_moveMouse(window, 30, 30);
+		
+
+		while (RGFW_window_checkEvent(window, &event)) {
+			switch (event.type) {
+				case RGFW_mouseMotion:
+					break;
+				case RGFW_mouseRawMotion:
+					int dev_x = event.delta.x;
+					int dev_y = event.delta.y;
+
+					cam->yaw += (float)dev_x / 15.0;
+					cam->pitch -= (float)dev_y / 15.0;
+				default:
+					break;
+			}
+		}
 
 
 		GLenum err;
@@ -66,19 +94,18 @@ int main() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	        glClearColor(0.1, 0.1, 0.2, 1);
-		glfwPollEvents();
+		RGFW_pollEvents();
 
 
 		glUseProgram(program3D);
 		key_input(window, cam, 0.05);
 		matrix_init(cam, program3D, "3D", 640, 360);
-		cursor_position_callback(window, cam, 0.05);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		
 		uniform_send_to_gpu(&cam->view_uniform, program3D, "view");
 
 		static float angle = 0;
-		angle += 0.01;
+		//angle += 0.01;
 		/*
 		Uniform angle_uniform = uniform_set_data(&angle, UNIFORM_FLOAT1);
 		uniform_send_to_gpu(&angle_uniform, program3D, "angle");
@@ -91,12 +118,11 @@ int main() {
 
 		glUseProgram(program);
 		matrix_init(cam, program, "3D", 640, 360);
-		cursor_position_callback(window, cam, 0.05);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		uniform_send_to_gpu(&cam->view_uniform, program, "view");
 		sprite_draw(&spr, (vec3){10, 0, 0}, program, 3);
 
-		glfwSwapBuffers(window);
+		RGFW_window_swapBuffers_OpenGL(window);
 
 	}
 
@@ -107,7 +133,7 @@ int main() {
 	glDeleteProgram(program3D);
 	free(cam);
 
-	glfwDestroyWindow(window);
-	glfwTerminate();
+	RGFW_window_close(window);
+	RGFW_deinit();
 	return 0;
 }
