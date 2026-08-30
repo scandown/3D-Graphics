@@ -1,6 +1,5 @@
 #define RGFW_OPENGL
-#define RGFW_EXPORT
-#define RGFW_IMPLEMENTATION
+#define RGFW_IMPORT
 #include "window.h"
 
 

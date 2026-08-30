@@ -74,6 +74,7 @@ int main() {
 	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I"INCLUDE, "-I"THIRDPARTY_INCLUDE);
 	nob_cmd_append(&cmd, "-Wfatal-errors");
 	nob_cmd_append(&cmd, "-g", "-c");
+	nob_cmd_append(&cmd, "external/lib/rgfw.c");
 	unsigned int total_object_sizes = 0;
 	for (int i = 0; i < total_files; ++i) {
 		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(files[i]) + 1;
@@ -101,6 +102,7 @@ int main() {
 
 	Cmd move_cmd = {0};
 	nob_cmd_append(&move_cmd, "mv");
+	nob_cmd_append(&move_cmd, "rgfw.o");
 
 	stbds_strreset(&my_arena);
 	for (int i = 0; i < total_files; ++i) {
@@ -122,6 +124,7 @@ int main() {
 
 	nob_cmd_append(&link_cmd, ARCHIVE);
 	nob_cmd_append(&link_cmd, "rcs", BUILD_FOLDER"libt.a");
+	nob_cmd_append(&link_cmd, "build_obj/rgfw.o");
 
 	for (int i = 0; i < total_files; ++i) {
 		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(files[i]) + 1;
