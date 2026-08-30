@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include "glad/glad.h"
+#define RGFW_IMPORT
+#define RGFW_OPENGL
 #include "RGFW.h"
 
 

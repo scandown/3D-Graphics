@@ -1,5 +1,3 @@
-#define RGFW_OPENGL
-#define RGFW_IMPORT
 #include "window.h"
 
 

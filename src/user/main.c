@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "engine.h"
+
 #define RGFW_OPENGL
 #define RGFW_IMPORT
-#include "engine.h"
 #include "RGFW.h"
 
 #include "user/input.h"
