@@ -1,4 +1,4 @@
-#include "sprite.h"
+#include "user/sprite.h"
 
 Sprite sprite_init(jmp_buf error, unsigned int scale, char *texture_location, float width, float height) {
 
