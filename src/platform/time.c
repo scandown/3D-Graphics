@@ -1,6 +1,4 @@
-#include "time.h"
-
-
+#include "platform/time.h"
 
 float time_delta(struct timeval *time_previous_frame, double *elapsed_time) {
 	double dummy_elapsed_time;
