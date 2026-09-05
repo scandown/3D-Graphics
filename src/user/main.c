@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 
 #include "engine.h"
+#include "platform/time.h"
 
 #define RGFW_OPENGL
 #define RGFW_IMPORT
@@ -50,13 +51,9 @@ int main() {
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 
 	Model rocky = obj_load(error, "assets/cube.obj");
-	clock_t t;
-	t = clock();
-	//Model rocky = obj_load(error, "../projects/models/rocky.obj");
-	t = clock() - t;
-	double time_taken = ((double)t) / CLOCKS_PER_SEC;
-	printf("Time elapsed: %f\n", time_taken);
-	//return 1;
+
+
+
 
 	Sprite spr = sprite_init(error, 1, "assets/smiley.png", 16, 16);
 	buffers_gen_and_init(&spr.plane);
@@ -69,7 +66,14 @@ int main() {
 
 	float yes[2] = {10, 100};
 	RGFW_event event;
+	struct timeval t1, t2;
+	gettimeofday(&t2, NULL);
 	while (!RGFW_window_shouldClose(window)) {
+		double elapsedTime;
+
+		float delta = time_delta(&t2, NULL);
+
+
 		//RGFW_window_moveMouse(window, 30, 30);
 		
 
@@ -102,7 +106,7 @@ int main() {
 
 
 		glUseProgram(program3D);
-		key_input(window, cam, 0.05);
+		key_input(window, cam, 10 * delta);
 		matrix_init(cam, program3D, "3D", 640, 360);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		

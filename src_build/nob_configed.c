@@ -36,7 +36,8 @@ char files[][MAX_FILE_LEN] = {
 	"uniform.c",
 	"texture.c",
 	"binary_tree.c",
-	"matrix.c"
+	"matrix.c",
+	"platform/time.c"
 };
 
 char user_files[][MAX_FILE_LEN] = {
@@ -110,7 +111,14 @@ int main() {
 		strcpy(file_dir, files[i]);
 		file_dir[strlen(files[i]) - 1] = 'o';
 
-		char *filename = stbds_stralloc(&my_arena, file_dir);
+		char *slash = strchr(file_dir, '/');
+		if (slash == NULL) {
+			slash = file_dir;	
+		} else {
+			slash = slash + 1;
+		}
+
+		char *filename = stbds_stralloc(&my_arena, slash);
 
 		nob_cmd_append(&move_cmd, filename);
 	}
@@ -127,14 +135,30 @@ int main() {
 	nob_cmd_append(&link_cmd, "build_obj/rgfw.o");
 
 	for (int i = 0; i < total_files; ++i) {
-		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(files[i]) + 1;
+
+		char *name = NULL;
+
+		char *slash;
+		slash = files[i];
+		while ((slash = strchr(slash, '/')) != NULL) {
+			slash = slash + 1;
+			name = slash;
+		}
+		if (name == NULL) {
+			name = files[i];
+		}
+
+		object_single_file_size = strlen(BUILD_OBJ_DIR) + strlen(name) + 1;
 		char object_new_file_string[object_single_file_size];
 		strcpy(object_new_file_string, BUILD_OBJ_DIR);
-		strcat(object_new_file_string, files[i]);
+		strcat(object_new_file_string, name);
 		object_new_file_string[object_single_file_size-2] = 'o';
 
 
-		char *file_name = stbds_stralloc(&my_arena, object_new_file_string);
+
+		slash = object_new_file_string;
+
+		char *file_name = stbds_stralloc(&my_arena, slash);
 
 		nob_cmd_append(&link_cmd, file_name);
 
