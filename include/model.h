@@ -10,7 +10,7 @@
 #include "texture.h"
 
 #include "stb_ds.h"
-#include "global_defines.h"
+#include "user/global_defines.h"
 
 
 typedef struct {
