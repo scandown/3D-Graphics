@@ -15,18 +15,14 @@ void buffers_gen(Model *model) {
 void buffers_init(Model *model) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
-	glBufferData(GL_ARRAY_BUFFER, model->vertex_arr.count * sizeof(vec3), model->vertex_arr.items, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, arrlen(model->vertex_array) * sizeof(vec3), model->vertex_array, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->uvVBO);
-	glBufferData(GL_ARRAY_BUFFER, model->uv_arr.count * sizeof(vec2), model->uv_arr.items, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, arrlen(model->uv_array) * sizeof(vec2), model->uv_array, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->normalVBO);
-	glBufferData(GL_ARRAY_BUFFER, model->normal_arr.count * sizeof(vec3), model->normal_arr.items, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, arrlen(model->normal_array) * sizeof(vec3), model->normal_array, GL_STATIC_DRAW);
 
-	/*
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model->vertex_face_size * sizeof(unsigned int), model->vertex_faces, GL_STATIC_DRAW);
-	*/
 	glBindVertexArray(model->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
@@ -78,9 +74,9 @@ void model_delete_buffers(Model *model) {
 	glDeleteBuffers(1, &model->instance_UV_VBO);
 	glDeleteBuffers(1, &model->instance_spr_VBO);
 
-	free(model->vertex_arr.items);
-	free(model->normal_arr.items);
-	free(model->uv_arr.items);
+	arrfree(model->vertex_array);
+	arrfree(model->normal_array);
+	arrfree(model->uv_array);
 }
 
 void model_draw(Model *model, vec3 pos, unsigned int program, unsigned int instance_amount) {
@@ -91,8 +87,7 @@ void model_draw(Model *model, vec3 pos, unsigned int program, unsigned int insta
 
 	glBindTexture(GL_TEXTURE_2D, model->texture);
 	glBindVertexArray(model->VAO);
-	//glDrawElementsInstanced(GL_TRIANGLES, model->vertex_face_size, GL_UNSIGNED_INT, 0, instance_amount);
-	glDrawArraysInstanced(GL_TRIANGLES, 0, model->vertex_arr.count, instance_amount);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, arrlen(model->vertex_array), instance_amount);
 }
 
 void model_init(jmp_buf error, Model *model, char *texture_location) {

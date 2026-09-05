@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "dynamic_array.h"
-
 
 typedef struct {
 	int vertex;

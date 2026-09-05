@@ -10,6 +10,8 @@
 #include "texture.h"
 #include "uniform.h"
 
+#include "stb_ds.h"
+
 typedef struct {
 	Model plane;
 } Sprite;

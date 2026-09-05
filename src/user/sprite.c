@@ -63,9 +63,9 @@ void sprite_generate_model(Model *model, float width, float height) {
 	
 
 	for (int i = 0; i < 6; ++i) {
-		DA_PUSH_VEC(model->vertex_arr, vertex[i], 3);
-		DA_PUSH_VEC(model->normal_arr, normal[i], 3);
-		DA_PUSH_VEC(model->uv_arr, uv[i], 2);
+		arrput_vector(model->vertex_array, vertex[i], 3);
+		arrput_vector(model->normal_array, normal[i], 3);
+		arrput_vector(model->uv_array, uv[i], 2);
 	}
 }
 

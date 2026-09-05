@@ -8,45 +8,45 @@
 // then check found bool, if found add the new vertices to the unique
 // vertex array and also add the index to the elements buffer array
 
-bool get_similar_index(v3Array vertex, v2Array uv, v3Array normal,
-		       v3Array out_vertex, v2Array out_uv, v3Array out_normal,
-		       Indices_Array out_indices) {
+bool get_similar_index(vec3 *vertex_array, vec2 *uv_array, vec3 *normal_array,
+		       vec3 *out_vertex_array, vec2 *out_uv_array, vec3 *out_normal_array,
+		       unsigned int *out_indices_array) {
 	int i;
-	for (i = 0; i < vertex.count; ++i) {
-		if (vertex.items[i][0] == out_vertex.items[i][0] &&
-		    vertex.items[i][1] == out_vertex.items[i][1] &&
-		    vertex.items[i][2] == out_vertex.items[i][2] &&
+	for (i = 0; i < arrlen(vertex_array); ++i) {
+		if (vertex_array[i][0] == out_vertex_array[i][0] &&
+		    vertex_array[i][1] == out_vertex_array[i][1] &&
+		    vertex_array[i][2] == out_vertex_array[i][2] &&
                                                                 
-		    normal.items[i][0] == out_normal.items[i][0] &&
-		    normal.items[i][1] == out_normal.items[i][1] &&
-		    normal.items[i][2] == out_normal.items[i][2] &&
-		    uv.items[i][0]     == out_uv.items[i][0]     &&
-		    uv.items[i][1]     == out_uv.items[i][1]     &&
-		    uv.items[i][2]     == out_uv.items[i][2]) {
+		    normal_array[i][0] == out_normal_array[i][0] &&
+		    normal_array[i][1] == out_normal_array[i][1] &&
+		    normal_array[i][2] == out_normal_array[i][2] &&
+		    uv_array[i][0]     == out_uv_array[i][0]     &&
+		    uv_array[i][1]     == out_uv_array[i][1]     &&
+		    uv_array[i][2]     == out_uv_array[i][2]) {
 			return false;
 		}
 	}
 
-	DA_PUSH_VEC(out_vertex, vertex.items[i], 3);
-	DA_PUSH_VEC(out_normal, normal.items[i], 3);
-	DA_PUSH_VEC(out_uv, uv.items[i], 2);
-	DA_PUSH(out_indices, i);
+	unsigned int vertex_len = arrlen(out_vertex_array);
+	unsigned int normal_len = arrlen(out_normal_array);
+	unsigned int uv_len = arrlen(out_uv_array);
+	arraddn(out_vertex_array, 1);
+	arraddn(out_normal_array, 1);
+	arraddn(out_uv_array, 1);
+
+	for (int j = 0; j < 3; j++) {
+		out_vertex_array[vertex_len][j] = vertex_array[i][j];
+		out_normal_array[normal_len][j] = normal_array[i][j];
+		if (j < 2) {
+			out_uv_array[uv_len][j] = uv_array[i][j];
+		}
+	}
+	arrput(out_indices_array, i);
 
 	return true;
 
 }
 
-void index_VBO(v3Array vertex, v2Array uv, v3Array normal,
-		v3Array out_vertex, v2Array out_uv, v3Array out_normal,
-		Indices_Array out_indices) {
-
-
-	if (get_similar_index(vertex, uv, normal, out_vertex, out_uv, out_normal, out_indices)) {
-		
-	}
-
-
-}
 
 Model obj_load(jmp_buf error, char *model_name) {
 	Model model = {0};
@@ -67,9 +67,9 @@ Model obj_load(jmp_buf error, char *model_name) {
 	fread(buffer, sizeof(*buffer), sz, fptr);
 	rewind(fptr);
 
-	v3Array vertex = {0};
-	v3Array normal = {0};
-	v2Array uv = {0};
+	vec3 *vertex_array = NULL;
+	vec3 *normal_array = NULL;
+	vec2 *uv_array = NULL;
 
 	int count = 0;
 	int vcount = 0;
@@ -102,7 +102,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 						}
 						v[2] = atof(buffer + i+2+space_diff);
 
-						DA_PUSH_VEC(vertex, v, 3);
+						arrput_vector(vertex_array, v, 3);
 
 						vcount++;
 						break;
@@ -120,7 +120,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 						}
 						vn[2] = atof(buffer + i+2+space_diff);
 
-						DA_PUSH_VEC(normal, vn, 3);
+						arrput_vector(normal_array, vn, 3);
 						vncount++;
 						break;
 					case 't':
@@ -133,7 +133,7 @@ Model obj_load(jmp_buf error, char *model_name) {
 						vt[1] = atof(buffer + i+2+space_diff);
 						space_diff++;
 
-						DA_PUSH_VEC(uv, vt, 2);
+						arrput_vector(uv_array, vt, 2);
 						vtcount++;
 						break;
 					default:
@@ -153,9 +153,9 @@ Model obj_load(jmp_buf error, char *model_name) {
 
 
 	int vertex_index = 0;
-	v3Array vertex_ordered = {0};
-	v3Array normal_ordered = {0};
-	v2Array uv_ordered = {0};
+	vec3 *vertex_ordered_array = NULL;
+	vec3 *normal_ordered_array = NULL;
+	vec2 *uv_ordered_array = NULL;
 
 	index = 0;
 	int init_index = 0;
@@ -174,19 +174,19 @@ Model obj_load(jmp_buf error, char *model_name) {
 					case 0:
 						// VERTEX
 						int vertex_index = atoi(line_buffer + prev_index);
-						DA_PUSH_VEC(vertex_ordered, vertex.items[vertex_index - 1], 3);
+						arrput_vector(vertex_ordered_array, vertex_array[vertex_index - 1], 3);
 						face_version++;
 						break;
 					case 1:
 						// UV
 						int uv_index = atoi(line_buffer + prev_index);
-						DA_PUSH_VEC(uv_ordered, uv.items[uv_index - 1], 2);
+						arrput_vector(uv_ordered_array, uv_array[uv_index - 1], 2);
 						face_version++;
 						break;
 					case 2:
 						// NORMAL
 						int normal_index = atoi(line_buffer + prev_index);
-						DA_PUSH_VEC(normal_ordered, normal.items[normal_index - 1], 3);
+						arrput_vector(normal_ordered_array, normal_array[normal_index - 1], 3);
 						face_version++;
 						break;
 					default:
@@ -215,14 +215,14 @@ Model obj_load(jmp_buf error, char *model_name) {
 	// use faces
 
 	free(buffer);
-	model.vertex_arr = vertex_ordered;
-	model.uv_arr = uv_ordered;
-	model.normal_arr = normal_ordered;
+	model.vertex_array = vertex_ordered_array;
+	model.uv_array = uv_ordered_array;
+	model.normal_array = normal_ordered_array;
 
 
-	free(vertex.items);
-	free(uv.items);
-	free(normal.items);
+	arrfree(vertex_array);
+	arrfree(uv_array);
+	arrfree(normal_array);
 
 	return model;
 }

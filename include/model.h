@@ -7,41 +7,19 @@
 #include "glad/glad.h"
 #include "binary_tree.h"
 #include "uniform.h"
-#include "dynamic_array.h"
 #include "texture.h"
 
-typedef struct {
-	unsigned int *items;
-	size_t count;
-	size_t capacity;
-} Indices_Array;
-
-typedef struct {
-	float *items;
-	size_t count;
-	size_t capacity;
-} Array;
-
-typedef struct {
-	vec3 *items;
-	size_t count;
-	size_t capacity;
-} v3Array;
-
-typedef struct {
-	vec2 *items;
-	size_t count;
-	size_t capacity;
-} v2Array;
+#include "stb_ds.h"
+#include "global_defines.h"
 
 
 typedef struct {
 	Uniform uniform;
 	unsigned int texture;
 
-	v3Array vertex_arr;
-	v2Array uv_arr;
-	v3Array normal_arr;
+	vec3 *vertex_array;
+	vec2 *uv_array;
+	vec3 *normal_array;
 	char *location;
 
 	unsigned int VAO;
@@ -54,6 +32,10 @@ typedef struct {
 
 	vec3 pos;
 } Model;
+
+bool get_similar_index(vec3 *vertex_array, vec2 *uv_array, vec3 *normal_array,
+		       vec3 *out_vertex_array, vec2 *out_uv_array, vec3 *out_normal_array,
+		       unsigned int *out_indices_array);
 
 int check_int_equality(int *array1, int array1_length, int *array2, int array2_length);
 int check_float_equality(float *array1, int array1_length, float *array2, int array2_length);

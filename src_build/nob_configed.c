@@ -72,7 +72,7 @@ int main() {
 
 	nob_cmd_append(&cmd, "cc");
 	nob_cmd_append(&cmd, "-I"BUILD_FOLDER, "-I"INCLUDE, "-I"THIRDPARTY_INCLUDE);
-	nob_cmd_append(&cmd, "-Wfatal-errors");
+	nob_cmd_append(&cmd, "-Wfatal-errors", "-Wno-unused-result");
 	nob_cmd_append(&cmd, "-g", "-c");
 	nob_cmd_append(&cmd, "external/lib/rgfw.c");
 	unsigned int total_object_sizes = 0;

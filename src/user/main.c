@@ -11,6 +11,9 @@
 #include "user/input.h"
 #include "user/instanced_positions.h"
 
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
+
 #define num_inst 3
 
 
