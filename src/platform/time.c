@@ -7,7 +7,7 @@ double time_get_current() {
 
 	const int NANOSECOND_TO_SEC = 1.0E9;
 
-	double decimal_part = tp.tv_nsec / NANOSECOND_TO_SEC;
+	double decimal_part = (double)tp.tv_nsec / NANOSECOND_TO_SEC;
 	double time_double = decimal_part + tp.tv_sec;
 
 	return time_double;
