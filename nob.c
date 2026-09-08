@@ -61,7 +61,6 @@ int main(int argc, char **argv) {
 	nob_cmd_append(&cmd, "-I.", "-I"BUILD_FOLDER, "-I"SRC_BUILD_FOLDER); // -I is usually the same across all compilers
 	nob_cc_output(&cmd, output_path);
 	nob_cc_inputs(&cmd, input_path);
-	printf("Hi\n");
 	if (!cmd_run(&cmd)) return 1;
 
 	if (argc == 1) {
