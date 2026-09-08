@@ -59,6 +59,15 @@ int main() {
 	buffers_gen_and_init(&spr.plane);
 	instanced_buffers_init(&spr.plane, instanced_positions, instanced_spr_num, num_inst, true);
 
+	Sprite grid = sprite_init(error, 1, "assets/grid.png", 640, 360);
+	for (int i = 0; i < arrlen(grid.plane.uv_array); ++i) {
+		grid.plane.uv_array[i][0] *= 20.0 / (640 / 360);
+		grid.plane.uv_array[i][1] *= 20.0;
+	}
+	buffers_gen_and_init(&grid.plane);
+	instanced_buffers_init(&grid.plane, instanced_positions, instanced_spr_num, num_inst, true);
+
+
 
 	model_init(error, &rocky, "assets/smiley.png");
 	buffers_gen_and_init(&rocky);
@@ -104,6 +113,19 @@ int main() {
 	        glClearColor(0.1, 0.1, 0.2, 1);
 		RGFW_pollEvents();
 
+		glDisable(GL_DEPTH_TEST);
+		glUseProgram(program);
+		matrix_init(cam, program, "2D", 640, 360);
+		camera_rotate(cam, -90, 0);
+		uniform_send_to_gpu(&cam->view_uniform, program, "view");
+		static float scroll = 0;
+		scroll += 1 * delta;
+		scroll = scroll >= 1 ? 0 : scroll;
+		uniform_apply(&scroll, UNIFORM_FLOAT1, program, "scroll");
+		sprite_draw(&grid, (vec3){30, 0, 0}, program, 1);
+
+		glEnable(GL_DEPTH_TEST);
+
 
 		glUseProgram(program3D);
 		key_input(window, cam, 10 * delta);
@@ -113,14 +135,7 @@ int main() {
 		uniform_send_to_gpu(&cam->view_uniform, program3D, "view");
 
 		static float angle = 0;
-		//angle += 0.01;
-		/*
-		Uniform angle_uniform = uniform_set_data(&angle, UNIFORM_FLOAT1);
-		uniform_send_to_gpu(&angle_uniform, program3D, "angle");
-		*/
 		uniform_apply(&angle, UNIFORM_FLOAT1, program3D, "angle");
-
-
 
 		model_draw(&rocky, (vec3){0, 0, 0}, program3D, 1);
 
@@ -128,6 +143,8 @@ int main() {
 		matrix_init(cam, program, "3D", 640, 360);
 		camera_rotate(cam, cam->yaw, cam->pitch);
 		uniform_send_to_gpu(&cam->view_uniform, program, "view");
+		float new_scroll = 0;
+		uniform_apply(&new_scroll, UNIFORM_FLOAT1, program, "scroll");
 		sprite_draw(&spr, (vec3){10, 0, 0}, program, 3);
 
 		RGFW_window_swapBuffers_OpenGL(window);
