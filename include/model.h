@@ -27,8 +27,8 @@ typedef struct {
 	unsigned int uvVBO;
 	unsigned int normalVBO;
 	unsigned int EBO;
-	unsigned int instance_UV_VBO;
-	unsigned int instance_spr_VBO;
+	unsigned int instance_pos_VBO;
+	unsigned int instance_uv_VBO;
 
 	vec3 pos;
 } Model;

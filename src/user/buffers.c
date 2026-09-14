@@ -8,8 +8,8 @@ void buffers_gen(Model *model) {
 	glGenBuffers(1, &model->EBO);
 
 
-	glGenBuffers(1, &model->instance_UV_VBO);
-	glGenBuffers(1, &model->instance_spr_VBO);
+	glGenBuffers(1, &model->instance_pos_VBO);
+	glGenBuffers(1, &model->instance_uv_VBO);
 }
 
 void buffers_init(Model *model) {
@@ -42,20 +42,20 @@ void buffers_gen_and_init(Model *model) {
 	buffers_init(model);
 }
 
-void instanced_buffers_init(Model *model, vec3 *instance_array, vec2 *spr_num, int translation_size, bool setup) {
-	glBindBuffer(GL_ARRAY_BUFFER, model->instance_UV_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * translation_size, instance_array, GL_STATIC_DRAW);
+void instanced_buffers_init(Model *model, vec3 *instance_pos, vec2 *instance_uv, int translation_size, bool setup) {
+	glBindBuffer(GL_ARRAY_BUFFER, model->instance_pos_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * translation_size, instance_pos, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->instance_spr_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, spr_num, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, model->instance_uv_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, instance_uv, GL_STATIC_DRAW);
 
 	if (setup) {
-		glBindBuffer(GL_ARRAY_BUFFER, model->instance_UV_VBO);
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
+		glBindBuffer(GL_ARRAY_BUFFER, model->instance_pos_VBO);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)(0));
 		glVertexAttribDivisor(3, 1);
 		glEnableVertexAttribArray(3);
 
-		glBindBuffer(GL_ARRAY_BUFFER, model->instance_spr_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, model->instance_uv_VBO);
 		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
 		glVertexAttribDivisor(4, 1);
 		glEnableVertexAttribArray(4);
@@ -71,8 +71,8 @@ void model_delete_buffers(Model *model) {
 	glDeleteBuffers(1, &model->uvVBO);
 	glDeleteBuffers(1, &model->normalVBO);
 	glDeleteBuffers(1, &model->EBO);
-	glDeleteBuffers(1, &model->instance_UV_VBO);
-	glDeleteBuffers(1, &model->instance_spr_VBO);
+	glDeleteBuffers(1, &model->instance_pos_VBO);
+	glDeleteBuffers(1, &model->instance_uv_VBO);
 
 	arrfree(model->vertex_array);
 	arrfree(model->normal_array);

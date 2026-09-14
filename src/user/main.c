@@ -47,7 +47,7 @@ int main() {
 
 
 
-	vec3 instanced_positions[num_inst] = {{0, 0, 0}, {16, 0, 0}, {32, 0, 0}};
+	vec3 instanced_positions[num_inst] = {{100, 0, 0}, {36, 0, 0}, {32, 0, 0}};
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 
 	Model rocky = obj_load(error, "assets/cube.obj");
@@ -126,7 +126,6 @@ int main() {
 
 		glEnable(GL_DEPTH_TEST);
 
-
 		glUseProgram(program3D);
 		key_input(window, cam, 10 * delta);
 		matrix_init(cam, program3D, "3D", 640, 360);
@@ -145,7 +144,7 @@ int main() {
 		uniform_send_to_gpu(&cam->view_uniform, program, "view");
 		float new_scroll = 0;
 		uniform_apply(&new_scroll, UNIFORM_FLOAT1, program, "scroll");
-		sprite_draw(&spr, (vec3){10, 0, 0}, program, 3);
+		sprite_draw(&spr, (vec3){0, 0, 0}, program, 3);
 
 		RGFW_window_swapBuffers_OpenGL(window);
 

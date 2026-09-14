@@ -6,7 +6,7 @@ layout (location = 2) in vec3 aNormal;
 
 
 // 
-layout (location = 3) in vec2 aOffset;
+layout (location = 3) in vec3 aOffset;
 layout (location = 4) in vec2 aSpr;
 
 out vec2 uv;
@@ -19,7 +19,7 @@ uniform mat4 projection;
 void main() {
 	mat4 coordinates = projection * view * model;
 
-	gl_Position = coordinates * vec4(aPos.xy + aOffset, -0.1, 1);
+	gl_Position = coordinates * vec4(aPos.xy + aOffset.xy, -0.1, 1);
 
 	uv = aUV;
 	spr_num = aSpr;

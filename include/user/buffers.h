@@ -10,4 +10,4 @@ void model_init(jmp_buf error, Model *model, char *texture_location);
 void buffers_gen(Model *model);
 void buffers_init(Model *model);
 void buffers_gen_and_init(Model *model);
-void instanced_buffers_init(Model *model, vec3 *instance_array, vec2 *spr_num, int translation_size, bool setup);
+void instanced_buffers_init(Model *model, vec3 *instance_pos, vec2 *instance_uv, int translation_size, bool setup);
