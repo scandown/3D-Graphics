@@ -13,6 +13,15 @@
 #include "user/global_defines.h"
 
 
+typedef enum {
+	VBO_VERTEX = 0,
+	VBO_UV = 1,
+	VBO_NORMAL = 2,
+	VBO_I_POSITION = 3,
+	VBO_I_UV = 4,
+} Buffer_Object_Index;
+
+
 typedef struct {
 	Uniform uniform;
 	unsigned int texture;
@@ -23,12 +32,16 @@ typedef struct {
 	char *location;
 
 	unsigned int VAO;
+	unsigned int *VBO_array;
+
+	/*
 	unsigned int vertexVBO;
 	unsigned int uvVBO;
 	unsigned int normalVBO;
 	unsigned int EBO;
 	unsigned int instance_pos_VBO;
 	unsigned int instance_uv_VBO;
+	*/
 
 	vec3 pos;
 } Model;

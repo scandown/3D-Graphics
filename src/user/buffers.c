@@ -2,38 +2,33 @@
 
 void buffers_gen(Model *model) {
 	glGenVertexArrays(1, &model->VAO);
-	glGenBuffers(1, &model->vertexVBO);
-	glGenBuffers(1, &model->uvVBO);
-	glGenBuffers(1, &model->normalVBO);
-	glGenBuffers(1, &model->EBO);
-
-
-	glGenBuffers(1, &model->instance_pos_VBO);
-	glGenBuffers(1, &model->instance_uv_VBO);
+	unsigned int VBO_amount = 6;
+	arraddn(model->VBO_array, VBO_amount);
+	glGenBuffers(VBO_amount, model->VBO_array);
 }
 
 void buffers_init(Model *model) {
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_VERTEX]);
 	glBufferData(GL_ARRAY_BUFFER, arrlen(model->vertex_array) * sizeof(vec3), model->vertex_array, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->uvVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_UV]);
 	glBufferData(GL_ARRAY_BUFFER, arrlen(model->uv_array) * sizeof(vec2), model->uv_array, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->normalVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_NORMAL]);
 	glBufferData(GL_ARRAY_BUFFER, arrlen(model->normal_array) * sizeof(vec3), model->normal_array, GL_STATIC_DRAW);
 
 	glBindVertexArray(model->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->vertexVBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, model->uvVBO);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)(0));
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, model->normalVBO);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
-	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_VERTEX]);
+	glVertexAttribPointer(VBO_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+	glEnableVertexAttribArray(VBO_VERTEX);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_UV]);
+	glVertexAttribPointer(VBO_UV, 2, GL_FLOAT, GL_FALSE, 0, (void *)(0));
+	glEnableVertexAttribArray(VBO_UV);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_NORMAL]);
+	glVertexAttribPointer(VBO_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
+	glEnableVertexAttribArray(VBO_NORMAL);
 
 }
 
@@ -43,22 +38,22 @@ void buffers_gen_and_init(Model *model) {
 }
 
 void instanced_buffers_init(Model *model, vec3 *instance_pos, vec2 *instance_uv, int translation_size, bool setup) {
-	glBindBuffer(GL_ARRAY_BUFFER, model->instance_pos_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * translation_size, instance_pos, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_I_POSITION]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * translation_size, instance_pos, GL_DYNAMIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, model->instance_uv_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, instance_uv, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_I_UV]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * translation_size, instance_uv, GL_DYNAMIC_DRAW);
 
 	if (setup) {
-		glBindBuffer(GL_ARRAY_BUFFER, model->instance_pos_VBO);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)(0));
-		glVertexAttribDivisor(3, 1);
-		glEnableVertexAttribArray(3);
+		glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_I_POSITION]);
+		glVertexAttribPointer(VBO_I_POSITION, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)(0));
+		glVertexAttribDivisor(VBO_I_POSITION, 1);
+		glEnableVertexAttribArray(VBO_I_POSITION);
 
-		glBindBuffer(GL_ARRAY_BUFFER, model->instance_uv_VBO);
-		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
-		glVertexAttribDivisor(4, 1);
-		glEnableVertexAttribArray(4);
+		glBindBuffer(GL_ARRAY_BUFFER, model->VBO_array[VBO_I_UV]);
+		glVertexAttribPointer(VBO_I_UV, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)(0));
+		glVertexAttribDivisor(VBO_I_UV, 1);
+		glEnableVertexAttribArray(VBO_I_UV);
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -67,12 +62,9 @@ void instanced_buffers_init(Model *model, vec3 *instance_pos, vec2 *instance_uv,
 
 void model_delete_buffers(Model *model) {
 	glDeleteVertexArrays(1, &model->VAO);
-	glDeleteBuffers(1, &model->vertexVBO);
-	glDeleteBuffers(1, &model->uvVBO);
-	glDeleteBuffers(1, &model->normalVBO);
-	glDeleteBuffers(1, &model->EBO);
-	glDeleteBuffers(1, &model->instance_pos_VBO);
-	glDeleteBuffers(1, &model->instance_uv_VBO);
+	glDeleteBuffers(arrlen(model->VBO_array), model->VBO_array);
+
+	arrfree(model->VBO_array);
 
 	arrfree(model->vertex_array);
 	arrfree(model->normal_array);

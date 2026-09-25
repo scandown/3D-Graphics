@@ -47,7 +47,7 @@ int main() {
 
 
 
-	vec3 instanced_positions[num_inst] = {{100, 0, 0}, {36, 0, 0}, {32, 0, 0}};
+	vec3 instanced_positions[num_inst] = {{100, 0, 0}, {36, 0, 0}, {10, 0, 0}};
 	vec2 instanced_spr_num[num_inst] = {{0, 0}, {0, 0}, {0, 1}};
 
 	Model rocky = obj_load(error, "assets/cube.obj");
@@ -134,6 +134,7 @@ int main() {
 		uniform_send_to_gpu(&cam->view_uniform, program3D, "view");
 
 		static float angle = 0;
+		angle += 0.0001;
 		uniform_apply(&angle, UNIFORM_FLOAT1, program3D, "angle");
 
 		model_draw(&rocky, (vec3){0, 0, 0}, program3D, 1);
