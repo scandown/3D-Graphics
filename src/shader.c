@@ -17,12 +17,13 @@ unsigned int shader_create(char *file_path, GLenum type) {
 
 	glShaderSource(shader, 1, (const char* const *)&string, NULL);
 	glCompileShader(shader);
+
+	free(string);
 	
 	if (shader_error_check(shader) == true) {
 		return 0;
 	}
 
-	free(string);
 
 	return shader;
 }
