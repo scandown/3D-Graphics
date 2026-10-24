@@ -10,15 +10,9 @@ typedef struct {
 	vec3 pos;
 	vec3 front;
 	vec3 up;
-	long mask1;
-	long mask2;
-	int key;
-
 
 	float pitch;
 	float yaw;
-	double prev_xpos;
-	double prev_ypos;
 
 	Uniform projection_uniform;
 	Uniform view_uniform;

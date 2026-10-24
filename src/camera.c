@@ -18,6 +18,4 @@ void camera_init(Camera *cam, vec3 pos, float pitch, float yaw) {
 	glm_vec3_copy((vec3){0, 1, 0}, cam->up);
 	cam->pitch = pitch;
 	cam->yaw = yaw;
-	cam->prev_xpos = 0;
-	cam->prev_ypos = 0;
 }
